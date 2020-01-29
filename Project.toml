@@ -1,6 +1,6 @@
 name = "MLJModelInterface"
 uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
-authors = ["Thibaut Lienart <ltib@me.com>"]
+authors = ["Thibaut Lienart and Anthony Blaom"]
 version = "0.1.0"
 
 [deps]

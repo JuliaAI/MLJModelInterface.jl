@@ -3,6 +3,8 @@ mutable struct A0 <: Model
 end
 
 @testset "clean!" begin
+    a = A0(0)
+    @test clean!(a) == ""
     function M.clean!(a::A0)
         warn = ""
         if a.f0 < 0

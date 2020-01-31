@@ -47,16 +47,3 @@ metadata_model(FooRegressor,
     @test infos[:hyperparameter_types] == ("Int64", "Any")
     @test infos[:hyperparameter_ranges] == (nothing, nothing)
 end
-
-@test infos[:input_scitype] == MLJBase.Table(Continuous)
-@test infos[:target_scitype] == AbstractVector{Continuous}
-@test infos[:is_pure_julia]
-@test !infos[:is_wrapper]
-@test infos[:docstring] == raw"""La di da
-    → based on [FooRegressor](http://existentialcomics.com/).
-    → do `@load FooRegressor pkg="FooRegressor"` to use the model.
-    → do `?FooRegressor` for documentation."""
-@test infos[:name] == "FooRegressor"
-
-@test infos[:is_supervised]
-@test infos[:prediction_type] == :deterministic

@@ -18,15 +18,12 @@ export Scientific, Found, Unknown, Known, Finite, Infinite,
        OrderedFactor, Multiclass, Count, Continuous, Textual,
        Binary, ColorImage, GrayImage, Table
 
-# model construction
-export @mlj_model
-# XXX metadata
-
+# constructor + metadata
+export @mlj_model, metadata_pkg, metadata_model, metadata_measure
 # api
 export fit, update, update_data, transform, inverse_transform,
        fitted_params, predict, predict_mode, predict_mean, predict_median,
        evaluate, clean!
-
 # traits
 export input_scitype, output_scitype, target_scitype,
        is_pure_julia, package_name, package_license,
@@ -83,5 +80,6 @@ include("data_utils.jl")
 include("model_traits.jl")
 include("model_def.jl")
 include("model_api.jl")
+include("model_metadata.jl")
 
 end # module

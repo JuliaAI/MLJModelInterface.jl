@@ -61,5 +61,5 @@ bar(::P1) = nothing
     setfull()
     M.implemented_methods(::FI, M::Type{<:MLJType}) =
         getfield.(methodswith(M), :name)
-    @test implemented_methods(mp) == [:clean!,:bar,:foo]
+    @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 end

@@ -1,3 +1,21 @@
+mutable struct A0 <: Model
+    f0::Int
+end
+
+@testset "clean!" begin
+    function M.clean!(a::A0)
+        warn = ""
+        if a.f0 < 0
+            warn *= "Field a is negative, resetting to 5."
+            a.f0 = 5
+        end
+    return warn
+    end
+    a = A0(-2)
+    @test clean!(a) == "Field a is negative, resetting to 5."
+    @test a.f0 == 5
+end
+
 # No type, no default
 @mlj_model mutable struct A1
     a

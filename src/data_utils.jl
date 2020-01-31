@@ -246,3 +246,14 @@ depending on the value type. See also: [`selectrows`](@ref),
 select(X, r, c) = select(get_interface_mode(), vtrait(X), X, r, c)
 
 select(::Mode, ::Val, X, r, c) = selectcols(selectrows(X, r), c)
+
+# ------------------------------------------------------------------------
+# mode, mean, median
+
+mode(x)   = mode(get_interface_mode(), x)
+mean(x)   = mean(get_interface_mode(), x)
+median(x) = median(get_interface_mode(), x)
+
+mode(::LightInterface, x)   = errlight("mode")
+mean(::LightInterface, x)   = errlight("mean")
+median(::LightInterface, x) = errlight("median")

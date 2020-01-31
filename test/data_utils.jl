@@ -112,6 +112,7 @@ end
     @test selectrows(X, :)   === X
     @test selectcols(X, 1)    == ones(5,)
     @test selectcols(X, 1:2)  == ones(5, 2)
+    @test selectcols(X, :)   === X
     @test select(X, 1, 1)     == [1.0]
     @test select(X, 1:2, 1)   == ones(2,)
     @test select(X, 1:2, 1:2) == ones(2, 2)

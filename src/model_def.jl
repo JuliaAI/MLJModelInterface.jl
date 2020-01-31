@@ -2,6 +2,11 @@
 # @sk_model macro defined to help import sklearn models.
 # NOTE: it does NOT handle parametric types (yet).
 
+# a model wishing invalid hyperparameters to be corrected with a
+# warning should overload this method (return value is the warning
+# message):
+clean!(::Model) = ""
+
 """
 	_process_model_def(ex)
 
@@ -132,7 +137,7 @@ Build the expression of the cleaner associated with the constraints specified
 in a model def.
 """
 function _model_cleaner(modelname, defaults, constraints)
-    Expr(:function, :(clean!(model::$modelname)),
+    Expr(:function, :(MLJModelInterface.clean!(model::$modelname)),
         # body of the function
         Expr(:block,
              :(warning = ""),

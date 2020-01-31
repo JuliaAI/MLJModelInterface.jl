@@ -3,7 +3,6 @@ module MLJModelInterface
 # ------------------------------------------------------------------------
 # Dependency (note that ScientificTypes itself does not have dependencies)
 using ScientificTypes
-using InteractiveUtils # stdlib
 
 # ------------------------------------------------------------------------
 # exports

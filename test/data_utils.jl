@@ -170,3 +170,8 @@ end
     @test selectcols(X, :x)  == [1,2,3]
     @test select(X, 1:2, :z) == [0,0]
 end
+
+@testset "univ-finite" begin
+    setlight()
+    @test_throws M.InterfaceError UnivariateFinite(Dict(2=>3,3=>4))
+end

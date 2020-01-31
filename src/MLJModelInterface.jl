@@ -10,8 +10,8 @@ using ScientificTypes
 # types
 export LightInterface, FullInterface
 export MLJType, Model, Supervised, Unsupervised,
-       Probabilistic, Deterministic, Interval, Static
-# XXX export UnivariateFinite
+       Probabilistic, Deterministic, Interval, Static,
+       UnivariateFinite
 
 # rexport types from ScientificTypes
 export Scientific, Found, Unknown, Known, Finite, Infinite,
@@ -59,7 +59,7 @@ end
 
 abstract type MLJType end
 
-abstract type Model <: MLJType end
+abstract type Model   <: MLJType end
 
 abstract type   Supervised <: Model end
 abstract type Unsupervised <: Model end
@@ -76,10 +76,10 @@ abstract type Static <: Unsupervised end
 include("utils.jl")
 
 include("data_utils.jl")
+include("metadata_utils.jl")
 
 include("model_traits.jl")
 include("model_def.jl")
 include("model_api.jl")
-include("model_metadata.jl")
 
 end # module

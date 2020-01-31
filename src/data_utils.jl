@@ -216,7 +216,7 @@ selectrows(::LightInterface, ::Val{:table}, X, r; kw...) =
 """
     selectcols(X, c)
 
-Select single or multiple columns from a table or matrix `X`. If `c`
+Select single or multiple columns from a matrix or table `X` $REQUIRE. If `c`
 is an abstract vector of integers or symbols, then the object returned
 is a table of the preferred sink type of `typeof(X)`. If `c` is a
 *single* integer or column, then an `AbstractVector` is returned.
@@ -246,3 +246,31 @@ depending on the value type. See also: [`selectrows`](@ref),
 select(X, r, c) = select(get_interface_mode(), vtrait(X), X, r, c)
 
 select(::Mode, ::Val, X, r, c) = selectcols(selectrows(X, r), c)
+
+# ------------------------------------------------------------------------
+# UnivariateFinite
+
+"""
+    UnivariateFinite(classes, p)
+
+A discrete univariate distribution whose finite support is the elements of the
+vector `classes`, and whose corresponding probabilities are elements of the
+vector `p`, which must sum to one $REQUIRE.. Here `classes` must have type
+`AbstractVector{<:CategoricalElement}` where
+
+    CategoricalElement = Union{CategoricalValue,CategoricalString}
+
+and all classes are assumed to share the same categorical pool.
+
+    UnivariateFinite(prob_given_class)
+
+A discrete univariate distribution whose finite support is the set of keys of
+the provided dictionary, `prob_given_class` $REQUIRE.. The dictionary keys must
+be of type `CategoricalElement` (see above) and the dictionary values specify
+the corresponding probabilities.
+"""
+UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
+UnivariateFinite(c::AbstractVector, p::AbstractVector) =
+    UnivariateFinite(get_interface_mode(), c, p)
+
+UnivariateFinite(::LightInterface, a...) = errlight("UnivariateFinite")

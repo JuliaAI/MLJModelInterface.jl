@@ -11,8 +11,8 @@ setfull()  = M.set_interface_mode(M.FullInterface())
 
 include("mode.jl")
 include("data_utils.jl")
+include("metadata_utils.jl")
 
 include("model_def.jl")
 include("model_api.jl")
 include("model_traits.jl")
-include("model_metadata.jl")

@@ -5,10 +5,24 @@ module MLJModelInterface
 import ScientificTypes: trait
 
 # ------------------------------------------------------------------------
-# Single export: matrix, everything else is qualified in MLJBase
-export matrix
+# exports
+
+# types
+export LightInterface, FullInterface
+export MLJType, Model, Supervised, Unsupervised,
+       Probabilistic, Deterministic, Interval, Static
+# export UnivariateFinite
+
+# model construction
+export @mlj_model
+
+# operations
+# export fit, predict, ...
+export matrix, int, classes, decoder, table,
+       nrows, select, selectrows, selectcols
 
 # ------------------------------------------------------------------------
+# Mode trick
 
 abstract type Mode end
 struct LightInterface <: Mode end
@@ -24,24 +38,27 @@ struct InterfaceError <: Exception
     m::String
 end
 
-vtrait(X) = X |> trait |> Val
+# ------------------------------------------------------------------------
+# Model types
 
-"""
-    matrix(X; transpose=false)
+abstract type MLJType end
 
-If `X <: AbstractMatrix`, return `X` or `permutedims(X)` if `transpose=true`.
-If `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`.
-"""
-matrix(X; kw...) = matrix(vtrait(X), X, get_interface_mode(); kw...)
+abstract type Model <: MLJType end
 
-matrix(::Val{:other}, X::AbstractMatrix, ::Mode; transpose=false) =
-    transpose ? permutedims(X) : X
+abstract type   Supervised <: Model end
+abstract type Unsupervised <: Model end
 
-matrix(::Val{:other}, X, ::Mode; kw...) =
-    throw(ArgumentError("Function `matrix` only supports AbstractMatrix or " *
-                        "containers implementing the Tables interface."))
+abstract type Probabilistic <: Supervised end
+abstract type Deterministic <: Supervised end
+abstract type      Interval <: Supervised end
 
-matrix(::Val{:table}, X, ::LightInterface; kw...) =
-    throw(InterfaceError("Only `MLJModelInterface` loaded. Import `MLJBase`."))
+abstract type Static <: Unsupervised end
+
+# ------------------------------------------------------------------------
+# includes
+
+include("data_utils.jl")
+
+include("mlj_model.jl")
 
 end # module

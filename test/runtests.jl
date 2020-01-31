@@ -1,5 +1,6 @@
 using Test, MLJModelInterface, ScientificTypes
 using Tables, Distances, CategoricalArrays, InteractiveUtils
+import DataFrames: DataFrame
 
 const M  = MLJModelInterface
 const FI = M.FullInterface

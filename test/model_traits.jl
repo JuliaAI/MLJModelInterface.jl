@@ -63,3 +63,14 @@ bar(::P1) = nothing
         getfield.(methodswith(M), :name)
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 end
+
+struct FooMeasure <: MLJType end
+
+@testset "extras" begin
+    @test docstring(Float64) == "Float64"
+    @test docstring(FooMeasure) == "FooMeasure"
+    @test name(Float64) == "Float64"
+
+    df = DataFrame(a=randn(2), b=randn(2))
+    @test string(M.coretype(typeof(df))) == "DataFrame"
+end

@@ -50,6 +50,11 @@ prediction_type(::Type)                  = :unknown # used for measures too
 prediction_type(::Type{<:Deterministic}) = :deterministic
 prediction_type(::Type{<:Probabilistic}) = :probabilistic
 prediction_type(::Type{<:Interval})      = :interval
-implemented_methods(M::Type{<:MLJType})  = getfield.(methodswith(M), :name)
 hyperparameters(M::Type)                 = fieldnames(M)
 hyperparameter_types(M::Type)            = string.(fieldtypes(M))
+
+# implementation is deferred as it requires methodswith which depends upon
+# InteractiveUtils which we don't want to bring here as a dependency
+# (even if it's stdlib).
+implemented_methods(M::Type) = implemented_methods(get_interface_mode(), M)
+implemented_methods(::LightInterface, M) = errlight("implemented_methods")

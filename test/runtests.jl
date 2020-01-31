@@ -1,5 +1,5 @@
 using Test, MLJModelInterface, ScientificTypes
-using Tables, Distances, CategoricalArrays
+using Tables, Distances, CategoricalArrays, InteractiveUtils
 
 const M  = MLJModelInterface
 const FI = M.FullInterface

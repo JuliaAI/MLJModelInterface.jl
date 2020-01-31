@@ -5,11 +5,11 @@ end
 end
 
 @mlj_model mutable struct D1 <: Deterministic
-    a::Int = 0::(_ > 0)
+    a::Int = 1::(_ > 0)
 end
 
 @mlj_model mutable struct P1 <: Probabilistic
-    a::Int = 0::(_ > 0)
+    a::Int = 1::(_ > 0)
 end
 
 @mlj_model mutable struct I1 <: Interval
@@ -52,7 +52,14 @@ bar(::P1) = nothing
     @test prediction_type(mp) == :probabilistic
     @test prediction_type(mi) == :interval
 
-    @test implemented_methods(mp) == [:clean!,:bar,:foo]
     @test hyperparameters(md) == (:a,)
     @test hyperparameter_types(md) == ("Int64",)
+
+    # implemented methods is deferred
+    setlight()
+    @test_throws M.InterfaceError implemented_methods(mp)
+    setfull()
+    M.implemented_methods(::FI, M::Type{<:MLJType}) =
+        getfield.(methodswith(M), :name)
+    @test implemented_methods(mp) == [:clean!,:bar,:foo]
 end

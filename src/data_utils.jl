@@ -31,7 +31,7 @@ matrix(::LightInterface, ::Val{:table}, X; kw...) = errlight("matrix")
 # int
 
 """
-   int(x)
+   int(x; type=nothing)
 
 The positional integer of the `CategoricalString` or `CategoricalValue` `x`, in
 the ordering defined by the pool of `x`. The type of `int(x)` is the reference
@@ -61,9 +61,12 @@ Broadcasted versions of `int`.
 
 See also: [`decoder`](@ref).
 """
-int(x; kw...) = int(get_interface_mode(), x; kw...)
+function int(x; type::Union{Nothing,Type{T}}=nothing) where T <: Real
+    type === nothing && return int(get_interface_mode(), x)
+    return convert.(T, int(get_interface_mode(), x))
+end
 
-int(::LightInterface, x; kw...) = errlight("int")
+int(::LightInterface, x) = errlight("int")
 
 # ------------------------------------------------------------------------
 # classes
@@ -270,7 +273,7 @@ be of type `CategoricalElement` (see above) and the dictionary values specify
 the corresponding probabilities.
 """
 UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
-UnivariateFinite(c::AbstractVector, p::AbstractVector) =
+UnivariateFinite(c::AbstractVector, p) =
     UnivariateFinite(get_interface_mode(), c, p)
 
 UnivariateFinite(::LightInterface, a...) = errlight("UnivariateFinite")

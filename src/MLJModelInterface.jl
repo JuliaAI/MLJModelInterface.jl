@@ -15,13 +15,8 @@ export MLJType, Model, Supervised, Unsupervised,
        Probabilistic, Deterministic, Interval, Static,
        UnivariateFinite
 
-# reexport types from ScientificTypes
-export Scientific, Found, Unknown, Known, Finite, Infinite,
-       OrderedFactor, Multiclass, Count, Continuous, Textual,
-       Binary, ColorImage, GrayImage, Table
-
 # model constructor + metadata
-export @mlj_model, metadata_pkg, metadata_model, metadata_measure
+export @mlj_model, metadata_pkg, metadata_model
 
 # model api
 export fit, update, update_data, transform, inverse_transform,
@@ -40,6 +35,12 @@ export input_scitype, output_scitype, target_scitype,
 # data operations
 export matrix, int, classes, decoder, table,
        nrows, selectrows, selectcols, select
+
+# re-exports from ScientificTypes
+export Scientific, Found, Unknown, Known, Finite, Infinite,
+       OrderedFactor, Multiclass, Count, Continuous, Textual,
+       Binary, ColorImage, GrayImage, Image, Table
+export scitype, scitype_union, elscitype, nonmissing, trait
 
 # ------------------------------------------------------------------------
 # Mode trick

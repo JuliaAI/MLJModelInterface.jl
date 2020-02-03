@@ -27,6 +27,9 @@ end
     x = categorical(['a','b','a'])
     @test int(x[1]) == 0x01
     @test int(x[2]) == 0x02
+    @test int(x[2]) isa UInt32
+    @test int(x[1], type=Int64) == 1
+    @test int(x[1], type=Int64) isa Int64
 end
 # ------------------------------------------------------------------------
 @testset "classes-light" begin

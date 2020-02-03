@@ -1,7 +1,7 @@
 name = "MLJModelInterface"
 uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
 authors = ["Thibaut Lienart and Anthony Blaom"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 ScientificTypes = "321657f4-b219-11e9-178b-2701a2544e81"
@@ -19,5 +19,4 @@ Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Tables", "Distances", "CategoricalArrays", "InteractiveUtils",
-        "DataFrames"]
+test = ["Test", "Tables", "Distances", "CategoricalArrays", "InteractiveUtils", "DataFrames"]

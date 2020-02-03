@@ -270,7 +270,7 @@ be of type `CategoricalElement` (see above) and the dictionary values specify
 the corresponding probabilities.
 """
 UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
-UnivariateFinite(c::AbstractVector, p::AbstractVector) =
+UnivariateFinite(c::AbstractVector, p) =
     UnivariateFinite(get_interface_mode(), c, p)
 
 UnivariateFinite(::LightInterface, a...) = errlight("UnivariateFinite")

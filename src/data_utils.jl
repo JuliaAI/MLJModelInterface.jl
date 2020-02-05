@@ -248,7 +248,16 @@ depending on the value type. See also: [`selectrows`](@ref),
 """
 select(X, r, c) = select(get_interface_mode(), vtrait(X), X, r, c)
 
-select(::Mode, ::Val, X, r, c) = selectcols(selectrows(X, r), c)
+# only used here to denote "group of indices"
+const MIdx = Union{AbstractArray,Colon}
+
+select(::Mode, ::Val, X, r::MIdx, c)       = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r, c::MIdx)       = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r::MIdx, c::MIdx) = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r, c) = _squeeze(selectcols(selectrows(X, r), c))
+
+_squeeze(::Nothing) = nothing
+_squeeze(v) = first(v)
 
 # ------------------------------------------------------------------------
 # UnivariateFinite

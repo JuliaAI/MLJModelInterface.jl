@@ -7,6 +7,15 @@ errlight(s) = throw(InterfaceError("Only `MLJModelInterface` is loaded. " *
                                     "Import `MLJBase` in order to use `$s`."))
 
 # ------------------------------------------------------------------------
+# categorical, note: not exported to avoid clashes; this is fine because
+# MLJBase loads CategoricalArrays and MLJ interfaces should use qualified
+# statements.
+
+categorical(a...; kw...) = categorical(get_interface_mode(), a...; kw...)
+
+categorical(::LightInterface, a...; kw...) = errlight("categorical")
+
+# ------------------------------------------------------------------------
 # matrix
 
 """

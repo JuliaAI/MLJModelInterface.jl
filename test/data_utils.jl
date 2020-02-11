@@ -1,3 +1,15 @@
+@testset "categorical-light" begin
+    setlight()
+    x = 1:5
+    @test_throws M.InterfaceError M.categorical(x)
+end
+@testset "categorical-full" begin
+    setfull()
+    M.categorical(::FI, a...; kw...) = categorical(a...; kw...)
+    x = 1:5
+    @test M.categorical(x) == categorical(x)
+end
+# ------------------------------------------------------------------------
 @testset "matrix-light" begin
     setlight()
     X = ones(2,3)

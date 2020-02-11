@@ -27,6 +27,9 @@ end
     x = categorical(['a','b','a'])
     @test int(x[1]) == 0x01
     @test int(x[2]) == 0x02
+    @test int(x[2]) isa UInt32
+    @test int(x[1], type=Int64) == 1
+    @test int(x[1], type=Int64) isa Int64
 end
 # ------------------------------------------------------------------------
 @testset "classes-light" begin
@@ -95,7 +98,7 @@ end
     X = nothing
     @test selectrows(X, 1) === nothing
     @test selectcols(X, 1) === nothing
-    @test select(X, 1, 2) === nothing
+    @test select(X, 1, 2)  === nothing
 
     # vector
     X = ones(5)
@@ -113,7 +116,7 @@ end
     @test selectcols(X, 1)    == ones(5,)
     @test selectcols(X, 1:2)  == ones(5, 2)
     @test selectcols(X, :)   === X
-    @test select(X, 1, 1)     == [1.0]
+    @test select(X, 1, 1)     == 1.0
     @test select(X, 1:2, 1)   == ones(2,)
     @test select(X, 1:2, 1:2) == ones(2, 2)
 
@@ -128,7 +131,6 @@ end
     @test_throws ArgumentError selectcols(X, 1)
     @test_throws ArgumentError select(X, 1, 1)
 end
-# ------------------------------------------------------------------------
 @testset "select-full" begin
     setfull()
     M.selectrows(::FI, ::Val{:table}, X, ::Colon) = X
@@ -164,13 +166,31 @@ end
     @test selectcols(X, 1)   == [1,2,3]
     @test selectcols(X, 1:2) == (x = [1, 2, 3], y = [4, 5, 6])
     @test selectcols(X, :)  === X
-    @test select(X, 1, 1)    == [1]
+    @test select(X, 1, 1)    == 1
     @test select(X, 1:2, 1)  == [1,2]
     @test select(X, :, 1)    == [1,2,3]
     @test selectcols(X, :x)  == [1,2,3]
     @test select(X, 1:2, :z) == [0,0]
-end
+    #
+    # extra tests by Anthony
+    X = (x=[1,2,3], y=[10, 20, 30], z= [:a, :b, :c])
+    @test select(X, 2, :y)         == 20
+    @test select(X, 2, [:x, :y])   == (x=[2,], y=[20,])
+    @test select(X, 2:3, :x)       == [2, 3]
+    @test select(X, 2:3, [:x, :y]) == (x=[2, 3], y=[20, 30])
+    @test select(X, :, [:x, :y])   == select(X, 1:3, [:x, :y])
+    @test select(X, 2, :)          == select(X, 2, 1:3)
+    @test select(X, 2:3, :)        == select(X, 2:3, 1:3)
 
+    @test select(X, 2, 2)        == 20
+    @test select(X, 2, [1, 2])   == (x=[2,], y=[20,])
+    @test select(X, 2:3, 1)      == [2, 3]
+    @test select(X, 2:3, [1, 2]) == (x=[2, 3], y=[20, 30])
+    @test select(X, :, [1, 2])   == select(X, 1:3, [1, 2])
+    @test select(X, 2, :)        == select(X, 2, 1:3)
+    @test select(X, 2:3, :)      == select(X, 2:3, 1:3)
+end
+# ------------------------------------------------------------------------
 @testset "univ-finite" begin
     setlight()
     @test_throws M.InterfaceError UnivariateFinite(Dict(2=>3,3=>4))

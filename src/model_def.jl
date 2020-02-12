@@ -122,7 +122,7 @@ function _model_constructor(modelname, params, defaults)
         # body of the function
         Expr(:block,
              Expr(:(=), :model, Expr(:call, :new, params...)),
-             :(message = clean!(model)),
+             :(message = MLJModelInterface.clean!(model)),
 			 :(isempty(message) || @warn message),
 			 :(return model)
 			 )

@@ -1,30 +1,29 @@
 module MLJModelInterface
 
 # ------------------------------------------------------------------------
-# Dependency (note that ScientificTypes itself does not have dependencies)
+# Dependency (ScientificTypes itself does not have dependencies)
 using ScientificTypes
 
 # ------------------------------------------------------------------------
 # exports
 
-# types
+# mode
 export LightInterface, FullInterface
+
+# MLJ model hierarchy
 export MLJType, Model, Supervised, Unsupervised,
        Probabilistic, Deterministic, Interval, Static,
        UnivariateFinite
 
-# rexport types from ScientificTypes
-export Scientific, Found, Unknown, Known, Finite, Infinite,
-       OrderedFactor, Multiclass, Count, Continuous, Textual,
-       Binary, ColorImage, GrayImage, Table
+# model constructor + metadata
+export @mlj_model, metadata_pkg, metadata_model
 
-# constructor + metadata
-export @mlj_model, metadata_pkg, metadata_model, metadata_measure
-# api
+# model api
 export fit, update, update_data, transform, inverse_transform,
        fitted_params, predict, predict_mode, predict_mean, predict_median,
        evaluate, clean!
-# traits
+
+# model traits
 export input_scitype, output_scitype, target_scitype,
        is_pure_julia, package_name, package_license,
        load_path, package_uuid, package_url,
@@ -36,6 +35,12 @@ export input_scitype, output_scitype, target_scitype,
 # data operations
 export matrix, int, classes, decoder, table,
        nrows, selectrows, selectcols, select
+
+# re-exports from ScientificTypes
+export Scientific, Found, Unknown, Known, Finite, Infinite,
+       OrderedFactor, Multiclass, Count, Continuous, Textual,
+       Binary, ColorImage, GrayImage, Image, Table
+export scitype, scitype_union, elscitype, nonmissing, trait
 
 # ------------------------------------------------------------------------
 # Mode trick

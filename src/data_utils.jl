@@ -7,6 +7,15 @@ errlight(s) = throw(InterfaceError("Only `MLJModelInterface` is loaded. " *
                                     "Import `MLJBase` in order to use `$s`."))
 
 # ------------------------------------------------------------------------
+# categorical, note: not exported to avoid clashes; this is fine because
+# MLJBase loads CategoricalArrays and MLJ interfaces should use qualified
+# statements.
+
+categorical(a...; kw...) = categorical(get_interface_mode(), a...; kw...)
+
+categorical(::LightInterface, a...; kw...) = errlight("categorical")
+
+# ------------------------------------------------------------------------
 # matrix
 
 """
@@ -31,7 +40,7 @@ matrix(::LightInterface, ::Val{:table}, X; kw...) = errlight("matrix")
 # int
 
 """
-   int(x)
+   int(x; type=nothing)
 
 The positional integer of the `CategoricalString` or `CategoricalValue` `x`, in
 the ordering defined by the pool of `x`. The type of `int(x)` is the reference
@@ -61,9 +70,12 @@ Broadcasted versions of `int`.
 
 See also: [`decoder`](@ref).
 """
-int(x; kw...) = int(get_interface_mode(), x; kw...)
+function int(x; type::Union{Nothing,Type{T}}=nothing) where T <: Real
+    type === nothing && return int(get_interface_mode(), x)
+    return convert.(T, int(get_interface_mode(), x))
+end
 
-int(::LightInterface, x; kw...) = errlight("int")
+int(::LightInterface, x) = errlight("int")
 
 # ------------------------------------------------------------------------
 # classes
@@ -238,31 +250,43 @@ selectcols(::LightInterface, ::Val{:table}, X, c; kw...) =
 """
     select(X, r, c)
 
-Select element(s) of a table or matrix at row(s) `r` and column(s) `c`. In the
-case of sparse data where the key `(r, c)`, zero or `missing` is returned,
-depending on the value type. See also: [`selectrows`](@ref),
-[`selectcols`](@ref).
+Select element(s) of a table or matrix at row(s) r and column(s) c. An object
+of the sink type of X (or a matrix) is returned unless c is a single integer or
+symbol. In that case a vector is returned, unless r is a single integer, in
+which case a single element is returned.
+
+See also: [`selectrows`](@ref), [`selectcols`](@ref).
 """
 select(X, r, c) = select(get_interface_mode(), vtrait(X), X, r, c)
 
-select(::Mode, ::Val, X, r, c) = selectcols(selectrows(X, r), c)
+# only used here to denote "group of indices"
+const MIdx = Union{AbstractArray,Colon}
+
+select(::Mode, ::Val, X, r::MIdx, c)       = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r, c::MIdx)       = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r::MIdx, c::MIdx) = selectcols(selectrows(X, r), c)
+select(::Mode, ::Val, X, r, c) = _squeeze(selectcols(selectrows(X, r), c))
+
+_squeeze(::Nothing) = nothing
+_squeeze(v) = first(v)
 
 # ------------------------------------------------------------------------
 # UnivariateFinite
 
-"""
-    UnivariateFinite(classes, p)
+const UNIVARIATE_FINITE_DOCSTRING =
+    """
+        UnivariateFinite(classes, p)
 
 A discrete univariate distribution whose finite support is the elements of the
 vector `classes`, and whose corresponding probabilities are elements of the
 vector `p`, which must sum to one $REQUIRE. Here `classes` must have type
 `AbstractVector{<:CategoricalElement}` where
 
-    CategoricalElement = Union{CategoricalValue,CategoricalString}
+        CategoricalElement = Union{CategoricalValue,CategoricalString}
 
 and all classes are assumed to share the same categorical pool.
 
-    UnivariateFinite(prob_given_class)
+        UnivariateFinite(prob_given_class)
 
 A discrete univariate distribution whose finite support is the set of keys of
 the provided dictionary, `prob_given_class` $REQUIRE. The dictionary keys must
@@ -270,7 +294,7 @@ be of type `CategoricalElement` (see above) and the dictionary values specify
 the corresponding probabilities.
 """
 UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
-UnivariateFinite(c::AbstractVector, p::AbstractVector) =
+UnivariateFinite(c::AbstractVector, p) =
     UnivariateFinite(get_interface_mode(), c, p)
 
 UnivariateFinite(::LightInterface, a...) = errlight("UnivariateFinite")

@@ -1,4 +1,5 @@
-using Test, MLJModelInterface, ScientificTypes
+using Test, MLJModelInterface
+using ScientificTypes, MLJScientificTypes
 using Tables, Distances, CategoricalArrays, InteractiveUtils
 import DataFrames: DataFrame
 

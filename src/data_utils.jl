@@ -83,7 +83,7 @@ int(::LightInterface, x) = errlight("int")
 """
     classes(x)
 
-All the categorical elements with in the same pool as `x` (including `x`),
+All the categorical elements with the same pool as `x` (including `x`),
 returned as a list, with an ordering consistent with the pool $REQUIRE.
 Here `x` has `CategoricalValue` or `CategoricalString` type, and `classes(x)`
 is a vector of the same eltype. Note that `x in classes(x)` is always true.
@@ -277,24 +277,22 @@ const UNIVARIATE_FINITE_DOCSTRING =
     """
         UnivariateFinite(classes, p)
 
-    A discrete univariate distribution whose finite support is the elements of
-    the vector `classes`, and whose corresponding probabilities are elements of
-    the vector `p`, which must sum to one $REQUIRE. Here `classes` must have
-    type `AbstractVector{<:CategoricalElement}` where
+A discrete univariate distribution whose finite support is the elements of the
+vector `classes`, and whose corresponding probabilities are elements of the
+vector `p`, which must sum to one $REQUIRE. Here `classes` must have type
+`AbstractVector{<:CategoricalElement}` where
 
         CategoricalElement = Union{CategoricalValue,CategoricalString}
 
-    and all classes are assumed to share the same categorical pool.
+and all classes are assumed to share the same categorical pool.
 
         UnivariateFinite(prob_given_class)
 
-    A discrete univariate distribution whose finite support is the set of keys
-    of the provided dictionary, `prob_given_class` $REQUIRE. The dictionary
-    keys must be of type `CategoricalElement` (see above) and the dictionary
-    values specify the corresponding probabilities.
-    """
-
-"""$UNIVARIATE_FINITE_DOCSTRING"""
+A discrete univariate distribution whose finite support is the set of keys of
+the provided dictionary, `prob_given_class` $REQUIRE. The dictionary keys must
+be of type `CategoricalElement` (see above) and the dictionary values specify
+the corresponding probabilities.
+"""
 UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
 UnivariateFinite(c::AbstractVector, p) =
     UnivariateFinite(get_interface_mode(), c, p)

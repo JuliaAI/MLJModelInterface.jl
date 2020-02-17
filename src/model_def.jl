@@ -8,7 +8,7 @@
 clean!(::Model) = ""
 
 """
-	_process_model_def(ex)
+    _process_model_def(ex)
 
 Take an expression defining a model (`mutable struct Model ...`) and unpack key
 elements for further processing:
@@ -88,7 +88,7 @@ function _process_model_def(ex)
 end
 
 """
-	_unpack!(ex, rep)
+    _unpack!(ex, rep)
 
 Internal function to allow to read a constraint given after a default value for
 a parameter and transform it in an executable condition (which is returned to
@@ -111,7 +111,7 @@ _unpack!(ex, _) = ex # when it's been unpacked, it's not an expression anymore
 
 
 """
-	_model_constructor(modelname, params, defaults)
+    _model_constructor(modelname, params, defaults)
 
 Build the expression of the keyword constructor associated with a model
 definition. When the constructor is called, the `clean!` function is called
@@ -131,7 +131,7 @@ end
 
 
 """
-	_model_cleaner(modelname, defaults, constraints)
+    _model_cleaner(modelname, defaults, constraints)
 
 Build the expression of the cleaner associated with the constraints specified
 in a model def.
@@ -163,7 +163,7 @@ function _model_cleaner(modelname, defaults, constraints)
 end
 
 """
-	@mlj_model
+    @mlj_model
 
 Macro to help define MLJ models with constraints on the default parameters.
 """

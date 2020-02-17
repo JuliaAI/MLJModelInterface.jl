@@ -1,9 +1,9 @@
-@testset "categorical-light" begin
+@testset "cat-light" begin
     setlight()
     x = 1:5
     @test_throws M.InterfaceError M.categorical(x)
 end
-@testset "categorical-full" begin
+@testset "cat-full" begin
     setfull()
     M.categorical(::FI, a...; kw...) = categorical(a...; kw...)
     x = 1:5

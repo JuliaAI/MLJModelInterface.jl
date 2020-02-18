@@ -13,7 +13,7 @@ const MODEL_TRAITS = [
 const SUPERVISED_TRAITS = setdiff(MODEL_TRAITS, [:output_scitype])
 
 const UNSUPERVISED_TRAITS = setdiff(MODEL_TRAITS,
-    [:prediction_type, :supports_weights])
+    [:target_scitype, :prediction_type, :supports_weights])
 
 for trait in MODEL_TRAITS
     ex = quote

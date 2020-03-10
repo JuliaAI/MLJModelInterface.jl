@@ -10,11 +10,6 @@ const MODEL_TRAITS = [
     :prediction_type, :implemented_methods, :hyperparameters,
     :hyperparameter_types, :hyperparameter_ranges]
 
-const SUPERVISED_TRAITS = setdiff(MODEL_TRAITS, [:output_scitype])
-
-const UNSUPERVISED_TRAITS = setdiff(MODEL_TRAITS,
-    [:target_scitype, :prediction_type, :supports_weights])
-
 for trait in MODEL_TRAITS
     ex = quote
         $trait(x) = $trait(typeof(x))

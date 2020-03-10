@@ -31,5 +31,10 @@ function predict_median end
 function transform end
 function inverse_transform end
 
+# models can optionally overload these for enable serialization in a
+# custom format:
+function save end
+function restore end
+
 # operations implemented by some meta-models:
 function evaluate end

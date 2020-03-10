@@ -19,6 +19,12 @@ mutable struct Super <: MLJType
     z::Int
 end
 
+mutable struct Partial <: MLJType
+    x::Int
+    y::Vector{Int}
+    Partial(x) = new(x)
+end
+
 @testset "equality for MLJType" begin
     f1 = Foo(MersenneTwister(7), 1, 2)
     f2 = Foo(MersenneTwister(8), 1, 2)
@@ -42,6 +48,17 @@ end
     @test s1 == s2
     s2.sub.x = 10
     @test f1 != f2
+
+    @test !(f1 == Super(f1, 4))
+
+    @test !(isequal(Foo(MersenneTwister(1), 1, 2),
+                    Foo(MersenneTwister(1), 1, 2)))
+
+    p1 = Partial(1)
+    p2 = Partial(1)
+    p2.y = [1,2]
+    @test !(p1 == p2)
+
 end
 
 @testset "in(x, collection) for MLJType" begin

@@ -1,8 +1,9 @@
 module MLJModelInterface
 
 # ------------------------------------------------------------------------
-# Dependency (ScientificTypes itself does not have dependencies)
+# Dependencies (ScientificTypes itself does not have dependencies)
 using ScientificTypes
+using Random
 
 # ------------------------------------------------------------------------
 # exports
@@ -36,12 +37,21 @@ export input_scitype, output_scitype, target_scitype,
 export matrix, int, classes, decoder, table,
        nrows, selectrows, selectcols, select
 
+# equality
+export is_same_except
+
 # re-exports from ScientificTypes
 export Scientific, Found, Unknown, Known, Finite, Infinite,
        OrderedFactor, Multiclass, Count, Continuous, Textual,
        Binary, ColorImage, GrayImage, Image, Table
 export scitype, scitype_union, elscitype, nonmissing, trait
 
+# ------------------------------------------------------------------------
+# To be extended
+
+import Base.==
+import Base: in, isequal
+#
 # ------------------------------------------------------------------------
 # Mode trick
 
@@ -79,12 +89,13 @@ abstract type Static <: Unsupervised end
 # includes
 
 include("utils.jl")
-
 include("data_utils.jl")
 include("metadata_utils.jl")
 
 include("model_traits.jl")
 include("model_def.jl")
 include("model_api.jl")
+include("equality.jl")
+
 
 end # module

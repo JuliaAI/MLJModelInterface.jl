@@ -94,9 +94,7 @@ end
     @test isrepresented(m, nothing) == false
     @test isrepresented(m, models)
     @test isrepresented(m2, models)
-    @test isrepresented(p, models)
-end
-
+    @test !isrepresented(p, models)
 end
 
 true

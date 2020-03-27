@@ -61,3 +61,24 @@ end
 Base.in(x::MLJType, itr::Set) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractVector) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
+
+# A version of `in` that actually uses `==`:
+
+"""
+    isrepresented(object::MLJType, objects)
+
+Test if `object` has a representative in the iterable
+`objects`. This is a weaker requirement than `object in objects`.
+
+Here we say `m1` *respresents* `m2` if `is_same_except(m1, m2)` is
+`true`.
+
+"""
+isrepresented(object::MLJType, ::Nothing) = false
+function isrepresented(object::MLJType, itr)::Union{Bool,Missing}
+    for m in itr
+        ismissing(m) && return missing
+        is_same_except(m, object) && return true
+    end
+    return false
+end

@@ -38,7 +38,7 @@ export matrix, int, classes, decoder, table,
        nrows, selectrows, selectcols, select
 
 # equality
-export is_same_except
+export is_same_except, isrepresented
 
 # re-exports from ScientificTypes
 export Scientific, Found, Unknown, Known, Finite, Infinite,

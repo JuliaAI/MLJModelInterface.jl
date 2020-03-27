@@ -84,4 +84,17 @@ end
 
 end
 
+@testset "isrepresented" begin
+    m = Foo(MersenneTwister(7), 1, 2)
+    m2 = Foo(MersenneTwister(8), 1, 2)
+    n = Foo(MersenneTwister(7), 3, 2)
+    p = Foo(MersenneTwister(9), 4, 5)
+    models = [m, n]
+
+    @test isrepresented(m, nothing) == false
+    @test isrepresented(m, models)
+    @test isrepresented(m2, models)
+    @test !isrepresented(p, models)
+end
+
 true

@@ -65,20 +65,20 @@ Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
 # A version of `in` that actually uses `==`:
 
 """
-    isrepresented(model::MLJBase.Model, models)
+    isrepresented(object::MLJBase.MLJType, objects)
 
-Test if `model` has a representative in the iterable
-`models`. This is a weaker requirement than `model in models`.
+Test if `object` has a representative in the iterable
+`objects`. This is a weaker requirement than `object in objects`.
 
 Here we say `m1` *respresents* `m2` if `is_same_except(m1, m2)` is
 `true`.
 
 """
-isrepresented(model::MLJBase.Model, ::Nothing) = false
-function isrepresented(model::MLJBase.Model, models)::Union{Bool,Missing}
-    for m in models
+isrepresented(object::MLJBase.MLJType, ::Nothing) = false
+function isrepresented(object::MLJBase.MLJType, itr)::Union{Bool,Missing}
+    for m in itr
         ismissing(m) && return missing
-        is_same_except(m, model) && return true
+        is_same_except(m, object) && return true
     end
     return false
 end

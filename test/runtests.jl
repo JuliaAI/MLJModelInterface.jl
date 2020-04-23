@@ -12,9 +12,9 @@ setlight() = M.set_interface_mode(M.LightInterface())
 setfull()  = M.set_interface_mode(M.FullInterface())
 
 include("mode.jl")
+include("parameter_inspection.jl")
 include("data_utils.jl")
 include("metadata_utils.jl")
-
 include("model_def.jl")
 include("model_api.jl")
 include("model_traits.jl")

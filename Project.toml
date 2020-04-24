@@ -8,7 +8,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ScientificTypes = "321657f4-b219-11e9-178b-2701a2544e81"
 
 [compat]
-ScientificTypes = "^0.7"
+ScientificTypes = "^0.7,^0.8"
 julia = "1"
 
 [extras]

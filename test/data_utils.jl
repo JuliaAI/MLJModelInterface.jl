@@ -97,6 +97,7 @@ end
     @test_throws ArgumentError nrows(X)
     X = (a=[4,2,1],b=[3,2,1])
     @test_throws M.InterfaceError nrows(X)
+    @test nrows(nothing) == 0
 end
 @testset "nrows-full" begin
     setfull()

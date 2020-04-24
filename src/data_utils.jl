@@ -191,6 +191,7 @@ Return the number of rows for a table, abstract vector or matrix `X` $REQUIRE.
 nrows(X) = nrows(get_interface_mode(), vtrait(X), X)
 
 nrows(::Mode, ::Val{:other}, X::AbstractVecOrMat) = size(X, 1)
+nrows(::Mode, ::Val{:other}, X::Nothing) = 0
 
 nrows(::Mode, ::Val{:other}, X) =
     throw(ArgumentError("Function `nrows` only supports AbstractVector or " *

@@ -58,6 +58,28 @@ end
     @test classes(x[1]) == ['a', 'b']
 end
 # ------------------------------------------------------------------------
+@testset "schema-light" begin
+    # throw error for any input anyway
+    setlight()
+    ary = rand(10, 3)
+    @test_throws M.InterfaceError M.schema(ary)
+    df = DataFrame(rand(10, 3))
+    @test_throws M.InterfaceError M.schema(df)
+end
+@testset "schema-full" begin
+    setfull()
+    ary = rand(10, 3)
+    @test M.schema(ary) === nothing
+    M.schema(::FI, ::Val{:table}, X; kw...) = schema(X; kw...) # this would be defined in MLJBase.jl
+    df = DataFrame(A = rand(10), B = categorical(rand('a':'c', 10)))
+    sch = M.schema(df)
+    @test sch.names == (:A, :B)
+    @test sch.types[1] <: Float64
+    @test sch.types[2] <: CategoricalValue
+    @test sch.scitypes[1] <: Continuous
+    @test sch.scitypes[2] <: Multiclass
+end
+# ------------------------------------------------------------------------
 @testset "decoder-light" begin
     setlight()
     x = 5

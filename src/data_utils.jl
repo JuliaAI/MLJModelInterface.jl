@@ -124,6 +124,23 @@ classes(x) = classes(get_interface_mode(), x)
 classes(::LightInterface, x) = errlight("classes")
 
 # ------------------------------------------------------------------------
+# schema
+
+"""
+    schema(X)
+
+If `X` is tabular, inspect the column types and scitypes, otherwise return
+`nothing`.
+"""
+schema(X; kw...) = schema(get_interface_mode(), vtrait(X), X; kw...)
+
+schema(::Mode, ::Val{:other}, X; kw...) = nothing
+
+schema(::LightInterface, ::Val{:other}, X; kw...) = errlight("schema")
+
+schema(::LightInterface, ::Val{:table}, X; kw...) = errlight("schema")
+
+# ------------------------------------------------------------------------
 # decoder
 
 """

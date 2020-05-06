@@ -10,10 +10,8 @@ fit(::Static, ::Integer, a...) = (nothing, nothing, nothing)
 # fallbacks for supervised models that don't support sample weights:
 fit(m::Supervised, verb::Integer, X, y, w) = fit(m, verb, X, y)
 
-"""
-`fitted_params` can be optionally overloaded to provide access to
-fitted parameters (eg, coeficients of linear model):
-"""
+# this operation can be optionally overloaded to provide access to
+# fitted parameters (eg, coeficients of linear model):
 fitted_params(::Model, fitres) = (fitresult=fitres,)
 
 """
@@ -56,16 +54,9 @@ unsupervised methods may implement the `inverse_transform` operation
 """
 function inverse_transform end
 
-"""
-models can optionally overload `save` to enable serialization in a
-custom format
-"""
+# models can optionally overload these for enable serialization in a
+# custom format:
 function save end
-
-"""
-models can optionally overload `restore` to enable serialization in a
-custom format
-"""
 function restore end
 
 """

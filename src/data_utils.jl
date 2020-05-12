@@ -311,8 +311,10 @@ the provided dictionary, `prob_given_class` $REQUIRE. The dictionary keys must
 be of type `CategoricalElement` (see above) and the dictionary values specify
 the corresponding probabilities.
 """
-UnivariateFinite(d::AbstractDict) = UnivariateFinite(get_interface_mode(), d)
-UnivariateFinite(c::AbstractVector, p) =
-    UnivariateFinite(get_interface_mode(), c, p)
+UnivariateFinite(d::AbstractDict; kwargs...) =
+    UnivariateFinite(get_interface_mode(), d; kwargs...)
+UnivariateFinite(c::AbstractVector, p; kwargs...) =
+    UnivariateFinite(get_interface_mode(), c, p; kwargs...)
 
-UnivariateFinite(::LightInterface, a...) = errlight("UnivariateFinite")
+UnivariateFinite(::LightInterface, a...; kwargs...) =
+    errlight("UnivariateFinite")

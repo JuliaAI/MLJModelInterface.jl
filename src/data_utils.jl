@@ -1,4 +1,3 @@
-
 vtrait(X) = X |> trait |> Val
 
 const REQUIRE = "(requires MLJBase to be loaded)"
@@ -292,24 +291,36 @@ _squeeze(v) = first(v)
 # UnivariateFinite
 
 const UNIVARIATE_FINITE_DOCSTRING =
-    """
-        UnivariateFinite(classes, p)
+"""
+        UnivariateFinite(classes, p; pool=nothing, ordered=false)
 
-A discrete univariate distribution whose finite support is the elements of the
-vector `classes`, and whose corresponding probabilities are elements of the
-vector `p`, which must sum to one $REQUIRE. Here `classes` must have type
-`AbstractVector{<:CategoricalElement}` where
+Construct a discrete univariate distribution whose finite support is
+the elements of the vector `classes`, and whose corresponding
+probabilities are elements of the vector `p`, which must sum to one $REQUIRE.
 
-        CategoricalElement = Union{CategoricalValue,CategoricalString}
+*Important.* Here `classes` must have type
+ `AbstractVector{<:CategoricalValue}` and all elements are assumed to
+share the same categorical pool. Raw classes *may* be used, but only provided
+`pool` is specified. The possible values are:
 
-and all classes are assumed to share the same categorical pool.
+- some `v::CategoricalVector`  such that `classes` is a subset of `levels(v)`
 
-        UnivariateFinite(prob_given_class)
+- some `a::CategoricalValue` such that `classes` is a subset of `levels(a)`
 
-A discrete univariate distribution whose finite support is the set of keys of
-the provided dictionary, `prob_given_class` $REQUIRE. The dictionary keys must
-be of type `CategoricalElement` (see above) and the dictionary values specify
-the corresponding probabilities.
+- `missing`, in which case a new categorical pool is created which has
+  `classes` as its only levels.
+
+In the last case specify `ordered=true` to order the new pool.
+
+        UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
+
+Construct a discrete univariate distribution whose finite support is
+the set of keys of the provided dictionary, `prob_given_class`, and
+whose values specify the corresponding probabilities $REQUIRE.
+
+The type requirements on the keys of the dictionary are the same as
+`classes` above.
+
 """
 UnivariateFinite(d::AbstractDict; kwargs...) =
     UnivariateFinite(get_interface_mode(), d; kwargs...)

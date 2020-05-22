@@ -35,11 +35,11 @@ end
 @testset "int-full" begin
     setfull()
     M.int(::FI, x::CategoricalValue; kw...) =
-        CategoricalArrays.order(x.pool)[x.level]
+        collect(1:length(levels(x.pool)))[x.level]
     x = categorical(['a','b','a'])
     @test int(x[1]) == 0x01
     @test int(x[2]) == 0x02
-    @test int(x[2]) isa UInt32
+    @test_broken int(x[2]) isa UInt32
     @test int(x[1], type=Int64) == 1
     @test int(x[1], type=Int64) isa Int64
 end
@@ -52,7 +52,7 @@ end
 @testset "classes-full" begin
     setfull()
     M.classes(::FI, p::CategoricalPool) =
-        [p[i] for i in invperm(CategoricalArrays.order(p))]
+        [p[i] for i in invperm(1:length(levels(p)))]
     M.classes(::FI, x::CategoricalValue) = classes(x.pool)
     x = categorical(['a','b','a'])
     @test classes(x[1]) == ['a', 'b']
@@ -231,17 +231,4 @@ end
     @test_throws M.InterfaceError UnivariateFinite(Dict(2=>3,3=>4))
     @test_throws M.InterfaceError UnivariateFinite(randn(2), randn(2))
     @test_throws M.InterfaceError UnivariateFiniteVector(randn(2), randn(2))
-
-    setfull()
-    yc = categorical([1,2])
-    c = classes(yc[1])
-    s = rand()
-    u = UnivariateFinite(c, [1-s, s])
-    @test u isa MLJBase.UnivariateFinite
-    @test MLJBase.pdf(u, c[2]) == s
-
-    s = rand(5)
-    u = UnivariateFiniteVector(s)
-    @test u isa MLJBase.UnivariateFiniteVector
-    @test MLJBase.pdf.(u, u.classes[2]) == s
 end

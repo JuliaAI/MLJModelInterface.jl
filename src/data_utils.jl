@@ -338,8 +338,10 @@ Container for UnivariateFinite elements optimised for efficiency.
 Accessing a single element will construct and return the corresponding
 UnivariateFinite lazily.
 """
-UnivariateFiniteVector(s::AbstractArray, a...) =
-    UnivariateFiniteVector(get_interface_mode(), s, a...)
+UnivariateFiniteVector(s::AbstractArray) =
+    UnivariateFiniteVector(get_interface_mode(), s)
+UnivariateFiniteVector(s::AbstractArray, c) =
+    UnivariateFiniteVector(get_interface_mode(), s, c)
 
 UnivariateFiniteVector(::LightInterface, a...) =
     errlight("UnivariateFiniteVector")

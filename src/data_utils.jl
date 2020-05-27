@@ -292,7 +292,7 @@ _squeeze(v) = first(v)
 
 const UNIVARIATE_FINITE_DOCSTRING =
 """
-        UnivariateFinite(classes, p; pool=nothing, ordered=false)
+    UnivariateFinite(classes, p; pool=nothing, ordered=false)
 
 Construct a discrete univariate distribution whose finite support is
 the elements of the vector `classes`, and whose corresponding
@@ -329,3 +329,19 @@ UnivariateFinite(c::AbstractVector, p; kwargs...) =
 
 UnivariateFinite(::LightInterface, a...; kwargs...) =
     errlight("UnivariateFinite")
+
+const UNIVARIATE_FINITE_VECTOR_DOCSTRING =
+"""
+    UnivariateFiniteVector(scores, classes)
+
+Container for UnivariateFinite elements optimised for efficiency.
+Accessing a single element will construct and return the corresponding
+UnivariateFinite lazily.
+"""
+UnivariateFiniteVector(s::AbstractArray) =
+    UnivariateFiniteVector(get_interface_mode(), s)
+UnivariateFiniteVector(s::AbstractArray, c) =
+    UnivariateFiniteVector(get_interface_mode(), s, c)
+
+UnivariateFiniteVector(::LightInterface, a...) =
+    errlight("UnivariateFiniteVector")

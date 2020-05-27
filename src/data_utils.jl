@@ -332,16 +332,23 @@ UnivariateFinite(::LightInterface, a...; kwargs...) =
 
 const UNIVARIATE_FINITE_VECTOR_DOCSTRING =
 """
-    UnivariateFiniteVector(scores, classes)
+    UnivariateFiniteVector(classes, p; pool=nothing, ordered=false)
 
 Container for UnivariateFinite elements optimised for efficiency.
 Accessing a single element will construct and return the corresponding
 UnivariateFinite lazily.
-"""
-UnivariateFiniteVector(s::AbstractArray) =
-    UnivariateFiniteVector(get_interface_mode(), s)
-UnivariateFiniteVector(s::AbstractArray, c) =
-    UnivariateFiniteVector(get_interface_mode(), s, c)
 
-UnivariateFiniteVector(::LightInterface, a...) =
+Here the probabalities `p` should be an array with `size(p, 2) = N`,
+where `N = length(classes)` and rows sum to one.
+
+See [`UnivariateFinite`](@ref) for explanation of the `pool` and
+`ordered` key-word arguments.
+
+"""
+UnivariateFiniteVector(s::AbstractArray; kwargs...) =
+    UnivariateFiniteVector(get_interface_mode(), s; kwargs...)
+UnivariateFiniteVector(c::AbstractArray, s::AbstractArray; kwargs...) =
+    UnivariateFiniteVector(get_interface_mode(), c, s; kwargs...)
+
+UnivariateFiniteVector(::LightInterface, a...; kwargs...) =
     errlight("UnivariateFiniteVector")

@@ -14,7 +14,7 @@ export LightInterface, FullInterface
 # MLJ model hierarchy
 export MLJType, Model, Supervised, Unsupervised,
        Probabilistic, Deterministic, Interval, Static,
-       UnivariateFinite, UnivariateFiniteArray
+       UnivariateFinite
 
 # model constructor + metadata
 export @mlj_model, metadata_pkg, metadata_model

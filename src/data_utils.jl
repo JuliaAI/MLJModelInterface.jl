@@ -300,38 +300,54 @@ const UNIVARIATE_FINITE_DOCSTRING =
 
 Construct a discrete univariate distribution whose finite support is
 the elements of the vector `support`, and whose corresponding
-probabilities are elements of the vector `probs`, which must sum to
-one.
+probabilities are elements of the vector `probs`. More generally,
+construct an abstract *array* of `UnivariateFinite` distributions by
+choosing `probs` to be an array of one higher dimension than the array
+generated.
 
-Unless `pool` is specified, `support` must have type
+Unless `pool` is specified, `support` should have type
  `AbstractVector{<:CategoricalValue}` and all elements are assumed to
  share the same categorical pool.
+
+*Important.* All levels of the common pool have associated
+probabilites, not just those in the specified `support`. However,
+these probabilities are always zero (see example below).
+
+If `probs` has size `(C, n1, n2, ..., nk)` then an array of size `(n1,
+n2, ..., nk)` is created. In all cases elements along the first axis
+always sum to one.
 
 ```
 using CategoricalArrays
 v = categorical([:x, :x, :y, :x, :z])
 
 julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
-UnivariateFinite(x=>0.2, y=>0.3, z=>0.5) (Multiclass{3} samples)
+UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
 
 julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
-UnivariateFinite(x=>0.1, z=>0.9) (Multiclass{3} samples)
+UnivariateFiniteMulticlass{3}(x=>0.1, z=>0.9)
+
+julia> rand(d, 3)
+3-element Array{Any,1}:
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+
+julia> levels(d)
+3-element Array{Symbol,1}:
+ :x
+ :y
+ :z
 
 julia> pdf(d, :y)
 0.0
-
 ```
 
 Alternatively, `support` may be a list of raw (non-categorical)
 elements if `pool` is:
 
-- some `v::CategoricalVector` such that `support` is a subset of
-  `levels(v)`
-
-- some `a::CategoricalValue` such that `support` is a subset of
-  `levels(a)`
-
-- some `CategoricalPool` object
+- some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
+  such that `support` is a subset of `levels(pool)`
 
 - `missing`, in which case a new categorical pool is created which has
   `support` as its only levels.
@@ -341,14 +357,27 @@ considered ordered.
 
 ```
 julia> UnivariateFinite([:x, :z], [0.1, 0.9], pool=missing, ordered=true)
-UnivariateFinite(x=>0.1, z=>0.9) (OrderedFactor{2} samples)
+UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
 
 julia> d = UnivariateFinite([:x, :z], [0.1, 0.9], pool=v) # v defined above
 UnivariateFinite(x=>0.1, z=>0.9) (Multiclass{3} samples)
 
 julia> pdf(d, :y) # allowed as `:y in levels(v)`
 0.0
+
+v = categorical([:x, :x, :y, :x, :z, :w])
+probs = rand(3, 100)
+probs = probs ./ sum(probs, dims=1)
+julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
+100-element UnivariateFiniteVector{Multiclass{4},Symbol,UInt32,Float64}:
+ UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
+ UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
+ UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
+   ⋮
+ UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
 ```
+
+---
 
     UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
 
@@ -357,51 +386,18 @@ the set of keys of the provided dictionary, `prob_given_class`, and
 whose values specify the corresponding probabilities.
 
 The type requirements on the keys of the dictionary are the same as
-`support` above.
+the elements of `support` given above. If the values (probabilities)
+are arrays instead of scalars, then an abstract array of
+`UnivariateFinite` elements is created, with the same size as the
+array.
 
 """
+UNIVARIATE_FINITE_DOCSTRING
 UnivariateFinite(d::AbstractDict; kwargs...) =
     UnivariateFinite(get_interface_mode(), d; kwargs...)
 UnivariateFinite(support::AbstractVector, probs; kwargs...) =
     UnivariateFinite(get_interface_mode(), support, probs; kwargs...)
 UnivariateFinite(probs; kwargs...) =
     UnivariateFinite(get_interface_mode(), probs; kwargs...)
-
 UnivariateFinite(::LightInterface, a...; kwargs...) =
     errlight("UnivariateFinite")
-
-const UNIVARIATE_FINITE_VECTOR_DOCSTRING =
-"""
-    UnivariateFiniteArray(support, probs; pool=nothing, ordered=false)
-
-Construct a performant array of `UnivariateFinite` elements.
-
-For an explanation of `support` and the keyword arguments, see
-[`UnivariateFinite`](@ref) . Here `probs` should be an array with
-`size(probs, 1) = C`, where `C = length(support)`, and its elements
-should sum to one along the first dimension.
-
-In the special binary case `prob` may be a vector of arbitrary `Real`
-elements between 0 and 1, signifying the probabilities of the first
-element of `support`.
-
-```
-using CategoricalArrays
-v = categorical([:x, :x, :y, :x, :z, :w])
-p = rand(6, 3)
-p = p ./ sum(p, dims=2)
-UnivariateFiniteArray([v[1], v[3], v[5]], p)
-
-UnivariateFiniteArray([:x, :z, :z], pool=missing, ordered=true)
-
-```
-
-"""
-UnivariateFiniteArray(probs::AbstractArray; kwargs...) =
-    UnivariateFiniteArray(get_interface_mode(), probs; kwargs...)
-UnivariateFiniteArray(support::AbstractArray,
-                       probs::AbstractArray; kwargs...) =
-    UnivariateFiniteArray(get_interface_mode(), support, probs; kwargs...)
-
-UnivariateFiniteArray(::LightInterface, a...; kwargs...) =
-    errlight("UnivariateFiniteArray")

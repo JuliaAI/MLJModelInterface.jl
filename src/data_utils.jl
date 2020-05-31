@@ -296,7 +296,11 @@ _squeeze(v) = first(v)
 
 const UNIVARIATE_FINITE_DOCSTRING =
 """
-    UnivariateFinite(support, probs; pool=nothing, ordered=false)
+    UnivariateFinite(support,
+                     probs;
+                     pool=nothing,
+                     augmented=false,
+                     ordered=false)
 
 Construct a discrete univariate distribution whose finite support is
 the elements of the vector `support`, and whose corresponding
@@ -307,15 +311,24 @@ generated.
 
 Unless `pool` is specified, `support` should have type
  `AbstractVector{<:CategoricalValue}` and all elements are assumed to
- share the same categorical pool.
+ share the same categorical pool, which may be larger than `support`.
 
 *Important.* All levels of the common pool have associated
 probabilites, not just those in the specified `support`. However,
 these probabilities are always zero (see example below).
 
-If `probs` has size `(C, n1, n2, ..., nk)` then an array of size `(n1,
-n2, ..., nk)` is created. In all cases elements along the first axis
-always sum to one.
+If `probs` is a matrix, it should have a column for each class in
+`support` (or one less, if `augment=true`). More generally, `probs`
+will be an array of size of the form `(n1, n2, ..., nk, C)` where `C`
+is the number of classes (or one less, if `augment=true`), the
+constructor returning an array of size `(n1, n2, ..., nk)`. 
+
+Unless `augment=true`, sums of elements along the last axis (row-sums
+in the case of a matrix) must be equal to one, and otherwise such an
+array is created by inserting appropriate elements *ahead* of those
+provided. For example, in the binary case, augmentation will transform
+a vector into a matrix, and the given probabilities will be associated
+with the *second* class in `support`.
 
 ```
 using CategoricalArrays

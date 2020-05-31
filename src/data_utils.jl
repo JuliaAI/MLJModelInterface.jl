@@ -148,6 +148,7 @@ schema(::LightInterface, ::Val{:table}, X; kw...) = errlight("schema")
 Return true if `X` is tabular.
 """
 istable(X) = istable(get_interface_mode(), vtrait(X))
+
 istable(::Mode, ::Val{:other}) = false
 
 istable(::Mode, ::Val{:table}) = true

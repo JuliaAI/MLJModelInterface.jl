@@ -80,6 +80,16 @@ end
     @test sch.scitypes[2] <: Multiclass
 end
 # ------------------------------------------------------------------------
+@testset "istable" begin
+    setlight()
+    X = rand(5)
+    @test !M.istable(X)
+    X = randn(5,5)
+    @test !M.istable(X)
+    X = DataFrame(A=rand(10))
+    @test M.istable(X)
+end
+# ------------------------------------------------------------------------
 @testset "decoder-light" begin
     setlight()
     x = 5

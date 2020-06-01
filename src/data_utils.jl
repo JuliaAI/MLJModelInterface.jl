@@ -320,7 +320,7 @@ these probabilities are always zero (see example below).
 If `probs` is a matrix, it should have a column for each class in
 `support` (or one less, if `augment=true`). More generally, `probs`
 will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
-where `c = length(suppport)` (or one less, if `augment=true`) and the
+where `c = length(support)` (or one less, if `augment=true`) and the
 constructor then returns an array of size `(n1, n2, ..., nk)`.
 
 ```

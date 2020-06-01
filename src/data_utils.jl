@@ -319,16 +319,9 @@ these probabilities are always zero (see example below).
 
 If `probs` is a matrix, it should have a column for each class in
 `support` (or one less, if `augment=true`). More generally, `probs`
-will be an array of size of the form `(n1, n2, ..., nk, C)` where `C`
-is the number of classes (or one less, if `augment=true`), the
-constructor returning an array of size `(n1, n2, ..., nk)`. 
-
-Unless `augment=true`, sums of elements along the last axis (row-sums
-in the case of a matrix) must be equal to one, and otherwise such an
-array is created by inserting appropriate elements *ahead* of those
-provided. For example, in the binary case, augmentation will transform
-a vector into a matrix, and the given probabilities will be associated
-with the *second* class in `support`.
+will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
+where `c = length(suppport)` (or one less, if `augment=true`) and the
+constructor then returns an array of size `(n1, n2, ..., nk)`.
 
 ```
 using CategoricalArrays
@@ -355,6 +348,8 @@ julia> levels(d)
 julia> pdf(d, :y)
 0.0
 ```
+
+### Specifying a pool
 
 Alternatively, `support` may be a list of raw (non-categorical)
 elements if `pool` is:
@@ -389,6 +384,14 @@ julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
    ⋮
  UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
 ```
+
+### Probability augmentation
+
+Unless `augment=true`, sums of elements along the last axis (row-sums
+in the case of a matrix) must be equal to one, and otherwise such an
+array is created by inserting appropriate elements *ahead* of those
+provided. This means the provided probabilities are associated with
+the the classes `c2, c3, ..., cn`.
 
 ---
 

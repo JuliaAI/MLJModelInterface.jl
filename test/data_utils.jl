@@ -240,5 +240,4 @@ end
     setlight()
     @test_throws M.InterfaceError UnivariateFinite(Dict(2=>3,3=>4))
     @test_throws M.InterfaceError UnivariateFinite(randn(2), randn(2))
-    @test_throws M.InterfaceError UnivariateFiniteVector(randn(2), randn(2))
 end

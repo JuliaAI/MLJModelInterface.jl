@@ -21,8 +21,8 @@ categorical(::LightInterface, a...; kw...) = errlight("categorical")
     matrix(X; transpose=false)
 
 If `X <: AbstractMatrix`, return `X` or `permutedims(X)` if `transpose=true`.
-If `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`
-$REQUIRE.
+If `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`.
+
 """
 matrix(X; kw...) = matrix(get_interface_mode(), vtrait(X), X; kw...)
 
@@ -43,7 +43,7 @@ matrix(::LightInterface, ::Val{:table}, X; kw...) = errlight("matrix")
 
 The positional integer of the `CategoricalString` or `CategoricalValue` `x`, in
 the ordering defined by the pool of `x`. The type of `int(x)` is the reference
-type of `x` $REQUIRE.
+type of `x`.
 
 Not to be confused with `x.ref`, which is unchanged by reordering of the pool
 of `x`, but has the same type.
@@ -82,10 +82,11 @@ int(::LightInterface, x) = errlight("int")
 """
     classes(x)
 
-All the categorical elements with the same pool as `x` (including `x`),
-returned as a list, with an ordering consistent with the pool $REQUIRE.
-Here `x` has `CategoricalValue` or `CategoricalString` type, and `classes(x)`
-is a vector of the same eltype. Note that `x in classes(x)` is always true.
+All the categorical elements with the same pool as `x` (including
+`x`), returned as a list, with an ordering consistent with the pool.
+Here `x` has `CategoricalValue` or `CategoricalString` type, and
+`classes(x)` is a vector of the same eltype. Note that `x in
+classes(x)` is always true.
 
 Not to be confused with `levels(x.pool)`. See the example below.
 
@@ -160,10 +161,10 @@ istable(::Mode, ::Val{:table}) = true
     d = decoder(x)
 
 A callable object for decoding the integer representation of a
-`CategoricalString` or `CategoricalValue` sharing the same pool as `x`
-$REQUIRE. (Here `x` is of one of these two types.) Specifically, one has
-`d(int(y)) == y` for all `y in classes(x)`. One can also call `d` on integer
-arrays, in which case `d` is broadcast over all elements.
+`CategoricalString` or `CategoricalValue` sharing the same pool as
+`x`. (Here `x` is of one of these two types.) Specifically, one has
+`d(int(y)) == y` for all `y in classes(x)`. One can also call `d` on
+integer arrays, in which case `d` is broadcast over all elements.
 
     julia> v = categorical([:c, :b, :c, :a])
     julia> int(v)
@@ -190,17 +191,17 @@ decoder(::LightInterface, x) = errlight("decoder")
 """
     table(columntable; prototype=nothing)
 
-Convert a named tuple of vectors or tuples `columntable`, into a table of the
-"preferred sink type" of `prototype` $REQUIRE. This is often the type of
+Convert a named tuple of vectors or tuples `columntable`, into a table
+of the "preferred sink type" of `prototype`. This is often the type of
 `prototype` itself, when `prototype` is a sink; see the Tables.jl
-documentation. If `prototype` is not specified, then a named tuple of vectors
-is returned.
+documentation. If `prototype` is not specified, then a named tuple of
+vectors is returned.
 
     table(A::AbstractMatrix; names=nothing, prototype=nothing)
 
-Wrap an abstract matrix `A` as a Tables.jl compatible table with the specified
-column `names` (a tuple of symbols). If `names` are not specified,
-`names=(:x1, :x2, ..., :xn)` is used, where `n=size(A, 2)` $REQUIRE.
+Wrap an abstract matrix `A` as a Tables.jl compatible table with the
+specified column `names` (a tuple of symbols). If `names` are not
+specified, `names=(:x1, :x2, ..., :xn)` is used, where `n=size(A, 2)`.
 
 If a `prototype` is specified, then the matrix is materialized as a table of
 the preferred sink type of `prototype`, rather than wrapped. Note that if
@@ -216,7 +217,7 @@ table(::LightInterface, X; kw...) = errlight("table")
 """
     nrows(X)
 
-Return the number of rows for a table, abstract vector or matrix `X` $REQUIRE.
+Return the number of rows for a table, abstract vector or matrix `X`.
 """
 nrows(X) = nrows(get_interface_mode(), vtrait(X), X)
 
@@ -233,9 +234,11 @@ nrows(::LightInterface, ::Val{:table}, X) = errlight("table")
 """
     selectrows(X, r)
 
-Select single or multiple rows from a table, abstract vector or matrix `X`
-$REQUIRE. If `X` is tabular, the object returned is a table of the
-preferred sink type of `typeof(X)`, even if only a single row is selected.
+Select single or multiple rows from a table, abstract vector or matrix
+`X`. If `X` is tabular, the object returned is a table of the
+preferred sink type of `typeof(X)`, even if only a single row is
+selected.
+
 """
 selectrows(X, r) = selectrows(get_interface_mode(), vtrait(X), X, r)
 
@@ -259,10 +262,11 @@ selectrows(::LightInterface, ::Val{:table}, X, r; kw...) =
 """
     selectcols(X, c)
 
-Select single or multiple columns from a matrix or table `X` $REQUIRE. If `c`
+Select single or multiple columns from a matrix or table `X`. If `c`
 is an abstract vector of integers or symbols, then the object returned
 is a table of the preferred sink type of `typeof(X)`. If `c` is a
 *single* integer or column, then an `AbstractVector` is returned.
+
 """
 selectcols(X, c) = selectcols(get_interface_mode(), vtrait(X), X, c)
 
@@ -306,56 +310,124 @@ _squeeze(v) = first(v)
 
 const UNIVARIATE_FINITE_DOCSTRING =
 """
-    UnivariateFinite(classes, p; pool=nothing, ordered=false)
+    UnivariateFinite(support,
+                     probs;
+                     pool=nothing,
+                     augmented=false,
+                     ordered=false)
 
 Construct a discrete univariate distribution whose finite support is
-the elements of the vector `classes`, and whose corresponding
-probabilities are elements of the vector `p`, which must sum to one $REQUIRE.
+the elements of the vector `support`, and whose corresponding
+probabilities are elements of the vector `probs`. More generally,
+construct an abstract *array* of `UnivariateFinite` distributions by
+choosing `probs` to be an array of one higher dimension than the array
+generated.
 
-*Important.* Here `classes` must have type
+Unless `pool` is specified, `support` should have type
  `AbstractVector{<:CategoricalValue}` and all elements are assumed to
-share the same categorical pool. Raw classes *may* be used, but only provided
-`pool` is specified. The possible values are:
+ share the same categorical pool, which may be larger than `support`.
 
-- some `v::CategoricalVector`  such that `classes` is a subset of `levels(v)`
+*Important.* All levels of the common pool have associated
+probabilites, not just those in the specified `support`. However,
+these probabilities are always zero (see example below).
 
-- some `a::CategoricalValue` such that `classes` is a subset of `levels(a)`
+If `probs` is a matrix, it should have a column for each class in
+`support` (or one less, if `augment=true`). More generally, `probs`
+will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
+where `c = length(suppport)` (or one less, if `augment=true`) and the
+constructor then returns an array of size `(n1, n2, ..., nk)`.
+
+```
+using CategoricalArrays
+v = categorical([:x, :x, :y, :x, :z])
+
+julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
+UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
+
+julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
+UnivariateFiniteMulticlass{3}(x=>0.1, z=>0.9)
+
+julia> rand(d, 3)
+3-element Array{Any,1}:
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+ CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+
+julia> levels(d)
+3-element Array{Symbol,1}:
+ :x
+ :y
+ :z
+
+julia> pdf(d, :y)
+0.0
+```
+
+### Specifying a pool
+
+Alternatively, `support` may be a list of raw (non-categorical)
+elements if `pool` is:
+
+- some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
+  such that `support` is a subset of `levels(pool)`
 
 - `missing`, in which case a new categorical pool is created which has
-  `classes` as its only levels.
+  `support` as its only levels.
 
-In the last case specify `ordered=true` to order the new pool.
+In the last case, specify `ordered=true` if the pool is to be
+considered ordered.
 
-        UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
+```
+julia> UnivariateFinite([:x, :z], [0.1, 0.9], pool=missing, ordered=true)
+UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
+
+julia> d = UnivariateFinite([:x, :z], [0.1, 0.9], pool=v) # v defined above
+UnivariateFinite(x=>0.1, z=>0.9) (Multiclass{3} samples)
+
+julia> pdf(d, :y) # allowed as `:y in levels(v)`
+0.0
+
+v = categorical([:x, :x, :y, :x, :z, :w])
+probs = rand(3, 100)
+probs = probs ./ sum(probs, dims=1)
+julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
+100-element UnivariateFiniteVector{Multiclass{4},Symbol,UInt32,Float64}:
+ UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
+ UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
+ UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
+   ⋮
+ UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
+```
+
+### Probability augmentation
+
+Unless `augment=true`, sums of elements along the last axis (row-sums
+in the case of a matrix) must be equal to one, and otherwise such an
+array is created by inserting appropriate elements *ahead* of those
+provided. This means the provided probabilities are associated with
+the the classes `c2, c3, ..., cn`.
+
+---
+
+    UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
 
 Construct a discrete univariate distribution whose finite support is
 the set of keys of the provided dictionary, `prob_given_class`, and
-whose values specify the corresponding probabilities $REQUIRE.
+whose values specify the corresponding probabilities.
 
 The type requirements on the keys of the dictionary are the same as
-`classes` above.
+the elements of `support` given above. If the values (probabilities)
+are arrays instead of scalars, then an abstract array of
+`UnivariateFinite` elements is created, with the same size as the
+array.
 
 """
+UNIVARIATE_FINITE_DOCSTRING
 UnivariateFinite(d::AbstractDict; kwargs...) =
     UnivariateFinite(get_interface_mode(), d; kwargs...)
-UnivariateFinite(c::AbstractVector, p; kwargs...) =
-    UnivariateFinite(get_interface_mode(), c, p; kwargs...)
-
+UnivariateFinite(support::AbstractVector, probs; kwargs...) =
+    UnivariateFinite(get_interface_mode(), support, probs; kwargs...)
+UnivariateFinite(probs; kwargs...) =
+    UnivariateFinite(get_interface_mode(), probs; kwargs...)
 UnivariateFinite(::LightInterface, a...; kwargs...) =
     errlight("UnivariateFinite")
-
-const UNIVARIATE_FINITE_VECTOR_DOCSTRING =
-"""
-    UnivariateFiniteVector(scores, classes)
-
-Container for UnivariateFinite elements optimised for efficiency.
-Accessing a single element will construct and return the corresponding
-UnivariateFinite lazily.
-"""
-UnivariateFiniteVector(s::AbstractArray) =
-    UnivariateFiniteVector(get_interface_mode(), s)
-UnivariateFiniteVector(s::AbstractArray, c) =
-    UnivariateFiniteVector(get_interface_mode(), s, c)
-
-UnivariateFiniteVector(::LightInterface, a...) =
-    errlight("UnivariateFiniteVector")

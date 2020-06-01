@@ -6,7 +6,6 @@ import MLJBase
 
 const M  = MLJModelInterface
 const FI = M.FullInterface
-const CategoricalElement = Union{CategoricalValue,CategoricalString}
 ScientificTypes.TRAIT_FUNCTION_GIVEN_NAME[:table] = Tables.istable
 
 setlight() = M.set_interface_mode(M.LightInterface())

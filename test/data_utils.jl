@@ -34,12 +34,12 @@ end
 end
 @testset "int-full" begin
     setfull()
-    M.int(::FI, x::CategoricalElement; kw...) =
-        CategoricalArrays.order(x.pool)[x.level]
+    M.int(::FI, x::CategoricalValue; kw...) =
+        collect(1:length(levels(x.pool)))[x.level]
     x = categorical(['a','b','a'])
     @test int(x[1]) == 0x01
     @test int(x[2]) == 0x02
-    @test int(x[2]) isa UInt32
+    @test_broken int(x[2]) isa UInt32
     @test int(x[1], type=Int64) == 1
     @test int(x[1], type=Int64) isa Int64
 end
@@ -52,8 +52,8 @@ end
 @testset "classes-full" begin
     setfull()
     M.classes(::FI, p::CategoricalPool) =
-        [p[i] for i in invperm(CategoricalArrays.order(p))]
-    M.classes(::FI, x::CategoricalElement) = classes(x.pool)
+        [p[i] for i in invperm(1:length(levels(p)))]
+    M.classes(::FI, x::CategoricalValue) = classes(x.pool)
     x = categorical(['a','b','a'])
     @test classes(x[1]) == ['a', 'b']
 end
@@ -78,6 +78,16 @@ end
     @test sch.types[2] <: CategoricalValue
     @test sch.scitypes[1] <: Continuous
     @test sch.scitypes[2] <: Multiclass
+end
+# ------------------------------------------------------------------------
+@testset "istable" begin
+    setlight()
+    X = rand(5)
+    @test !M.istable(X)
+    X = randn(5,5)
+    @test !M.istable(X)
+    X = DataFrame(A=rand(10))
+    @test M.istable(X)
 end
 # ------------------------------------------------------------------------
 @testset "decoder-light" begin

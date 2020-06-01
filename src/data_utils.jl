@@ -140,6 +140,20 @@ schema(::LightInterface, ::Val{:other}, X; kw...) = errlight("schema")
 schema(::LightInterface, ::Val{:table}, X; kw...) = errlight("schema")
 
 # ------------------------------------------------------------------------
+# istable
+
+"""
+    istable(X)
+
+Return true if `X` is tabular.
+"""
+istable(X) = istable(get_interface_mode(), vtrait(X))
+
+istable(::Mode, ::Val{:other}) = false
+
+istable(::Mode, ::Val{:table}) = true
+
+# ------------------------------------------------------------------------
 # decoder
 
 """

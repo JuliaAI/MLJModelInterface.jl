@@ -314,7 +314,7 @@ Unless `pool` is specified, `support` should have type
  share the same categorical pool, which may be larger than `support`.
 
 *Important.* All levels of the common pool have associated
-probabilites, not just those in the specified `support`. However,
+probabilities, not just those in the specified `support`. However,
 these probabilities are always zero (see example below).
 
 If `probs` is a matrix, it should have a column for each class in
@@ -331,7 +331,7 @@ julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
 UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
 
 julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
-UnivariateFiniteMulticlass{3}(x=>0.1, z=>0.9)
+UnivariateFinite{Multiclass{3}(x=>0.1, z=>0.9)
 
 julia> rand(d, 3)
 3-element Array{Any,1}:
@@ -402,10 +402,13 @@ the set of keys of the provided dictionary, `prob_given_class`, and
 whose values specify the corresponding probabilities.
 
 The type requirements on the keys of the dictionary are the same as
-the elements of `support` given above. If the values (probabilities)
-are arrays instead of scalars, then an abstract array of
-`UnivariateFinite` elements is created, with the same size as the
-array.
+the elements of `support` given above with this exception: if
+non-categorical elements (raw labels) are used as keys, then
+`pool=...` must be specified and cannot be `missing`.
+
+If the values (probabilities) are arrays instead of scalars, then an
+abstract array of `UnivariateFinite` elements is created, with the
+same size as the array.
 
 """
 UNIVARIATE_FINITE_DOCSTRING

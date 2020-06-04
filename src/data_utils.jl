@@ -304,7 +304,7 @@ const UNIVARIATE_FINITE_DOCSTRING =
 
 Construct a discrete univariate distribution whose finite support is
 the elements of the vector `support`, and whose corresponding
-probabilities are elements of the vector `probs`. More generally,
+probabilities are elements of the vector `probs`. Alternatively,
 construct an abstract *array* of `UnivariateFinite` distributions by
 choosing `probs` to be an array of one higher dimension than the array
 generated.

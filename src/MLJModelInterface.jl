@@ -16,6 +16,9 @@ export MLJType, Model, Supervised, Unsupervised,
        Probabilistic, Deterministic, Interval, Static,
        UnivariateFinite
 
+# parameter_inspection:
+export params
+
 # model constructor + metadata
 export @mlj_model, metadata_pkg, metadata_model
 
@@ -89,9 +92,9 @@ abstract type Static <: Unsupervised end
 # includes
 
 include("utils.jl")
+include("parameter_inspection.jl")
 include("data_utils.jl")
 include("metadata_utils.jl")
-
 include("model_traits.jl")
 include("model_def.jl")
 include("model_api.jl")

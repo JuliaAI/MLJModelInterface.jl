@@ -179,7 +179,6 @@ macro mlj_model(ex)
         quote
             Base.@__doc__ $ex
             export $modelname
-            #$ex
             $clean_ex
         end
     )

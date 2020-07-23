@@ -177,9 +177,9 @@ macro mlj_model(ex)
     clean_ex = _model_cleaner(modelname, defaults, constraints)
     esc(
         quote
-            #Base.@__doc__ $ex
+            Base.@__doc__ $ex
             #export $modelname
-            $ex
+            #$ex
             $clean_ex
         end
     )

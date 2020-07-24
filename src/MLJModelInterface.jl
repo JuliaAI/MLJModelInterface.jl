@@ -47,7 +47,7 @@ export is_same_except, isrepresented
 export Scientific, Found, Unknown, Known, Finite, Infinite,
        OrderedFactor, Multiclass, Count, Continuous, Textual,
        Binary, ColorImage, GrayImage, Image, Table
-export scitype, scitype_union, elscitype, nonmissing, trait
+export scitype, scitype_union, elscitype, nonmissing, trait, info
 
 # ------------------------------------------------------------------------
 # To be extended

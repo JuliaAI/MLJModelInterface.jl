@@ -388,8 +388,8 @@ julia> pdf(d, :y) # allowed as `:y in levels(v)`
 0.0
 
 v = categorical([:x, :x, :y, :x, :z, :w])
-probs = rand(3, 100)
-probs = probs ./ sum(probs, dims=1)
+probs = rand(100, 3)
+probs = probs ./ sum(probs, dims=2)
 julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
 100-element UnivariateFiniteVector{Multiclass{4},Symbol,UInt32,Float64}:
  UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)

@@ -45,6 +45,13 @@ probabilistic supervised models may overload `predict_median`
 function predict_median end
 
 """
+`JointProbabilistic` supervised models MUST overload `predict_joint`.
+
+`Probabilistic` supervised models MAY overload `predict_joint`.
+"""
+function predict_joint end
+
+"""
 unsupervised methods must implement the `transform` operation
 """
 function transform end

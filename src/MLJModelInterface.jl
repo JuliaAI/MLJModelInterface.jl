@@ -14,7 +14,8 @@ export LightInterface, FullInterface
 # MLJ model hierarchy
 export MLJType, Model, Supervised, Unsupervised,
        Probabilistic, Deterministic, Interval, Static,
-       UnivariateFinite
+       UnivariateFinite,
+       JointProbabilistic
 
 # parameter_inspection:
 export params
@@ -87,6 +88,8 @@ abstract type Deterministic <: Supervised end
 abstract type      Interval <: Supervised end
 
 abstract type Static <: Unsupervised end
+
+abstract type JointProbabilistic <: Probabilistic end
 
 # ------------------------------------------------------------------------
 # includes

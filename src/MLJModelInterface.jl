@@ -13,9 +13,9 @@ export LightInterface, FullInterface
 
 # MLJ model hierarchy
 export MLJType, Model, Supervised, Unsupervised,
-       Probabilistic, Deterministic, Interval, Static,
-       UnivariateFinite,
-       JointProbabilistic
+       Probabilistic, JointProbabilistic, Deterministic, Interval, Static,
+       UnivariateFinite
+       
 
 # parameter_inspection:
 export params
@@ -25,7 +25,7 @@ export @mlj_model, metadata_pkg, metadata_model
 
 # model api
 export fit, update, update_data, transform, inverse_transform,
-       fitted_params, predict, predict_mode, predict_mean, predict_median,
+       fitted_params, predict, predict_mode, predict_mean, predict_median, predict_joint,
        evaluate, clean!
 
 # model traits

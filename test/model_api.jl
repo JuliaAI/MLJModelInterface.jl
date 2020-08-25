@@ -25,3 +25,44 @@ mutable struct APIx1 <: Static end
     #update fallback = fit
     @test update(m0, 1, 5, nothing, randn(2), 5) == (5, nothing, nothing)
 end
+
+struct DummyUnivariateFinite end
+
+mutable struct UnivariateFiniteFitter <: Probabilistic end
+
+@testset "models fitting a distribution to data" begin
+
+    function MLJModelInterface.fit(model::UnivariateFiniteFitter,
+                                   verbosity::Int, X, y)
+
+        fitresult = DummyUnivariateFinite()
+        report = nothing
+        cache = nothing
+
+        verbosity > 0 && @info "Fitted a $fitresult"
+
+        return fitresult, cache, report
+    end
+
+    MLJModelInterface.predict(model::UnivariateFiniteFitter,
+                          fitresult,
+                          X) = fill(fitresult, length(X))
+
+    MLJModelInterface.input_scitype(::Type{<:UnivariateFiniteFitter}) =
+        AbstractVector{Nothing}
+    MLJModelInterface.target_scitype(::Type{<:UnivariateFiniteFitter}) =
+        AbstractVector{<:Finite}
+
+    y =categorical(collect("aabbccaa"))
+    X = fill(nothing, length(y))
+    model = UnivariateFiniteFitter()
+    fitresult, cache, report = MLJModelInterface.fit(model, 1, X, y)
+
+    @test cache == nothing
+    @test report == nothing
+
+    ytest = y[1:3]
+    yhat = predict(model, fitresult, fill(nothing, 3))
+    @test yhat == fill(DummyUnivariateFinite(), 3)
+
+end

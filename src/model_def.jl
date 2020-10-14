@@ -8,7 +8,7 @@
 clean!(::Model) = ""
 
 """
-    _process_model_def(ex)
+    _process_model_def(modl, ex)
 
 Take an expression defining a model (`mutable struct Model ...`) and unpack key
 elements for further processing:
@@ -17,12 +17,17 @@ elements for further processing:
 - Names of parameters (`params`)
 - Default values (`defaults`)
 - Constraints (`constraints`)
-"""
-function _process_model_def(ex)
-    defaults    = Dict{Symbol,Any}()
+
+When no default field value is given a heuristic is to guess an
+appropriate default (eg, zero for a `Float64` parameter). To this end,
+the specified type expression is evaluated in the module `modl`.
+
+ """
+function _process_model_def(modl, ex)
+    defaults = Dict{Symbol,Any}()
     constraints = Dict{Symbol,Any}()
-    modelname   = ex.args[2] isa Symbol ? ex.args[2] : ex.args[2].args[1]
-    params      = Symbol[]
+    modelname = ex.args[2] isa Symbol ? ex.args[2] : ex.args[2].args[1]
+    params = Symbol[]
 
     # inspect all lines which may define parameters, retrieve their names,
     # default values and constraints on values that can be given to them
@@ -67,7 +72,7 @@ function _process_model_def(ex)
                 # these are simple heuristics when no default value is given for the
                 # field but an "obvious" one can be provided implicitly (ideally this should
                 # not be used as it's not very clear that the intention matches the usage)
-                eff_type = eval(type)
+                eff_type = modl.eval(type)
                 if eff_type <: Number
                     defaults[param] = zero(eff_type)
                 elseif eff_type <: AbstractString
@@ -168,7 +173,7 @@ end
 Macro to help define MLJ models with constraints on the default parameters.
 """
 macro mlj_model(ex)
-    ex, modelname, params, defaults, constraints = _process_model_def(ex)
+    ex, modelname, params, defaults, constraints = _process_model_def(__module__, ex)
 	# keyword constructor
     const_ex = _model_constructor(modelname, params, defaults)
 	# associate the constructor with the definition of the struct

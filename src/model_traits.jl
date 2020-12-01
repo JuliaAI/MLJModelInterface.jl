@@ -5,8 +5,8 @@ const MODEL_TRAITS = [
     :input_scitype, :output_scitype, :target_scitype,
     :is_pure_julia, :package_name, :package_license,
     :load_path, :package_uuid, :package_url,
-    :is_wrapper, :supports_weights, :supports_online,
-    :docstring, :name, :is_supervised,
+    :is_wrapper, :supports_weights, :supports_class_weights,
+    :supports_online, :docstring, :name, :is_supervised,
     :prediction_type, :implemented_methods, :hyperparameters,
     :hyperparameter_types, :hyperparameter_ranges]
 
@@ -30,6 +30,7 @@ package_url(::Type)            = "unknown"
 is_wrapper(::Type)             = false
 supports_online(::Type)        = false
 supports_weights(::Type)       = false  # used for measures too
+supports_class_weights(::Type) = false  # used for measures too
 hyperparameter_ranges(T::Type) = Tuple(fill(nothing, length(fieldnames(T))))
 docstring(M::Type)             = string(M)
 docstring(M::Type{<:MLJType})  = name(M)

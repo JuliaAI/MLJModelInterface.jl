@@ -36,9 +36,10 @@ bar(::P1) = nothing
     @test package_uuid(ms)    == "unknown"
     @test package_url(ms)     == "unknown"
 
-    @test is_wrapper(ms)       == false
-    @test supports_online(ms)  == false
-    @test supports_weights(ms) == false
+    @test is_wrapper(ms)             == false
+    @test supports_online(ms)        == false
+    @test supports_weights(ms)       == false
+    @test supports_class_weights(ms) == false
 
     @test hyperparameter_ranges(md) == (nothing,)
 

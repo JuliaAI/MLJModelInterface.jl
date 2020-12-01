@@ -31,8 +31,8 @@ export fit, update, update_data, transform, inverse_transform,
 export input_scitype, output_scitype, target_scitype,
        is_pure_julia, package_name, package_license,
        load_path, package_uuid, package_url,
-       is_wrapper, supports_weights, supports_online,
-       docstring, name, is_supervised,
+       is_wrapper, supports_weights, supports_class_weights,
+       supports_online, docstring, name, is_supervised,
        prediction_type, implemented_methods, hyperparameters,
        hyperparameter_types, hyperparameter_ranges
 

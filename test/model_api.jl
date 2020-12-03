@@ -7,6 +7,12 @@ end
 
 mutable struct APIx1 <: Static end
 
+@testset "selectrows(model, data...)" begin
+    X = (x1 = [2, 4, 6],)
+    y = [10.0, 20.0, 30.0]
+    @test selectrows(APIx0(), 2:3, X, y) == ((x1 = [4, 6],), [20.0, 30.0])
+end
+
 @testset "fit-x" begin
     m0 = APIx0(f0=1)
     m1 = APIx0b(f0=3)

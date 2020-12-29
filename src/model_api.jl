@@ -33,31 +33,92 @@ function update_data end
     MLJModelInterface.reformat(model, args...) -> data
 
 Models optionally overload `reformat` to define transformations of
-user-supplied training data `args` into some model-specific
-representation `data` (e.g., from a table to a matrix). The fallback
-returns `args` (no transformation).
+user-supplied data into some model-specific representation (e.g., from
+a table to a matrix). Computational overheads associated with multiple
+`fit!`/`predict`/`transform` calls are then avoided, when memory
+resources allow. The fallback returns `args` (no transformation).
 
-If `mach` is a machine with `mach.model == model` then calling `fit!(mach)`
-will either call
+Here "user-supplied data" is what the MLJ user supplies when
+constructing a machine, as in `machine(models, args...)`, which
+coincides with the arguments expected by `fit(model, verbosity,
+args...)` when `reformat` is not overloaded.
 
-    fit(model, verbosity, data...)
+Implementing a `reformat` data front-end is permitted for any `Model`
+subtype, except for subtypes of `Static`. Here is a complete list of
+responsibilities for such an implementation, for some
+`model::SomeModelType`:
 
-or
+- A `reformat(model::SomeModelType, args...) -> data` method must be
+  implemented for each form of `args...` appearing in a valid machine
+  construction `machine(model, args...)` (there will be one for each
+  possible signature of `fit(::SomeModelType, ...)`).
 
-    update(model, verbosity, data...)
+- Additionally, if not included above, there must be a single argument
+  form of reformat, `reformat(model::SommeModelType, arg) -> (data,)`,
+  serving as a data front-end for operations like `predict`. It must
+  always hold that `reformat(model, args...)[1] = reformat(model,
+  args[1])`.
 
-where `data = reformat(model, mach.args...)`. This means that
-overloading `reformat` alters the form of the arguments expected by
-`fit` and `update`.
+**Warning.** `reformat(model::SomeModelType, args...)` must always
+  return a tuple of the same length as `args`, even if this is one.
 
-If, instead, one calls `fit!(mach, rows=I)`, then `data` in the above
-`fit`/`update` calls is replaced with `selectrows(model, I,
-data...)`. So overloading `reformat` generally requires overloading of
-`selectrows` also, to specify how the model-specific representation of
-training data is resampled.
+- `fit(model::SomeModelType, verbosity, data...)` should be
+  implemented as if `data` is the output of `reformat(model,
+  args...)`, where `args` is the data an MLJ user has bound to `model`
+  in some machine. The same applies to any overloading of `update`.
 
-Note `data` is always a tuple, but it needn't have the same length as
-`args`.
+- Each implemented operation, such as `predict` and `transform` - but
+  excluding `inverse_transform` - must be defined as if its data
+  arguments are `reformat`ed versions of user-supplied data. For
+  example, in the supervised case, `data_new` in
+  `predict(model::SomeModelType, fitresult, data_new)` is
+  `reformat(model, Xnew)`, where `Xnew is the data provided by the MLJ
+  user in a call `predict(mach, Xnew)` (`mach.model == model`).
+
+- To specify how the model-specific representation of data is to be
+  resampled, implement `selectrows(model::SomeModelType, I, data...)
+  -> resampled_data` for each overloading of `reformat(model::SomeModel,
+  args...) -> data` above. Here `I` is an arbitrary abstract integer
+  vector or `:` (type `Colon`).
+
+**Warning.** `selectrows(model::SomeModelType, I, args...)` must always
+return a tuple of the same length as `args`, even if this is one.
+
+The fallback for `selectrows` is described at [`selectrows`](@ref).
+
+
+### Example
+
+Suppose a supervised model type `SomeSupervised` supports sample
+weights, leading to two different `fit` signatures:
+
+    fit(model::SomeSupervised, verbosity, X, y)
+    fit(model::SomeSupervised, verbosity, X, y, w)
+
+    predict(model::SomeSupervised, fitresult, Xnew)
+
+Without a data front-end implemented, suppose `X` is expected to be a
+table and `y` a vector, but suppose the core algorithm always converts
+`X` to a matrix with features as rows (features corresponding to
+columns in the table).  Then a new data-front end might look like
+this:
+
+    constant MMI = MLJModelInterface
+
+    # for fit:
+    MMI.reformat(::SomeSupervised, X, y) = (MMI.matrix(X, transpose=true), y)
+    MMI.reformat(::SomeSupervised, X, y, w) = (MMI.matrix(X, transpose=true), y, w)
+    MMI.selectrows(::SomeSupervised, I, Xmatrix, y) =
+        (view(Xmatrix, :, I), view(y, I))
+    MMI.selectrows(::SomeSupervised, I, Xmatrix, y, w) =
+        (view(Xmatrix, :, I), view(y, I), view(w, I))
+
+    # for predict:
+    MMI.reformat(::SomeSupervised, X) = (MMI.matrix(X, transpose=true),)
+    MMI.selectrows(::SomeSupervised, I, Xmatrix) = view(Xmatrix, I)
+
+With these additions, `fit` and `predict` are refactored, so that `X`
+and `Xnew` represent matrices with features as rows.
 
 """
 reformat(model::Model, args...) = args
@@ -65,9 +126,9 @@ reformat(model::Model, args...) = args
 """
     selectrows(::Model, I, data...) -> sampled_data
 
-Models optionally overload `selectrows` for efficient resampling of
-training data. Here `data` is the ouput of calling `reformat` on
-user-provided data.  The fallback assumes `data` is a tuple and calls
+A model overloads `selectrows` whenever it buys into the optional
+`reformat` front-end for data preprocessing. See [`reformat`](@ref)
+for details. The fallback assumes `data` is a tuple and calls
 `selectrows(X, I)` for each `X` in `data`, returning the results in a
 new tuple of the same length. This call makes sense when `X` is a
 table, abstract vector or abstract matrix. In the last two cases, a

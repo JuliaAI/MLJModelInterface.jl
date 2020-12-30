@@ -25,7 +25,7 @@ export @mlj_model, metadata_pkg, metadata_model
 # model api
 export fit, update, update_data, transform, inverse_transform,
     fitted_params, predict, predict_mode, predict_mean, predict_median,
-    predict_joint, evaluate, clean!
+    predict_joint, evaluate, clean!, reformat
 
 # model traits
 export input_scitype, output_scitype, target_scitype,

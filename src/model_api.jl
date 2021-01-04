@@ -40,8 +40,8 @@ make use of more efficient row subsampling, which is then based on the
 model-specific representation of data, rather than the
 user-representation. When `reformat` is overloaded,
 `selectrows(::Model, ...)` must be as well (see
-[`selectrows](@ref)). Furthermore, the model `fit` method(s), and
-operations such as `predict` and `transform`, must be refactored to
+[`selectrows`](@ref)). Furthermore, the model `fit` method(s), and
+operations, such as `predict` and `transform`, must be refactored to
 act on the model-specific representions of the data.
 
 To implement the `reformat` data front-end for a model, refer to

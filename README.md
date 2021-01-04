@@ -5,9 +5,9 @@ machine learning models into
 [MLJ](https://github.com/alan-turing-institute/MLJ.jl).
 
 
-| [MacOS/Linux] | Coverage |
+| Linux | Coverage |
 | :-----------: | :------: |
-| [![Build Status](https://travis-ci.org/alan-turing-institute/MLJModelInterface.jl.svg?branch=master)](https://travis-ci.org/alan-turing-institute/MLJModelInterface.jl) | [![codecov.io](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl/coverage.svg?branch=master)](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl?branch=master) |
+| [![Build Status](https://github.com/alan-turing-institute/MLJModelInterface.jl/workflows/CI/badge.svg)](https://github.com/alan-turing-institute/MLJModelInterface.jl/actions) | [![codecov.io](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl/coverage.svg?branch=master)](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl?branch=master) |
 
 
 [MLJ](https://github.com/alan-turing-institute/MLJ.jl) is a framework

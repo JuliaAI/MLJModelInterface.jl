@@ -36,8 +36,10 @@ docstring(M::Type{<:MLJType})  = name(M)
 docstring(M::Type{<:Model})    = "$(name(M)) from $(package_name(M)).jl.\n" *
                                  "[Documentation]($(package_url(M)))."
 # "derived" traits:
-name(M::Type)            = string(M)
-name(M::Type{<:MLJType}) = split(string(coretype(M)), '.')[end] |> String
+typename(s)              = replace(s, r"typename\((.*?)\)" => s"\1")
+name(M::Type)            = string(M) |> typename
+name(M::Type{<:MLJType}) = split(string(coretype(M)), '.')[end] |> String |> typename
+
 
 is_supervised(::Type)                    = false
 is_supervised(::Type{<:Supervised})      = true

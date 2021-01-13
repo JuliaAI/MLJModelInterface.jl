@@ -72,9 +72,10 @@ struct FooMeasure <: MLJType end
     @test name(Float64) == "Float64"
 
     df = DataFrame(a=randn(2), b=randn(2))
-    if VERSION < v"1.6-"
+    @static if VERSION < v"1.6-"
         @test string(M.coretype(typeof(df))) == "DataFrame"
     else
         @test string(M.coretype(typeof(df))) == "typename(DataFrame)"
     end
+    @test M.name(typeof(df)) == "DataFrame"
 end

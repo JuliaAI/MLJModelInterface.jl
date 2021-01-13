@@ -63,7 +63,7 @@ end
     setlight()
     ary = rand(10, 3)
     @test_throws M.InterfaceError M.schema(ary)
-    df = DataFrame(rand(10, 3))
+    df = DataFrame(rand(10, 3), :auto)
     @test_throws M.InterfaceError M.schema(df)
 end
 @testset "schema-full" begin

@@ -73,7 +73,7 @@ struct Apple end
 
 end
 
-import .Banana
+import .Fruit
 
 @testset "extras" begin
     @test docstring(Float64) == "Float64"

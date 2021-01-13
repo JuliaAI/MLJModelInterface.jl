@@ -64,18 +64,27 @@ bar(::P1) = nothing
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 end
 
-struct FooMeasure <: MLJType end
+module Fruit
+
+import MLJModelInterface.MLJType
+
+struct Banana <: MLJType end
+struct Apple end
+
+end
+
+import .Banana
 
 @testset "extras" begin
     @test docstring(Float64) == "Float64"
-    @test docstring(FooMeasure) == "FooMeasure"
+    @test docstring(Fruit.Banana) == "Banana"
     @test name(Float64) == "Float64"
 
     df = DataFrame(a=randn(2), b=randn(2))
-    @static if VERSION < v"1.6-"
-        @test string(M.coretype(typeof(df))) == "DataFrame"
-    else
-        @test string(M.coretype(typeof(df))) == "typename(DataFrame)"
-    end
     @test M.name(typeof(df)) == "DataFrame"
+    @test M.name(df) == "DataFrame"
+    @test M.name(Fruit.Banana) == "Banana"
+    @test M.name(Fruit.Banana()) == "Banana"
+    @test M.name(Fruit.Apple) == "Apple"
+    @test M.name(Fruit.Apple()) == "Apple"
 end

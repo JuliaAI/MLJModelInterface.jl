@@ -1,8 +1,9 @@
 module MLJModelInterface
 
 # ------------------------------------------------------------------------
-# Dependencies (ScientificTypes itself does not have dependencies)
+# Dependencies (ScientificTypes and StatisticalTraits have none)
 using ScientificTypes
+using StatisticalTraits
 using Random
 
 # ------------------------------------------------------------------------

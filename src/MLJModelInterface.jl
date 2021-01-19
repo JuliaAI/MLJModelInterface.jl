@@ -99,7 +99,6 @@ abstract type JointProbabilistic <: Probabilistic end
 # ------------------------------------------------------------------------
 # includes
 
-include("utils.jl")
 include("parameter_inspection.jl")
 include("data_utils.jl")
 include("metadata_utils.jl")

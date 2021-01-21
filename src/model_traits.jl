@@ -1,6 +1,4 @@
-## MODEL TRAITS
-
-# model trait names:
+## OVERLOADING TRAIT DEFAULTS RELEVANT TO MODELS
 
 StatisticalTraits.docstring(M::Type{<:MLJType}) = name(M)
 StatisticalTraits.docstring(M::Type{<:Model}) =

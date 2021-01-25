@@ -1,8 +1,32 @@
 module MLJModelInterface
 
+const MODEL_TRAITS = [
+    :input_scitype,
+    :output_scitype,
+    :target_scitype,
+    :is_pure_julia,
+    :package_name,
+    :package_license,
+    :load_path,
+    :package_uuid,
+    :package_url,
+    :is_wrapper,
+    :supports_weights,
+    :supports_class_weights,
+    :supports_online,
+    :docstring,
+    :name,
+    :is_supervised,
+    :prediction_type,
+    :implemented_methods,
+    :hyperparameters,
+    :hyperparameter_types,
+    :hyperparameter_ranges]
+
 # ------------------------------------------------------------------------
-# Dependencies (ScientificTypes itself does not have dependencies)
+# Dependencies (ScientificTypes and StatisticalTraits have none)
 using ScientificTypes
+using StatisticalTraits
 using Random
 
 # ------------------------------------------------------------------------
@@ -28,13 +52,9 @@ export fit, update, update_data, transform, inverse_transform,
     predict_joint, evaluate, clean!, reformat
 
 # model traits
-export input_scitype, output_scitype, target_scitype,
-       is_pure_julia, package_name, package_license,
-       load_path, package_uuid, package_url,
-       is_wrapper, supports_weights, supports_online,
-       docstring, name, is_supervised,
-       prediction_type, implemented_methods, hyperparameters,
-       hyperparameter_types, hyperparameter_ranges
+for trait in MODEL_TRAITS
+    @eval(export $trait)
+end
 
 # data operations
 export matrix, int, classes, decoder, table,
@@ -93,7 +113,6 @@ abstract type JointProbabilistic <: Probabilistic end
 # ------------------------------------------------------------------------
 # includes
 
-include("utils.jl")
 include("parameter_inspection.jl")
 include("data_utils.jl")
 include("metadata_utils.jl")

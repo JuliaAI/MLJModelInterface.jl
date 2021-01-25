@@ -239,10 +239,14 @@ Select single or multiple rows from a table, abstract vector or matrix
 preferred sink type of `typeof(X)`, even if only a single row is
 selected.
 
+If the object is neither a table, abstract vector or matrix, `X` is
+returned and `r` is ignored.
+
 """
 selectrows(X, r) = selectrows(get_interface_mode(), vtrait(X), X, r)
 
-selectrows(::Mode, ::Val{:other}, ::Nothing, r) = nothing
+# fall-back is to return object, ignoring vector of row indices, `r`:
+selectrows(::Mode, ::Val{:other}, X::Any, r) = X
 
 selectrows(::Mode, ::Val{:other}, X::AbstractVector, r)          = X[r]
 selectrows(::Mode, ::Val{:other}, X::AbstractVector, r::Integer) = X[r:r]
@@ -251,10 +255,6 @@ selectrows(::Mode, ::Val{:other}, X::AbstractVector, ::Colon)    = X
 selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r)          = X[r, :]
 selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r::Integer) = X[r:r, :]
 selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, ::Colon)    = X
-
-selectrows(::Mode, ::Val{:other}, X, r) =
-    throw(ArgumentError("Function `selectrows` only supports AbstractVector " *
-                        "or AbstractMatrix or containers implementing the " * "Tables interface."))
 
 selectrows(::LightInterface, ::Val{:table}, X, r; kw...) =
     errlight("selectrows")

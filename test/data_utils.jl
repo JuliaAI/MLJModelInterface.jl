@@ -141,6 +141,8 @@ end
 # ------------------------------------------------------------------------
 @testset "select-light" begin
     setlight()
+
+    # test fallback
     X = nothing
     @test selectrows(X, 1) === nothing
     @test selectcols(X, 1) === nothing
@@ -173,12 +175,20 @@ end
 
     # something else
     X = (1,2,3)
-    @test_throws ArgumentError selectrows(X, 1)
+    selectrows(X, 1) == X
     @test_throws ArgumentError selectcols(X, 1)
     @test_throws ArgumentError select(X, 1, 1)
 end
 @testset "select-full" begin
     setfull()
+
+    # test fallback
+    X = nothing
+    @test selectrows(X, 1) === nothing
+    @test selectcols(X, 1) === nothing
+    @test select(X, 1, 2)  === nothing
+
+    # implement some behaviour:
     M.selectrows(::FI, ::Val{:table}, X, ::Colon) = X
     M.selectcols(::FI, ::Val{:table}, X, ::Colon) = X
     function M.selectrows(::FI, ::Val{:table}, X, r)

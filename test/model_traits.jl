@@ -69,7 +69,6 @@ module Fruit
 import MLJModelInterface.MLJType
 
 struct Banana <: MLJType end
-struct Apple end
 
 end
 
@@ -78,13 +77,4 @@ import .Fruit
 @testset "extras" begin
     @test docstring(Float64) == "Float64"
     @test docstring(Fruit.Banana) == "Banana"
-    @test name(Float64) == "Float64"
-
-    df = DataFrame(a=randn(2), b=randn(2))
-    @test M.name(typeof(df)) == "DataFrame"
-    @test M.name(df) == "DataFrame"
-    @test M.name(Fruit.Banana) == "Banana"
-    @test M.name(Fruit.Banana()) == "Banana"
-    @test M.name(Fruit.Apple) == "Apple"
-    @test M.name(Fruit.Apple()) == "Apple"
 end

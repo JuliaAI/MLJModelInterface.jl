@@ -24,12 +24,18 @@ end
     @test fit(m1, 1, randn(2), randn(2), 5) == (7, nothing, nothing)
     # default fitted params
     @test M.fitted_params(m1, 7) == (fitresult=7,)
+    # default iteration_parameter
+    @test training_losses(m0, nothing, nothing, nothing) === nothing
     # static
     s1 = APIx1()
     @test fit(s1, 1, 0) == (nothing, nothing, nothing)
 
     #update fallback = fit
     @test update(m0, 1, 5, nothing, randn(2), 5) == (5, nothing, nothing)
+
+    # training losses:
+    f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
+    @test training_losses(m0, f, c, r) === nothing
 end
 
 struct DummyUnivariateFinite end

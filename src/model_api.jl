@@ -25,6 +25,17 @@ Models may optionally implement an `update` method. The fallback calls
 update(m::Model, verbosity, fitresult, cache, data...) =
     fit(m, verbosity, data...)
 
+"""
+    training_losses(model::M, fitresult, cache)
+
+If `M` is an iterative model type which calculates training losses,
+implement this method to return the an `AbstractVector` of the losses
+in historical order. If the model calculates scores instead, then the
+sign of the scores should be reversed.
+
+"""
+training_losses(model, fitresult, cache, report) = nothing
+
 # to support online learning in the future:
 # https://github.com/alan-turing-institute/MLJ.jl/issues/60 :
 function update_data end

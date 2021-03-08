@@ -22,7 +22,8 @@ const MODEL_TRAITS = [
     :hyperparameters,
     :hyperparameter_types,
     :hyperparameter_ranges,
-    :iteration_parameter]
+    :iteration_parameter,
+    :supports_training_losses]
 
 # ------------------------------------------------------------------------
 # Dependencies (ScientificTypes and StatisticalTraits have none)

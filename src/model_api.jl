@@ -33,6 +33,9 @@ implement this method to return an `AbstractVector` of the losses
 in historical order. If the model calculates scores instead, then the
 sign of the scores should be reversed.
 
+The following trait overload is alse required:
+`supports_training_losses(::Type{<:M}) = true`
+
 """
 training_losses(model, fitresult, cache, report) = nothing
 

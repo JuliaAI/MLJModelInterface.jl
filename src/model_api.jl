@@ -26,7 +26,7 @@ update(m::Model, verbosity, fitresult, cache, data...) =
     fit(m, verbosity, data...)
 
 """
-    MLJModelInterface.training_losses(model::M, fitresult, cache)
+    MLJModelInterface.training_losses(model::M, report)
 
 If `M` is an iterative model type which calculates training losses,
 implement this method to return an `AbstractVector` of the losses
@@ -37,7 +37,7 @@ The following trait overload is alse required:
 `supports_training_losses(::Type{<:M}) = true`
 
 """
-training_losses(model, fitresult, cache, report) = nothing
+training_losses(model, report) = nothing
 
 # to support online learning in the future:
 # https://github.com/alan-turing-institute/MLJ.jl/issues/60 :

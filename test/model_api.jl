@@ -55,12 +55,12 @@ mutable struct UnivariateFiniteFitter <: Probabilistic end
                           X) = fill(fitresult, length(X))
 
     MLJModelInterface.input_scitype(::Type{<:UnivariateFiniteFitter}) =
-        AbstractVector{Nothing}
+        Nothing
     MLJModelInterface.target_scitype(::Type{<:UnivariateFiniteFitter}) =
         AbstractVector{<:Finite}
 
     y =categorical(collect("aabbccaa"))
-    X = fill(nothing, length(y))
+    X = nothing
     model = UnivariateFiniteFitter()
     fitresult, cache, report = MLJModelInterface.fit(model, 1, X, y)
 

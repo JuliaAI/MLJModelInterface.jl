@@ -39,6 +39,7 @@ bar(::P1) = nothing
     @test is_wrapper(ms)       == false
     @test supports_online(ms)  == false
     @test supports_weights(ms) == false
+    @test iteration_parameter(ms) === nothing
 
     @test hyperparameter_ranges(md) == (nothing,)
 

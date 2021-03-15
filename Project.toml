@@ -1,7 +1,7 @@
 name = "MLJModelInterface"
 uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
 authors = ["Thibaut Lienart and Anthony Blaom"]
-version = "0.4.0"
+version = "0.4.1"
 
 [deps]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -10,7 +10,7 @@ StatisticalTraits = "64bff920-2084-43da-a3e6-9bb72801c0c9"
 
 [compat]
 ScientificTypes = "^1"
-StatisticalTraits = "^0.1"
+StatisticalTraits = "^0.1.1"
 julia = "^1"
 
 [extras]

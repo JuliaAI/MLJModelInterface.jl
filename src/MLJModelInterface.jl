@@ -21,7 +21,9 @@ const MODEL_TRAITS = [
     :implemented_methods,
     :hyperparameters,
     :hyperparameter_types,
-    :hyperparameter_ranges]
+    :hyperparameter_ranges,
+    :iteration_parameter,
+    :supports_training_losses]
 
 # ------------------------------------------------------------------------
 # Dependencies (ScientificTypes and StatisticalTraits have none)
@@ -49,7 +51,7 @@ export @mlj_model, metadata_pkg, metadata_model
 # model api
 export fit, update, update_data, transform, inverse_transform,
     fitted_params, predict, predict_mode, predict_mean, predict_median,
-    predict_joint, evaluate, clean!, reformat
+    predict_joint, evaluate, clean!, reformat, training_losses
 
 # model traits
 for trait in MODEL_TRAITS

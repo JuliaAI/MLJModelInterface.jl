@@ -1,5 +1,5 @@
 """
-    fit(model, verbosity, data...) -> fitresult, cache, report
+    MLJModelInterface.fit(model, verbosity, data...) -> fitresult, cache, report
 
 All models must implement a `fit` method. Here `data` is the
 output of `reformat` on user-provided data, or some some resampling
@@ -16,7 +16,7 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
 """
-    update(model, verbosity, fitresult, cache, data...)
+    MLJModelInterface.update(model, verbosity, fitresult, cache, data...)
 
 Models may optionally implement an `update` method. The fallback calls
 `fit`.
@@ -24,6 +24,20 @@ Models may optionally implement an `update` method. The fallback calls
 """
 update(m::Model, verbosity, fitresult, cache, data...) =
     fit(m, verbosity, data...)
+
+"""
+    MLJModelInterface.training_losses(model::M, report)
+
+If `M` is an iterative model type which calculates training losses,
+implement this method to return an `AbstractVector` of the losses
+in historical order. If the model calculates scores instead, then the
+sign of the scores should be reversed.
+
+The following trait overload is alse required:
+`supports_training_losses(::Type{<:M}) = true`
+
+"""
+training_losses(model, report) = nothing
 
 # to support online learning in the future:
 # https://github.com/alan-turing-institute/MLJ.jl/issues/60 :
@@ -53,7 +67,7 @@ manual](https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_gen
 reformat(model::Model, args...) = args
 
 """
-    selectrows(::Model, I, data...) -> sampled_data
+    MLJModelInterface.selectrows(::Model, I, data...) -> sampled_data
 
 A model overloads `selectrows` whenever it buys into the optional
 `reformat` front-end for data preprocessing. See [`reformat`](@ref)

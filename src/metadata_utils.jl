@@ -10,10 +10,9 @@ function docstring_ext(T; descr::String="")
     model_name   = MLJModelInterface.name(T)
     # the message to return
     message      = "$descr"
-    message     *= "\n→ based on [$package_name]($package_url)."
-    message     *= "\n→ do `@load $model_name pkg=\"$package_name\"` to " *
-                   "use the model."
-    message     *= "\n→ do `?$model_name` for documentation."
+    message     *= "\n→ Based on [$package_name]($package_url)."
+    message     *= "\n→ Do `NameForType = @load $model_name pkg=$package_name` to " *
+                   "load the model code. "
 end
 
 """

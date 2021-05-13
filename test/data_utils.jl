@@ -34,8 +34,7 @@ end
 end
 @testset "int-full" begin
     setfull()
-    M.int(::FI, x::CategoricalValue; kw...) =
-        collect(1:length(levels(x.pool)))[x.level]
+    M.int(::FI, x::CategoricalValue) = CategoricalArrays.refcode(x)
     x = categorical(['a','b','a'])
     @test int(x[1]) == 0x01
     @test int(x[2]) == 0x02

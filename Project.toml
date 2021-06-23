@@ -9,7 +9,7 @@ ScientificTypes = "321657f4-b219-11e9-178b-2701a2544e81"
 StatisticalTraits = "64bff920-2084-43da-a3e6-9bb72801c0c9"
 
 [compat]
-ScientificTypes = "1"
+ScientificTypes = "1, 2"
 StatisticalTraits = "1.1"
 julia = "1"
 

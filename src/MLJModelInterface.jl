@@ -27,8 +27,8 @@ const MODEL_TRAITS = [
     :deep_properties]
 
 # ------------------------------------------------------------------------
-# Dependencies (ScientificTypes and StatisticalTraits have none)
-using ScientificTypes
+# Dependencies
+using ScientificTypesBase
 using StatisticalTraits
 using Random
 
@@ -66,7 +66,7 @@ export matrix, int, classes, decoder, table,
 # equality
 export is_same_except, isrepresented
 
-# re-exports from ScientificTypes
+# re-exports from ScientificTypesBase
 export Scientific, Found, Unknown, Known, Finite, Infinite,
        OrderedFactor, Multiclass, Count, Continuous, Textual,
        Binary, ColorImage, GrayImage, Image, Table

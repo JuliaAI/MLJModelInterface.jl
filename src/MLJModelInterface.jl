@@ -1,4 +1,4 @@
-module MLJModelInterface
+module MLJModelInterface 
 
 const MODEL_TRAITS = [
     :input_scitype,

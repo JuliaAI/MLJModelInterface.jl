@@ -1,11 +1,11 @@
 using Test, MLJModelInterface
-using ScientificTypes, MLJScientificTypes
+using ScientificTypesBase, ScientificTypes
 using Tables, Distances, CategoricalArrays, InteractiveUtils
 import DataFrames: DataFrame
 
 const M  = MLJModelInterface
 const FI = M.FullInterface
-ScientificTypes.TRAIT_FUNCTION_GIVEN_NAME[:table] = Tables.istable
+ScientificTypesBase.TRAIT_FUNCTION_GIVEN_NAME[:table] = Tables.istable
 
 setlight() = M.set_interface_mode(M.LightInterface())
 setfull()  = M.set_interface_mode(M.FullInterface())

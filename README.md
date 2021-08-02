@@ -7,7 +7,7 @@ machine learning models into
 
 | Linux | Coverage |
 | :-----------: | :------: |
-| [![Build Status](https://github.com/alan-turing-institute/MLJModelInterface.jl/workflows/CI/badge.svg)](https://github.com/alan-turing-institute/MLJModelInterface.jl/actions) | [![codecov.io](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl/coverage.svg?branch=master)](http://codecov.io/github/alan-turing-institute/MLJModelInterface.jl?branch=master) |
+| [![Build Status](https://github.com/JuliaAI/MLJModelInterface.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJModelInterface.jl/actions) | [![codecov.io](http://codecov.io/github/JuliaAI/MLJModelInterface.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaAI/MLJModelInterface.jl?branch=master) |
 
 
 [MLJ](https://github.com/alan-turing-institute/MLJ.jl) is a framework

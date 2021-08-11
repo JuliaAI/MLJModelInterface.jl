@@ -26,6 +26,15 @@ const MODEL_TRAITS = [
     :supports_training_losses,
     :deep_properties]
 
+const ABSTRACT_MODEL_SUBTYPES =
+    [:Supervised,
+     :Unsupervised,
+     :Probabilistic,
+     :Deterministic,
+     :Interval,
+     :JointProbabilistic,
+     :Static]
+
 # ------------------------------------------------------------------------
 # Dependencies
 using ScientificTypesBase
@@ -38,10 +47,13 @@ using Random
 # mode
 export LightInterface, FullInterface
 
-# MLJ model hierarchy
-export MLJType, Model, Supervised, Unsupervised,
-       Probabilistic, JointProbabilistic, Deterministic, Interval, Static,
-       UnivariateFinite
+# model types
+export MLJType, Model
+for T in ABSTRACT_MODEL_SUBTYPES
+    @eval(export $T)
+end
+
+export UnivariateFinite
 
 # parameter_inspection:
 export params
@@ -95,12 +107,11 @@ struct InterfaceError <: Exception
     m::String
 end
 
-# ------------------------------------------------------------------------
-# Model types
-
 abstract type MLJType end
-
 abstract type Model   <: MLJType end
+
+# ------------------------------------------------------------------------
+# Model subtypes
 
 abstract type   Supervised <: Model end
 abstract type Unsupervised <: Model end

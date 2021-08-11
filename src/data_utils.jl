@@ -434,3 +434,9 @@ UnivariateFinite(probs; kwargs...) =
     UnivariateFinite(get_interface_mode(), probs; kwargs...)
 UnivariateFinite(::LightInterface, a...; kwargs...) =
     errlight("UnivariateFinite")
+
+## FOR DETECTION MODELS
+
+const OUTLIER = "outlier"
+const INLIER = "inlier"
+const UNKNOWN = "unknown"

@@ -1,7 +1,7 @@
 module MLJModelInterface
 
-const MODEL_TRAITS = [
-    :input_scitype,
+const MODEL_TRAITS =
+    [:input_scitype,
     :output_scitype,
     :target_scitype,
     :fit_data_scitype,
@@ -38,7 +38,17 @@ const ABSTRACT_MODEL_SUBTYPES =
      :Deterministic,
      :Interval,
      :JointProbabilistic,
-     :Static]
+     :Static,
+     :Annotator,
+     :SupervisedAnnotator,
+     :UnsupervisedAnnotator,
+     :SupervisedDetector,
+     :UnsupervisedDetector,
+     :AbstractProbabilisticSupervisedDetector,
+     :AbstractProbabilisticUnsupervisedDetector,
+     :AbstractDeterministicSupervisedDetector,
+     :AbstractDeterministicUnsupervisedDetector]
+
 
 # ------------------------------------------------------------------------
 # Dependencies
@@ -69,7 +79,8 @@ export @mlj_model, metadata_pkg, metadata_model
 # model api
 export fit, update, update_data, transform, inverse_transform,
     fitted_params, predict, predict_mode, predict_mean, predict_median,
-    predict_joint, evaluate, clean!, reformat, training_losses
+    predict_joint, evaluate, clean!, reformat, training_losses,
+    augmented_predict
 
 # model traits
 for trait in MODEL_TRAITS
@@ -118,16 +129,29 @@ abstract type Model   <: MLJType end
 # ------------------------------------------------------------------------
 # Model subtypes
 
-abstract type   Supervised <: Model end
-abstract type Unsupervised <: Model end
+abstract type          Supervised <: Model end
+abstract type        Unsupervised <: Model end
+abstract type           Annotator <: Model end
 
 abstract type Probabilistic <: Supervised end
 abstract type Deterministic <: Supervised end
 abstract type      Interval <: Supervised end
 
-abstract type Static <: Unsupervised end
-
 abstract type JointProbabilistic <: Probabilistic end
+
+abstract type Static                <: Unsupervised end
+
+abstract type SupervisedAnnotator   <: Annotator end
+abstract type UnsupervisedAnnotator <: Annotator end
+
+abstract type UnsupervisedDetector <: UnsupervisedAnnotator end
+abstract type SupervisedDetector   <: SupervisedAnnotator end
+
+abstract type AbstractProbabilisticSupervisedDetector   <: SupervisedDetector end
+abstract type AbstractProbabilisticUnsupervisedDetector <: UnsupervisedDetector end
+
+abstract type AbstractDeterministicSupervisedDetector   <: SupervisedDetector end
+abstract type AbstractDeterministicUnsupervisedDetector <: UnsupervisedDetector end
 
 # ------------------------------------------------------------------------
 # includes

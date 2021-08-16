@@ -21,9 +21,9 @@ for M in ABSTRACT_MODEL_SUBTYPES
     @eval(StatisticalTraits.abstract_type(::Type{<:$M}) = $M)
 end
 
-StatisticalTraits.training_scitype(M::Type{<:Model}) = input_scitype(M)
-StatisticalTraits.training_scitype(::Type{<:Static}) = Tuple{}
-function StatisticalTraits.training_scitype(M::Type{<:Supervised})
+StatisticalTraits.fit_data_scitype(M::Type{<:Model}) = input_scitype(M)
+StatisticalTraits.fit_data_scitype(::Type{<:Static}) = Tuple{}
+function StatisticalTraits.fit_data_scitype(M::Type{<:Supervised})
     I = input_scitype(M)
     T = target_scitype(M)
     ret = Tuple{I,T}

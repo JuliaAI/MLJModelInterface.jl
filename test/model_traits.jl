@@ -129,17 +129,17 @@ M.input_scitype(::Type{<:S2}) = Table(Continuous)
     @test inverse_transform_scitype(S2()) == Table(Continuous)
 end
 
-@testset "abstract_type, training_scitype" begin
+@testset "abstract_type, fit_data_scitype" begin
     @test abstract_type(P2()) == Probabilistic
     @test abstract_type(S1()) == Supervised
     @test abstract_type(U1()) == Unsupervised
     @test abstract_type(D1()) == Deterministic
     @test abstract_type(P1()) == Probabilistic
 
-    @test training_scitype(P2()) ==
+    @test fit_data_scitype(P2()) ==
         Tuple{Table(Continuous),AbstractVector{<:Multiclass}}
-    @test training_scitype(U2()) == Table(Continuous)
-    @test training_scitype(S2()) == Tuple{}
+    @test fit_data_scitype(U2()) == Table(Continuous)
+    @test fit_data_scitype(S2()) == Tuple{}
 end
 
 true

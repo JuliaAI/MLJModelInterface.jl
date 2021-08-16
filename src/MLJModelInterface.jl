@@ -4,7 +4,7 @@ const MODEL_TRAITS = [
     :input_scitype,
     :output_scitype,
     :target_scitype,
-    :training_scitype,
+    :fit_data_scitype,
     :predict_scitype,
     :transform_scitype,
     :inverse_transform_scitype,

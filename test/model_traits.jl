@@ -138,7 +138,7 @@ end
 
     @test fit_data_scitype(P2()) ==
         Tuple{Table(Continuous),AbstractVector{<:Multiclass}}
-    @test fit_data_scitype(U2()) == Table(Continuous)
+    @test fit_data_scitype(U2()) == Tuple{Table(Continuous)}
     @test fit_data_scitype(S2()) == Tuple{}
 end
 

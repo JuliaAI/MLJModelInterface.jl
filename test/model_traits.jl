@@ -79,3 +79,67 @@ import .Fruit
     @test docstring(Float64) == "Float64"
     @test docstring(Fruit.Banana) == "Banana"
 end
+
+@testset "`_density` - helper for predict_scitype fallback" begin
+    for T in [Continuous, Count, Textual]
+        @test M._density(AbstractArray{T,3}) ==
+            AbstractArray{Density{T},3}
+    end
+
+    for T in [Finite,
+              Multiclass,
+              OrderedFactor,
+              Infinite,
+              Continuous,
+              Count,
+              Textual]
+        @test M._density(AbstractVector{<:T}) ==
+            AbstractVector{Density{<:T}}
+        @test M._density(Table(T)) == Table(Density{T})
+    end
+
+    for T in [Finite, Multiclass, OrderedFactor]
+        @test M._density(AbstractArray{<:T{2},3}) ==
+            AbstractArray{Density{<:T{2}},3}
+        @test M._density(AbstractArray{T{2},3}) ==
+            AbstractArray{Density{T{2}},3}
+        @test M._density(Table(T{2})) == Table(Density{T{2}})
+    end
+end
+
+@mlj_model mutable struct P2 <: Probabilistic end
+M.target_scitype(::Type{<:P2}) = AbstractVector{<:Multiclass}
+M.input_scitype(::Type{<:P2}) = Table(Continuous)
+
+@mlj_model mutable struct U2 <: Unsupervised end
+M.output_scitype(::Type{<:U2}) = AbstractVector{<:Multiclass}
+M.input_scitype(::Type{<:U2}) = Table(Continuous)
+
+@mlj_model mutable struct S2 <: Static end
+M.output_scitype(::Type{<:S2}) = AbstractVector{<:Multiclass}
+M.input_scitype(::Type{<:S2}) = Table(Continuous)
+
+@testset "operation scitypes" begin
+    @test predict_scitype(P2()) == AbstractVector{Density{<:Multiclass}}
+    @test transform_scitype(P2()) == Unknown
+    @test transform_scitype(U2()) == AbstractVector{<:Multiclass}
+    @test inverse_transform_scitype(U2()) == Table(Continuous)
+    @test predict_scitype(U2()) == Unknown
+    @test transform_scitype(S2()) == AbstractVector{<:Multiclass}
+    @test inverse_transform_scitype(S2()) == Table(Continuous)
+end
+
+@testset "abstract_type, fit_data_scitype" begin
+    @test abstract_type(P2()) == Probabilistic
+    @test abstract_type(S1()) == Supervised
+    @test abstract_type(U1()) == Unsupervised
+    @test abstract_type(D1()) == Deterministic
+    @test abstract_type(P1()) == Probabilistic
+
+    @test fit_data_scitype(P2()) ==
+        Tuple{Table(Continuous),AbstractVector{<:Multiclass}}
+    @test fit_data_scitype(U2()) == Tuple{Table(Continuous)}
+    @test fit_data_scitype(S2()) == Tuple{}
+end
+
+true

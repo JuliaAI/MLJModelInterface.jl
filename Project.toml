@@ -10,7 +10,7 @@ StatisticalTraits = "64bff920-2084-43da-a3e6-9bb72801c0c9"
 
 [compat]
 ScientificTypesBase = "2.1"
-StatisticalTraits = "2.1"
+StatisticalTraits = "2.1, 2"
 julia = "1"
 
 [extras]

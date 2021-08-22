@@ -109,27 +109,6 @@ called on user-specified data.
 function predict end
 
 """
-    augmented_predict
-
-If implemented, the same as `predict`, but with a return value
-augmented by the `predict`ion of the training data.
-
-For example, if implemented for a `Supervised` model with a
-`predict` method, `augmented_predict(model, fitresult, Xnew)` will
-return
-
-```julia
-(predict(model, fitresult, X), predict(model, fitresult, Xnew))
-```
-
-where `(X, y)` was the training data.
-
-Must be implemented by any `UnsupervisedDetector` or `SupervisedDetector`.
-
-"""
-function augmented_predict end
-
-"""
 
 Models types `M` for which `prediction_type(M) == :probablisitic` may
 overload `predict_mean`.
@@ -170,6 +149,27 @@ function transform end
 
 """
 function inverse_transform end
+
+"""
+    augmented_transform
+
+If implemented, the same as `transform`, but with a return value
+augmented by the `transform`ation of the training data.
+
+For example, for if implemented for a `Supervised` model with a
+`transform` method, the return value of `transform_transform(model,
+fitresult, Xnew)` coincides with
+
+```julia
+(transform(model, fitresult, X), transform(model, fitresult, Xnew))
+```
+
+where `(X, y)` was the training data.
+
+Must be implemented by any `UnsupervisedDetector` or `SupervisedDetector`.
+
+"""
+function augmented_transform end
 
 # models can optionally overload these for enable serialization in a
 # custom format:

@@ -80,7 +80,7 @@ export @mlj_model, metadata_pkg, metadata_model
 export fit, update, update_data, transform, inverse_transform,
     fitted_params, predict, predict_mode, predict_mean, predict_median,
     predict_joint, evaluate, clean!, reformat, training_losses,
-    augmented_predict
+    augmented_transform
 
 # model traits
 for trait in MODEL_TRAITS

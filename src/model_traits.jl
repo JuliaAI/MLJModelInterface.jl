@@ -25,9 +25,9 @@ StatTraits.prediction_type(::Type{<:DeterministicDetector}) =
     :deterministic
 
 StatTraits.target_scitype(::Type{<:ProbabilisticDetector}) =
-    AbstractVector{OrderedFactor{2}}
+    AbstractVector{<:Union{Missing,OrderedFactor{2}}}
 StatTraits.target_scitype(::Type{<:DeterministicDetector}) =
-    AbstractVector{OrderedFactor{2}}
+    AbstractVector{<:Union{Missing,OrderedFactor{2}}}
 
 # implementation is deferred as it requires methodswith which depends upon
 # InteractiveUtils which we don't want to bring here as a dependency

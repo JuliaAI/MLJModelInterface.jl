@@ -44,10 +44,10 @@ const ABSTRACT_MODEL_SUBTYPES =
      :UnsupervisedAnnotator,
      :SupervisedDetector,
      :UnsupervisedDetector,
-     :AbstractProbabilisticSupervisedDetector,
-     :AbstractProbabilisticUnsupervisedDetector,
-     :AbstractDeterministicSupervisedDetector,
-     :AbstractDeterministicUnsupervisedDetector]
+     :ProbabilisticSupervisedDetector,
+     :ProbabilisticUnsupervisedDetector,
+     :DeterministicSupervisedDetector,
+     :DeterministicUnsupervisedDetector]
 
 
 # ------------------------------------------------------------------------
@@ -147,11 +147,11 @@ abstract type UnsupervisedAnnotator <: Annotator end
 abstract type UnsupervisedDetector <: UnsupervisedAnnotator end
 abstract type SupervisedDetector   <: SupervisedAnnotator end
 
-abstract type AbstractProbabilisticSupervisedDetector   <: SupervisedDetector end
-abstract type AbstractProbabilisticUnsupervisedDetector <: UnsupervisedDetector end
+abstract type ProbabilisticSupervisedDetector   <: SupervisedDetector end
+abstract type ProbabilisticUnsupervisedDetector <: UnsupervisedDetector end
 
-abstract type AbstractDeterministicSupervisedDetector   <: SupervisedDetector end
-abstract type AbstractDeterministicUnsupervisedDetector <: UnsupervisedDetector end
+abstract type DeterministicSupervisedDetector   <: SupervisedDetector end
+abstract type DeterministicUnsupervisedDetector <: UnsupervisedDetector end
 
 # ------------------------------------------------------------------------
 # includes

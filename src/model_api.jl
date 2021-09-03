@@ -16,8 +16,8 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
 # fallback for unsupervised detectors when no "evaluation" labels appear:
-fit(m::Union{AbstractProbabilisticUnsupervisedDetector,
-             AbstractDeterministicUnsupervisedDetector},
+fit(m::Union{ProbabilisticUnsupervisedDetector,
+             DeterministicUnsupervisedDetector},
              verbosity,
              X,
              y) =  fit(m, verbosity, X)
@@ -154,27 +154,6 @@ function transform end
 """
 function inverse_transform end
 
-"""
-    augmented_transform
-
-If implemented, the same as `transform`, but with a return value
-augmented by the `transform`ation of the training data.
-
-For example, for if implemented for a `Supervised` model with a
-`transform` method, the return value of `transform_transform(model,
-fitresult, Xnew)` coincides with
-
-```julia
-(transform(model, fitresult, X), transform(model, fitresult, Xnew))
-```
-
-where `(X, y)` was the training data.
-
-Must be implemented by any `UnsupervisedDetector` or `SupervisedDetector`.
-
-"""
-function augmented_transform end
-
 # models can optionally overload these for enable serialization in a
 # custom format:
 function save end
@@ -184,4 +163,3 @@ function restore end
 some meta-models may choose to implement the `evaluate` operations
 """
 function evaluate end
-

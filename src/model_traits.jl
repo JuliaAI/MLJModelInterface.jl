@@ -2,10 +2,10 @@
 
 # unexported aliases:
 const Detector = Union{SupervisedDetector,UnsupervisedDetector}
-const ProbabilisticDetector = Union{AbstractProbabilisticSupervisedDetector,
-                                    AbstractProbabilisticUnsupervisedDetector}
-const DeterministicDetector = Union{AbstractDeterministicSupervisedDetector,
-                                    AbstractDeterministicUnsupervisedDetector}
+const ProbabilisticDetector = Union{ProbabilisticSupervisedDetector,
+                                    ProbabilisticUnsupervisedDetector}
+const DeterministicDetector = Union{DeterministicSupervisedDetector,
+                                    DeterministicUnsupervisedDetector}
 
 const StatTraits = StatisticalTraits
 
@@ -67,8 +67,8 @@ StatTraits.fit_data_scitype(M::Type{<:SupervisedAnnotator}) =
 # constructor will accept it as a valid argument, which then enables
 # *evaluation* of the detector with labeled data:
 StatTraits.fit_data_scitype(M::Type{<:Union{
-    AbstractProbabilisticUnsupervisedDetector,
-    AbstractDeterministicUnsupervisedDetector}}) =
+    ProbabilisticUnsupervisedDetector,
+    DeterministicUnsupervisedDetector}}) =
         Union{Tuple{input_scitype(M)},
               Tuple{input_scitype(M),target_scitype(M)}}
 

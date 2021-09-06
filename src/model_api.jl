@@ -15,6 +15,13 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 # fallbacks for supervised models that don't support sample weights:
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
+# fallback for unsupervised detectors when no "evaluation" labels appear:
+fit(m::Union{ProbabilisticUnsupervisedDetector,
+             DeterministicUnsupervisedDetector},
+             verbosity,
+             X,
+             y) =  fit(m, verbosity, X)
+
 """
     MLJModelInterface.update(model, verbosity, fitresult, cache, data...)
 
@@ -98,24 +105,33 @@ fitted_params(::Model, fitresult) = (fitresult=fitresult,)
 
     predict(model, fitresult, new_data...)
 
-`Supervised` models must implement the `predict` operation. Here
-`new_data` is the output of `reformat` called on user-specified data.
+`Supervised` and `SupervisedAnnotator` models must implement the
+`predict` operation. Here `new_data` is the output of `reformat`
+called on user-specified data.
 
 """
 function predict end
 
 """
-probabilistic supervised models may overload `predict_mean`
-"""
-function predict_mean end
+
+Models types `M` for which `prediction_type(M) == :probablisitic` may
+overload `predict_mean`.
 
 """
-probabilistic supervised models may overload `predict_mode`
+function predict_mean end
+"""
+
+Models types `M` for which `prediction_type(M) == :probablisitic` may
+overload `predict_mode`.
+
 """
 function predict_mode end
 
 """
-probabilistic supervised models may overload `predict_median`
+
+Models types `M` for which `prediction_type(M) == :probablisitic` may
+overload `predict_median`.
+
 """
 function predict_median end
 
@@ -127,12 +143,14 @@ function predict_median end
 function predict_joint end
 
 """
-unsupervised methods must implement the `transform` operation
+`Unsupervised` models must implement the `transform` operation.
 """
 function transform end
 
 """
-unsupervised methods may implement the `inverse_transform` operation
+
+`Unsupervised` models may implement the `inverse_transform` operation.
+
 """
 function inverse_transform end
 

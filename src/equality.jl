@@ -1,3 +1,12 @@
+# to ensure that propertynames that aren't fieldnames are always viewed as
+# "defined", in MLJType objects. See #115.
+function _isdefined(object, name)
+    pnames = propertynames(object)
+    fnames = fieldnames(typeof(object))
+    name in pnames && !(name in fnames) && return true
+    isdefined(object, name)
+end
+
 function _equal_to_depth_one(x1, x2)
     names = propertynames(x1)
     names === propertynames(x2) || return false
@@ -68,7 +77,8 @@ following conditions all hold, and `false` otherwise:
 
 - with the exception of properties listed as `exceptions` or bound to
   an `AbstractRNG`, each pair of corresponding property values is
-  either "equal" or  both undefined.
+  either "equal" or both undefined. (If a property appears as a
+  `propertyname` but not a `fieldname`, it is deemed as always defined.)
 
 The meaining of "equal" depends on the type of the property value:
 
@@ -93,9 +103,9 @@ function is_same_except(m1::M1,
 
     for name in names
         if !(name in exceptions)
-            if !isdefined(m1, name)
-               !isdefined(m2, name) || return false
-            elseif isdefined(m2, name)
+            if !_isdefined(m1, name)
+               !_isdefined(m2, name) || return false
+            elseif _isdefined(m2, name)
                 if name in deep_properties(M1)
                     _equal_to_depth_one(getproperty(m1,name),
                                         getproperty(m2, name)) || return false

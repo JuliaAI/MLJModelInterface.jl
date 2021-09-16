@@ -27,6 +27,16 @@ function Base.getproperty(b::Bar{names}, name::Symbol) where names
     name === names[1] && return v[1]
     return v[2]
 end
+function Base.setproperty!(b::Bar{names}, name::Symbol, value) where names
+    name === :rng && return setfield!(b, :rng, value)
+    v = getfield(b, :v)
+    if name === names[1]
+        setfield!(b, :v, (value, v[2]))
+        return value
+    end
+    setfield!(b, :v, (v[1], value))
+    value
+end
 
 mutable struct Super <: MLJType
     sub::Foo
@@ -53,7 +63,14 @@ mutable struct Super2 <: MLJType
     z::Int
 end
 
+
 MLJModelInterface.deep_properties(::Type{<:Super2}) = (:sub,)
+
+@testset "_isdefined" begin
+    b = Bar(MersenneTwister(), 2, 3)
+    @test MLJModelInterface._isdefined(b, :x)
+end
+
 
 @testset "_equal_to_depth_one" begin
     d1 = Deep(1, 2)
@@ -108,6 +125,11 @@ end
     s2 = Super2(Sub(1), 2)
     @test s1 == s2
 
+    # replacing value of a "strap-on" property is detected:
+    b = Bar(MersenneTwister(), 1, 2)
+    b1 = deepcopy(b)
+    b.x = 42
+    @test b != b1
 end
 
 @testset "in(x, collection) for MLJType" begin

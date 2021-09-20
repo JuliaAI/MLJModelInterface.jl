@@ -14,7 +14,8 @@ StatTraits.docstring(M::Type{<:Model}) =
     "$(name(M)) from $(package_name(M)).jl.\n" *
     "[Documentation]($(package_url(M)))."
 
-StatTraits.is_supervised(::Type{<:Supervised})      = true
+StatTraits.is_supervised(::Type{<:Supervised})          = true
+StatTraits.is_supervised(::Type{<:SupervisedAnnotator}) = true
 
 StatTraits.prediction_type(::Type{<:Deterministic}) = :deterministic
 StatTraits.prediction_type(::Type{<:Probabilistic}) = :probabilistic

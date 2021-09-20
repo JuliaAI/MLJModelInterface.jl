@@ -15,6 +15,12 @@ end
 @mlj_model mutable struct I1 <: Interval
 end
 
+@mlj_model mutable struct SA <: SupervisedAnnotator
+end
+
+@mlj_model mutable struct UA <: UnsupervisedAnnotator
+end
+
 foo(::P1) = 0
 bar(::P1) = nothing
 
@@ -24,6 +30,8 @@ bar(::P1) = nothing
     md = D1()
     mp = P1()
     mi = I1()
+    sa = SA()
+    ua = UA()
 
     @test input_scitype(ms)  == Unknown
     @test output_scitype(ms) == Unknown
@@ -47,7 +55,9 @@ bar(::P1) = nothing
     @test name(ms)      == "S1"
 
     @test is_supervised(ms)
+    @test is_supervised(sa)
     @test !is_supervised(mu)
+    @test !is_supervised(ua)
     @test prediction_type(ms) == :unknown
     @test prediction_type(md) == :deterministic
     @test prediction_type(mp) == :probabilistic

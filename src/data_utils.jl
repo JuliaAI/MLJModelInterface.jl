@@ -323,6 +323,14 @@ construct an abstract *array* of `UnivariateFinite` distributions by
 choosing `probs` to be an array of one higher dimension than the array
 generated.
 
+Here the word "probabilities" is an abuse of terminology as there is
+no requirement that probabilities actually sum to one, only that they
+be non-negative. So `UnivariateFinite` objects actually implement
+arbitrary non-negative measures over finite sets of labelled points. A
+`UnivariateDistribution` will be a bona fide probability measure when
+constructed using the `augment=true` option (see below) or when
+`fit` to data.
+
 Unless `pool` is specified, `support` should have type
  `AbstractVector{<:CategoricalValue}` and all elements are assumed to
  share the same categorical pool, which may be larger than `support`.
@@ -335,7 +343,8 @@ If `probs` is a matrix, it should have a column for each class in
 `support` (or one less, if `augment=true`). More generally, `probs`
 will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
 where `c = length(support)` (or one less, if `augment=true`) and the
-constructor then returns an array of size `(n1, n2, ..., nk)`.
+constructor then returns an array of `UnivariateFinite` distributions
+of size `(n1, n2, ..., nk)`.
 
 ```
 using CategoricalArrays
@@ -401,11 +410,12 @@ julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
 
 ### Probability augmentation
 
-Unless `augment=true`, sums of elements along the last axis (row-sums
-in the case of a matrix) must be equal to one, and otherwise such an
-array is created by inserting appropriate elements *ahead* of those
-provided. This means the provided probabilities are associated with
-the the classes `c2, c3, ..., cn`.
+If `augment=true` the provided array is augmented by inserting
+appropriate elements *ahead* of those provided, along the last
+dimension of the array. This means the user only provides probabilities
+for the classes `c2, c3, ..., cn`. The class `c1` probabilities are
+chosen so that each `UnivariateFinite` distribution in the returned
+array is a bona fide probability distribution.
 
 ---
 

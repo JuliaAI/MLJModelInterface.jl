@@ -90,7 +90,7 @@ selectrows(::Model, I, data...) = map(X -> selectrows(X, I), data)
 # this operation can be optionally overloaded to provide access to
 # fitted parameters (eg, coeficients of linear model):
 """
-   fitted_params(model, fitresult) -> human_readable_fitresult # named_tuple
+    fitted_params(model, fitresult) -> human_readable_fitresult # named_tuple
 
 Models may overload `fitted_params`. The fallback returns
 `(fitresult=fitresult,)`.

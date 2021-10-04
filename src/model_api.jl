@@ -16,11 +16,7 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
 # fallback for unsupervised detectors when no "evaluation" labels appear:
-fit(m::Union{ProbabilisticUnsupervisedDetector,
-             DeterministicUnsupervisedDetector},
-             verbosity,
-             X,
-             y) =  fit(m, verbosity, X)
+fit(m::UnsupervisedDetector, verbosity, X, y) =  fit(m, verbosity, X)
 
 """
     MLJModelInterface.update(model, verbosity, fitresult, cache, data...)

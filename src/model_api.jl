@@ -15,8 +15,9 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 # fallbacks for supervised models that don't support sample weights:
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
-# fallback for unsupervised detectors when no "evaluation" labels appear:
-fit(m::UnsupervisedDetector, verbosity, X, y) =  fit(m, verbosity, X)
+# fallback for unsupervised detectors when labels or weights appear:
+fit(m::UnsupervisedAnnotator, verbosity, X, y) =  fit(m, verbosity, X)
+fit(m::UnsupervisedAnnotator, verbosity, X, y, w) =  fit(m, verbosity, X)
 
 """
     MLJModelInterface.update(model, verbosity, fitresult, cache, data...)

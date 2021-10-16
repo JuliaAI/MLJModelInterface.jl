@@ -15,7 +15,9 @@ fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
 # fallbacks for supervised models that don't support sample weights:
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 
-# fallback for unsupervised detectors when labels or weights appear:
+# fallback for unsupervised annotators when labels or weights appear:
+# this is useful for evaluation and mixed composite models that combine
+# both supervised and unsupervised annotators
 fit(m::UnsupervisedAnnotator, verbosity, X, y) =  fit(m, verbosity, X)
 fit(m::UnsupervisedAnnotator, verbosity, X, y, w) =  fit(m, verbosity, X)
 

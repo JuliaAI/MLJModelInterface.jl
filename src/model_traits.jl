@@ -40,10 +40,8 @@ for M in ABSTRACT_MODEL_SUBTYPES
     @eval(StatTraits.abstract_type(::Type{<:$M}) = $M)
 end
 
-StatTraits.fit_data_scitype(M::Type{<:Unsupervised}) =
-    Tuple{input_scitype(M)}
-StatTraits.fit_data_scitype(::Type{<:Static}) = Tuple{}
-function StatTraits.fit_data_scitype(M::Type{<:Supervised})
+# helper to determine the scitype of supervised models
+function supervised_fit_data_scitype(M)
     I = input_scitype(M)
     T = target_scitype(M)
     ret = Tuple{I,T}
@@ -56,21 +54,21 @@ function StatTraits.fit_data_scitype(M::Type{<:Supervised})
     end
     return ret
 end
-StatTraits.fit_data_scitype(M::Type{<:UnsupervisedAnnotator}) =
-    Tuple{input_scitype(M)}
-StatTraits.fit_data_scitype(M::Type{<:SupervisedAnnotator}) =
-    Tuple{input_scitype(M),target_scitype(M)}
 
-# In special case of `UnsupervisedProbabilisticDetector`, and
-# `UnsupervsedDeterministicDetector` we allow the target as an
-# optional argument to `fit` (that is ignored) so that the `machine`
-# constructor will accept it as a valid argument, which then enables
-# *evaluation* of the detector with labeled data:
-StatTraits.fit_data_scitype(M::Type{<:Union{
-    ProbabilisticUnsupervisedDetector,
-    DeterministicUnsupervisedDetector}}) =
-        Union{Tuple{input_scitype(M)},
-              Tuple{input_scitype(M),target_scitype(M)}}
+StatTraits.fit_data_scitype(M::Type{<:Unsupervised}) =
+    Tuple{input_scitype(M)}
+StatTraits.fit_data_scitype(::Type{<:Static}) = Tuple{}
+StatTraits.fit_data_scitype(M::Type{<:Supervised}) =
+    supervised_fit_data_scitype(M)
+
+# In special case of `UnsupervisedAnnotator`, we allow the target 
+# as an optional argument to `fit` (that is ignored) so that the
+# `machine` constructor will accept it as a valid argument, which
+# then enables *evaluation* of the detector with labeled data:
+StatTraits.fit_data_scitype(M::Type{<:UnsupervisedAnnotator}) =
+    Union{Tuple{input_scitype(M)}, supervised_fit_data_scitype(M)}
+StatTraits.fit_data_scitype(M::Type{<:SupervisedAnnotator}) =
+    supervised_fit_data_scitype(M)
 
 StatTraits.transform_scitype(M::Type{<:Unsupervised}) =
     output_scitype(M)
@@ -80,7 +78,6 @@ StatTraits.inverse_transform_scitype(M::Type{<:Unsupervised}) =
 
 StatTraits.predict_scitype(M::Type{<:Union{
     Deterministic,DeterministicDetector}}) = target_scitype(M)
-
 
 ## FALLBACKS FOR `predict_scitype` FOR `Probabilistic` and
 ## `ProbabilisticDetector` MODELS

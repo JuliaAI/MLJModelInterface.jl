@@ -1,9 +1,18 @@
-vtrait(X) = X |> trait |> Val
 
 const REQUIRE = "(requires MLJBase to be loaded)"
 
-errlight(s) = throw(InterfaceError("Only `MLJModelInterface` is loaded. " *
-                                    "Import `MLJBase` in order to use `$s`."))
+function errlight(s)
+    throw(
+        InterfaceError(
+            "Only `MLJModelInterface` is loaded. " *
+            "Import `MLJBase` in order to use `$s`."
+        )
+    )
+end
+
+## Internal function to be extended in MLJBase (so do not export)                                   
+vtrait(X, s="") = vtrait(get_interface_mode(), X, s)
+vtrait(::LightInterface, X, s) = errlight(s)
 
 # ------------------------------------------------------------------------
 # categorical, note: not exported to avoid clashes; this is fine because
@@ -20,20 +29,30 @@ categorical(::LightInterface, a...; kw...) = errlight("categorical")
 """
     matrix(X; transpose=false)
 
-If `X <: AbstractMatrix`, return `X` or `permutedims(X)` if `transpose=true`.
-If `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`.
+If `X isa AbstractMatrix`, return `X` or `permutedims(X)` if `transpose=true`.
+Otherwise if `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`.
 
 """
-matrix(X; kw...) = matrix(get_interface_mode(), vtrait(X), X; kw...)
+function matrix(X; kw...) 
+    m = get_interface_mode()
+    return matrix(m, vtrait(m, X, "matrix"), X; kw...)
+end
 
-matrix(::Mode, ::Val{:other}, X::AbstractMatrix; transpose=false) =
-    transpose ? permutedims(X) : X
+function matrix(X::AbstractMatrix; transpose=false)
+    return transpose ? permutedims(X) : X
+end
 
-matrix(::Mode, ::Val{:other}, X; kw...) =
-    throw(ArgumentError("Function `matrix` only supports AbstractMatrix or " *
-                        "containers implementing the Tables interface."))
+matrix(m::Mode, v, X; kw...) = _matrix(m, v, X; kw...)
+matrix(::LightInterface, v, X; kw...) = errlight("matrix")
 
-matrix(::LightInterface, ::Val{:table}, X; kw...) = errlight("matrix")
+function _matrix(::Mode, ::Val{:other}, X; kw...)
+    throw(
+        ArgumentError(
+            "`matrix` method only supports AbstractMatrix or " *
+            "containers implementing the Tables interface."
+        )
+    )
+end
 
 # ------------------------------------------------------------------------
 # int
@@ -54,22 +73,30 @@ of `x`, but has the same type.
 
 Broadcasted versions of `int`.
 
-    julia> v = categorical([:c, :b, :c, :a])
-    julia> levels(v)
-    3-element Array{Symbol,1}:
-     :a
-     :b
-     :c
-    julia> int(v)
-    4-element Array{UInt32,1}:
-     0x00000003
-     0x00000002
-     0x00000003
-     0x00000001
+```julia
+julia> v = categorical(["c", "b", "c", "a"])
+4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "c"
+ "b"
+ "c"
+ "a"
 
+julia> levels(v)
+3-element Vector{String}:
+ "a"
+ "b"
+ "c"
+
+julia> int(v)
+4-element Vector{UInt32}:
+ 0x00000003
+ 0x00000002
+ 0x00000003
+ 0x00000001
+```
 See also: [`decoder`](@ref).
 """
-function int(x; type::Union{Nothing,Type{T}}=nothing) where T <: Real
+function int(x; type::Union{Nothing, Type{T}}=nothing) where T <: Real
     type === nothing && return int(get_interface_mode(), x)
     return convert.(T, int(get_interface_mode(), x))
 end
@@ -90,34 +117,35 @@ classes(x)` is always true.
 
 Not to be confused with `levels(x.pool)`. See the example below.
 
-    julia>  v = categorical([:c, :b, :c, :a])
-    4-element CategoricalArrays.CategoricalArray{Symbol,1,UInt32}:
-     :c
-     :b
-     :c
-     :a
+```julia
+julia>  v = categorical(["c", "b", "c", "a"])
+4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "c"
+ "b"
+ "c"
+ "a"
 
-    julia> levels(v)
-    3-element Array{Symbol,1}:
-     :a
-     :b
-     :c
+julia> levels(v)
+3-element Vector{String}:
+ "a"
+ "b"
+ "c"
 
-    julia> x = v[4]
-    CategoricalArrays.CategoricalValue{Symbol,UInt32} :a
+julia> x = v[4]
+CategoricalArrays.CategoricalValue{String, UInt32} "a"
 
-    julia> classes(x)
-    3-element CategoricalArrays.CategoricalArray{Symbol,1,UInt32}:
-     :a
-     :b
-     :c
+julia> classes(x)
+3-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "a"
+ "b"
+ "c"
 
-    julia> levels(x.pool)
-    3-element Array{Symbol,1}:
-     :a
-     :b
-     :c
-
+julia> levels(x.pool)
+3-element Vector{String}:
+ "a"
+ "b"
+ "c"
+```
 """
 classes(x) = classes(get_interface_mode(), x)
 
@@ -129,16 +157,14 @@ classes(::LightInterface, x) = errlight("classes")
 """
     schema(X)
 
-If `X` is tabular, inspect the column types and scitypes, otherwise return
-`nothing`.
+Inspect the column types and scitypes of a tabular object.
+returns `nothing` if the column types and scitypes can't be inspected.
 """
-schema(X; kw...) = schema(get_interface_mode(), vtrait(X), X; kw...)
+schema(X) = schema(get_interface_mode(), vtrait(X, "schema"), X)
 
-schema(::Mode, ::Val{:other}, X; kw...) = nothing
-
-schema(::LightInterface, ::Val{:other}, X; kw...) = errlight("schema")
-
-schema(::LightInterface, ::Val{:table}, X; kw...) = errlight("schema")
+function schema(::LightInterface, m, X)
+    return errlight("schema")
+end
 
 # ------------------------------------------------------------------------
 # istable
@@ -148,7 +174,10 @@ schema(::LightInterface, ::Val{:table}, X; kw...) = errlight("schema")
 
 Return true if `X` is tabular.
 """
-istable(X) = istable(get_interface_mode(), vtrait(X))
+function istable(X)
+    m = get_interface_mode()
+    return istable(m, vtrait(m, X, "istable"))
+end
 
 istable(::Mode, ::Val{:other}) = false
 
@@ -166,18 +195,29 @@ A callable object for decoding the integer representation of a
 `d(int(y)) == y` for all `y in classes(x)`. One can also call `d` on
 integer arrays, in which case `d` is broadcast over all elements.
 
-    julia> v = categorical([:c, :b, :c, :a])
-    julia> int(v)
-    4-element Array{UInt32,1}:
-     0x00000003
-     0x00000002
-     0x00000003
-     0x00000001
-    julia> d = decoder(v[3])
-    julia> d(int(v)) == v
-    true
+```julia
+julia> v = categorical(["c", "b", "c", "a"])
+4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "c"
+ "b"
+ "c"
+ "a"
 
-*Warning:* It is *not* true that `int(d(u)) == u` always holds.
+julia> int(v)
+4-element Vector{UInt32}:
+ 0x00000003
+ 0x00000002
+ 0x00000003
+ 0x00000001
+
+julia> d = decoder(v[3]);
+
+julia> d(int(v)) == v
+true
+```
+### Warning:
+
+It is *not* true that `int(d(u)) == u` always holds.
 
 See also: [`int`](@ref), [`classes`](@ref).
 """
@@ -217,17 +257,30 @@ table(::LightInterface, X; kw...) = errlight("table")
 """
     nrows(X)
 
-Return the number of rows for a table, abstract vector or matrix `X`.
+return the number of rows for a table, abstractvector or abtractmatrix, `X`.
 """
-nrows(X) = nrows(get_interface_mode(), vtrait(X), X)
+function nrows(X)
+    m = get_interface_mode()
+    return nrows(m, vtrait(m, X, "nrows"), X)
+end
 
-nrows(::Mode, ::Val{:other}, X::AbstractVecOrMat) = size(X, 1)
-nrows(::Mode, ::Val{:other}, X::Nothing) = 0
+nrows(::Nothing) = 0
 
-nrows(::Mode, ::Val{:other}, X) =
-    throw(ArgumentError("Function `nrows` only supports AbstractVector or " *
-                        "AbstractMatrix or containers implementing the " *
-                        "Tables interface."))
+nrows(m::Mode, v, X) = _nrows(m, v, X)
+nrows(::LightInterface, v, X) = errlight("table")
+
+_nrows(::Mode, ::Val{:other}, X::AbstractVecOrMat) = size(X, 1)
+_nrows(::Mode, ::Val{:other}, X::Nothing) = 0
+
+function _nrows(::Mode, ::Val{:other}, X)
+    throw(
+        ArgumentError(
+            "`nrows` method only supports AbstractVector or " *
+            "AbstractMatrix or containers implementing the " *
+            "Tables interface."
+        )
+    )
+end
 
 nrows(::LightInterface, ::Val{:table}, X) = errlight("table")
 
@@ -243,21 +296,30 @@ If the object is neither a table, abstract vector or matrix, `X` is
 returned and `r` is ignored.
 
 """
-selectrows(X, r) = selectrows(get_interface_mode(), vtrait(X), X, r)
+function selectrows end
+
+function selectrows(X, r)
+    m = get_interface_mode()
+    return selectrows(m, vtrait(m, X, "selectrows"), X, r)
+end
+
+selectrows(::Nothing, r) = nothing
+selectrows(m::Mode, v, X, r) = _selectrows(m, v, X, r)
+selectrows(::LightInterface, v, X, r) = errlight("selectrows")
 
 # fall-back is to return object, ignoring vector of row indices, `r`:
-selectrows(::Mode, ::Val{:other}, X::Any, r) = X
+_selectrows(::Mode, ::Val{:other}, X::Any, r) = X
 
-selectrows(::Mode, ::Val{:other}, X::AbstractVector, r)          = X[r]
-selectrows(::Mode, ::Val{:other}, X::AbstractVector, r::Integer) = X[r:r]
-selectrows(::Mode, ::Val{:other}, X::AbstractVector, ::Colon)    = X
+_selectrows(::Mode, ::Val{:other}, X::AbstractVector, r) = X[r]
+_selectrows(::Mode, ::Val{:other}, X::AbstractVector, r::Integer) = X[r:r]
+_selectrows(::Mode, ::Val{:other}, X::AbstractVector, ::Colon) = X
 
-selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r)          = X[r, :]
-selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r::Integer) = X[r:r, :]
-selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, ::Colon)    = X
+_selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r) = X[r, :]
+_selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, r::Integer) = X[r:r, :]
+_selectrows(::Mode, ::Val{:other}, X::AbstractMatrix, ::Colon) = X
 
-selectrows(::LightInterface, ::Val{:table}, X, r; kw...) =
-    errlight("selectrows")
+# The following method maybe called by `select`
+_selectrows(::Mode, ::Val{:other}, ::Nothing, r) = nothing
 
 """
     selectcols(X, c)
@@ -268,39 +330,71 @@ is a table of the preferred sink type of `typeof(X)`. If `c` is a
 *single* integer or column, then an `AbstractVector` is returned.
 
 """
-selectcols(X, c) = selectcols(get_interface_mode(), vtrait(X), X, c)
+function selectcols end
 
-selectcols(::Mode, ::Val{:other}, ::Nothing, c) = nothing
+function selectcols(X, c)
+    m = get_interface_mode()
+    return selectcols(m, vtrait(m, X, "selectcols"), X, c)
+end
 
-selectcols(::Mode, ::Val{:other}, X::AbstractMatrix, r)       = X[:, r]
-selectcols(::Mode, ::Val{:other}, X::AbstractMatrix, ::Colon) = X
+selectcols(::Nothing, c) = nothing
+selectcols(m::Mode, v, X, r) = _selectcols(m, v, X, r)
+selectcols(::LightInterface, v, X, c) = errlight("selectcols")
 
-selectcols(::Mode, ::Val{:other}, X, r) =
-    throw(ArgumentError("Function `selectcols` only supports AbstractMatrix " *
-                        "or containers implementing the Tables interface."))
+_selectcols(::Mode, ::Val{:other}, X::AbstractMatrix, r) = X[:, r]
+_selectcols(::Mode, ::Val{:other}, X::AbstractMatrix, ::Colon) = X
+_selectcols(::Mode, ::Val{:other}, ::Nothing, r) = nothing
 
-selectcols(::LightInterface, ::Val{:table}, X, c; kw...) =
-    errlight("selectcols")
+function _selectcols(::Mode, ::Val{:other}, X, r)
+    throw(
+        ArgumentError(
+            "`selectcols` method only supports AbstractMatrix " *
+            "or containers implementing the Tables interface."
+        )
+    )
+end
 
 """
     select(X, r, c)
 
-Select element(s) of a table or matrix at row(s) r and column(s) c. An object
-of the sink type of X (or a matrix) is returned unless c is a single integer or
-symbol. In that case a vector is returned, unless r is a single integer, in
+Select element(s) of a table or matrix at row(s) `r` and column(s) `c`. An object
+of the sink type of `X` (or a matrix) is returned unless `c` is a single integer or
+symbol. In that case a vector is returned, unless `r` is a single integer, in
 which case a single element is returned.
 
 See also: [`selectrows`](@ref), [`selectcols`](@ref).
 """
-select(X, r, c) = select(get_interface_mode(), vtrait(X), X, r, c)
+function select end
+
+function select(X, r, c) 
+    m = get_interface_mode()
+    return select(m, vtrait(m, X, "select"), X, r, c)
+end
+
+select(::Nothing, r, c) = nothing
 
 # only used here to denote "group of indices"
-const MIdx = Union{AbstractArray,Colon}
 
-select(::Mode, ::Val, X, r::MIdx, c)       = selectcols(selectrows(X, r), c)
-select(::Mode, ::Val, X, r, c::MIdx)       = selectcols(selectrows(X, r), c)
-select(::Mode, ::Val, X, r::MIdx, c::MIdx) = selectcols(selectrows(X, r), c)
-select(::Mode, ::Val, X, r, c) = _squeeze(selectcols(selectrows(X, r), c))
+const MIdx = Union{AbstractArray, Colon}
+select(m::Mode, v::Val, X, r, c) = _select(m, v, X, r, c)
+select(m::LightInterface, v::Val, X, r, c) = errlight("select")
+
+_select(m, v::Val{:table}, X, r, c) = __select(m, v, X, r, c)
+_select(m, v::Val{:other}, X::AbstractMatrix, r, c) = __select(m, v, X, r, c)
+
+__select(m::Mode, v::Val, X, r::MIdx, c) = selectcols(m, v, selectrows(m, v, X, r), c)
+__select(m::Mode, v::Val, X, r, c::MIdx) = selectcols(m, v, selectrows(m, v, X, r), c)
+__select(m::Mode, v::Val, X, r::MIdx, c::MIdx) = selectcols(m, v, selectrows(m, v, X, r), c)
+__select(m::Mode, v::Val, X, r, c) = _squeeze(selectcols(m, v, selectrows(m, v, X, r), c))
+
+function _select(m, ::Val{:other}, X, r, c)
+    throw(
+        ArgumentError(
+            "`select` method only supports AbstractMatrix " *
+            "or containers implementing the Tables interface."
+        )
+    )
+end
 
 _squeeze(::Nothing) = nothing
 _squeeze(v) = first(v)
@@ -309,138 +403,165 @@ _squeeze(v) = first(v)
 # UnivariateFinite
 
 const UNIVARIATE_FINITE_DOCSTRING =
-"""
-    UnivariateFinite(support,
-                     probs;
-                     pool=nothing,
-                     augmented=false,
-                     ordered=false)
+    """
+        UnivariateFinite(
+            support,
+            probs;
+            pool=nothing,
+            augmented=false,
+            ordered=false
+        )
 
-Construct a discrete univariate distribution whose finite support is
-the elements of the vector `support`, and whose corresponding
-probabilities are elements of the vector `probs`. Alternatively,
-construct an abstract *array* of `UnivariateFinite` distributions by
-choosing `probs` to be an array of one higher dimension than the array
-generated.
+    Construct a discrete univariate distribution whose finite support is
+    the elements of the vector `support`, and whose corresponding
+    probabilities are elements of the vector `probs`. Alternatively,
+    construct an abstract *array* of `UnivariateFinite` distributions by
+    choosing `probs` to be an array of one higher dimension than the array
+    generated.
 
-Here the word "probabilities" is an abuse of terminology as there is
-no requirement that probabilities actually sum to one, only that they
-be non-negative. So `UnivariateFinite` objects actually implement
-arbitrary non-negative measures over finite sets of labelled points. A
-`UnivariateDistribution` will be a bona fide probability measure when
-constructed using the `augment=true` option (see below) or when
-`fit` to data.
+    Here the word "probabilities" is an abuse of terminology as there is
+    no requirement that probabilities actually sum to one, only that they
+    be non-negative. So `UnivariateFinite` objects actually implement
+    arbitrary non-negative measures over finite sets of labelled points. A
+    `UnivariateDistribution` will be a bona fide probability measure when
+    constructed using the `augment=true` option (see below) or when
+    `fit` to data.
 
-Unless `pool` is specified, `support` should have type
- `AbstractVector{<:CategoricalValue}` and all elements are assumed to
- share the same categorical pool, which may be larger than `support`.
+    Unless `pool` is specified, `support` should have type
+    `AbstractVector{<:CategoricalValue}` and all elements are assumed to
+    share the same categorical pool, which may be larger than `support`.
 
-*Important.* All levels of the common pool have associated
-probabilities, not just those in the specified `support`. However,
-these probabilities are always zero (see example below).
+    *Important.* All levels of the common pool have associated
+    probabilities, not just those in the specified `support`. However,
+    these probabilities are always zero (see example below).
 
-If `probs` is a matrix, it should have a column for each class in
-`support` (or one less, if `augment=true`). More generally, `probs`
-will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
-where `c = length(support)` (or one less, if `augment=true`) and the
-constructor then returns an array of `UnivariateFinite` distributions
-of size `(n1, n2, ..., nk)`.
+    If `probs` is a matrix, it should have a column for each class in
+    `support` (or one less, if `augment=true`). More generally, `probs`
+    will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
+    where `c = length(support)` (or one less, if `augment=true`) and the
+    constructor then returns an array of `UnivariateFinite` distributions
+    of size `(n1, n2, ..., nk)`.
 
-```
-using CategoricalArrays
-v = categorical([:x, :x, :y, :x, :z])
+    ## Examples
 
-julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
-UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
+    ```julia
+    julia> v = categorical(["x", "x", "y", "x", "z"])
+    5-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+     "x"
+     "x"
+     "y"
+     "x"
+     "z"
 
-julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
-UnivariateFinite{Multiclass{3}(x=>0.1, z=>0.9)
+    julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
+    UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
 
-julia> rand(d, 3)
-3-element Array{Any,1}:
- CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
- CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
- CategoricalArrays.CategoricalValue{Symbol,UInt32} :z
+    julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
+    UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
 
-julia> levels(d)
-3-element Array{Symbol,1}:
- :x
- :y
- :z
+    julia> rand(d, 3)
+    3-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+     "x"
+     "z"
+     "x"
 
-julia> pdf(d, :y)
-0.0
-```
+    julia> levels(d)
+    3-element Vector{String}:
+     "x"
+     "y"
+     "z"
 
-### Specifying a pool
+    julia> pdf(d, "y")
+    0.0
 
-Alternatively, `support` may be a list of raw (non-categorical)
-elements if `pool` is:
+    ```
 
-- some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
-  such that `support` is a subset of `levels(pool)`
+    ### Specifying a pool
 
-- `missing`, in which case a new categorical pool is created which has
-  `support` as its only levels.
+    Alternatively, `support` may be a list of raw (non-categorical)
+    elements if `pool` is:
 
-In the last case, specify `ordered=true` if the pool is to be
-considered ordered.
+    - some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
+    such that `support` is a subset of `levels(pool)`
 
-```
-julia> UnivariateFinite([:x, :z], [0.1, 0.9], pool=missing, ordered=true)
-UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
+    - `missing`, in which case a new categorical pool is created which has
+    `support` as its only levels.
 
-julia> d = UnivariateFinite([:x, :z], [0.1, 0.9], pool=v) # v defined above
-UnivariateFinite(x=>0.1, z=>0.9) (Multiclass{3} samples)
+    In the last case, specify `ordered=true` if the pool is to be
+    considered ordered.
 
-julia> pdf(d, :y) # allowed as `:y in levels(v)`
-0.0
+    ```julia
+    julia> UnivariateFinite(["x", "z"], [0.1, 0.9], pool=missing, ordered=true)
+    UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
 
-v = categorical([:x, :x, :y, :x, :z, :w])
-probs = rand(100, 3)
-probs = probs ./ sum(probs, dims=2)
-julia> UnivariateFinite([:x, :y, :z], probs, pool=v)
-100-element UnivariateFiniteVector{Multiclass{4},Symbol,UInt32,Float64}:
- UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
- UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
- UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
-   ⋮
- UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
-```
+    julia> d = UnivariateFinite(["x", "z"], [0.1, 0.9], pool=v) # v defined above
+    UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
 
-### Probability augmentation
+    julia> pdf(d, "y") # allowed as `"y" in levels(v)`
+    0.0
 
-If `augment=true` the provided array is augmented by inserting
-appropriate elements *ahead* of those provided, along the last
-dimension of the array. This means the user only provides probabilities
-for the classes `c2, c3, ..., cn`. The class `c1` probabilities are
-chosen so that each `UnivariateFinite` distribution in the returned
-array is a bona fide probability distribution.
+    julia> v = categorical(["x", "x", "y", "x", "z", "w"])
+    6-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+     "x"
+     "x"
+     "y"
+     "x"
+     "z"
+     "w"
 
----
+    julia> probs = rand(100, 3); probs = probs ./ sum(probs, dims=2);
 
-    UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
+    julia> UnivariateFinite(["x", "y", "z"], probs, pool=v)
+    100-element UnivariateFiniteVector{Multiclass{4}, String, UInt32, Float64}:
+     UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
+     UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
+     UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
+     ⋮
+     UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
+    ```
 
-Construct a discrete univariate distribution whose finite support is
-the set of keys of the provided dictionary, `prob_given_class`, and
-whose values specify the corresponding probabilities.
+    ### Probability augmentation
 
-The type requirements on the keys of the dictionary are the same as
-the elements of `support` given above with this exception: if
-non-categorical elements (raw labels) are used as keys, then
-`pool=...` must be specified and cannot be `missing`.
+    If `augment=true` the provided array is augmented by inserting
+    appropriate elements *ahead* of those provided, along the last
+    dimension of the array. This means the user only provides probabilities
+    for the classes `c2, c3, ..., cn`. The class `c1` probabilities are
+    chosen so that each `UnivariateFinite` distribution in the returned
+    array is a bona fide probability distribution.
 
-If the values (probabilities) are arrays instead of scalars, then an
-abstract array of `UnivariateFinite` elements is created, with the
-same size as the array.
+    ---
 
-"""
-UNIVARIATE_FINITE_DOCSTRING
-UnivariateFinite(d::AbstractDict; kwargs...) =
-    UnivariateFinite(get_interface_mode(), d; kwargs...)
-UnivariateFinite(support::AbstractVector, probs; kwargs...) =
-    UnivariateFinite(get_interface_mode(), support, probs; kwargs...)
-UnivariateFinite(probs; kwargs...) =
-    UnivariateFinite(get_interface_mode(), probs; kwargs...)
-UnivariateFinite(::LightInterface, a...; kwargs...) =
-    errlight("UnivariateFinite")
+        UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
+
+    Construct a discrete univariate distribution whose finite support is
+    the set of keys of the provided dictionary, `prob_given_class`, and
+    whose values specify the corresponding probabilities.
+
+    The type requirements on the keys of the dictionary are the same as
+    the elements of `support` given above with this exception: if
+    non-categorical elements (raw labels) are used as keys, then
+    `pool=...` must be specified and cannot be `missing`.
+
+    If the values (probabilities) are arrays instead of scalars, then an
+    abstract array of `UnivariateFinite` elements is created, with the
+    same size as the array.
+
+    """
+
+@doc UNIVARIATE_FINITE_DOCSTRING
+function UnivariateFinite(d::AbstractDict; kwargs...)
+    return UnivariateFinite(get_interface_mode(), d; kwargs...)
+end
+
+function UnivariateFinite(support::AbstractVector, probs; kwargs...)
+    return UnivariateFinite(get_interface_mode(), support, probs; kwargs...)
+end
+
+function UnivariateFinite(probs; kwargs...)
+    return UnivariateFinite(get_interface_mode(), probs; kwargs...)
+end
+
+function UnivariateFinite(::LightInterface, a...; kwargs...)
+    return errlight("UnivariateFinite")
+end
+

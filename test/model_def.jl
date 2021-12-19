@@ -11,7 +11,7 @@ end
             warn *= "Field a is negative, resetting to 5."
             a.f0 = 5
         end
-    return warn
+        return warn
     end
     a = A0(-2)
     @test clean!(a) == "Field a is negative, resetting to 5."

@@ -24,8 +24,8 @@ the specified type expression is evaluated in the module `modl`.
 
  """
 function _process_model_def(modl, ex)
-    defaults = Dict{Symbol,Any}()
-    constraints = Dict{Symbol,Any}()
+    defaults = Dict{Symbol, Any}()
+    constraints = Dict{Symbol, Any}()
     modelname = ex.args[2] isa Symbol ? ex.args[2] : ex.args[2].args[1]
     params = Symbol[]
 
@@ -47,15 +47,16 @@ function _process_model_def(modl, ex)
             #
             # where line.args[1] will either be just `name`  or `name::Type`
             # and   line.args[2] will either be just `value` or `value::constraint`
-            # ---------------------------------------------------------
+            # -----------------------------------------------------------------------------
             # 1. decompose `line.args[1]` appropriately (name and type)
             if line.args[1] isa Symbol # case :a
                 param = line.args[1]
                 type  = length(line.args) > 1 ? line.args[2] : :Any
-            else                       # case :(a::Int)
+            else # case :(a::Int)
                 param, type = line.args[1].args[1:2] # (:a, Int)
             end
             push!(params, param)
+            
             # ------------------------------------------------------------------
             # 2. decompose `line.args[2]` appropriately (values and constraints)
             if line.head == :(=) # assignment for default
@@ -66,25 +67,31 @@ function _process_model_def(modl, ex)
                     # now discard the constraint to keep only the value
                     default = default.args[1]
                 end
-                defaults[param]    = default       # this will be a value not an expr
-                ex.args[3].args[i] = line.args[1]  # name or name::Type (for the constructor)
+                defaults[param] = default # this will be a value not an expr
+
+                # name or name::Type (for the constructor)
+                ex.args[3].args[i] = line.args[1] 
             else
                 # these are simple heuristics when no default value is given for the
-                # field but an "obvious" one can be provided implicitly (ideally this should
-                # not be used as it's not very clear that the intention matches the usage)
+                # field but an "obvious" one can be provided implicitly 
+                # (ideally this should not be used as it's not very clear
+                # that the intention matches the usage)
                 eff_type = modl.eval(type)
                 if eff_type <: Number
                     defaults[param] = zero(eff_type)
                 elseif eff_type <: AbstractString
                     defaults[param] = ""
-                elseif eff_type == Any         # e.g. Any or no type given
+                elseif eff_type == Any  # e.g. Any or no type given
                     defaults[param] = missing
-                elseif eff_type >: Nothing     # e.g. Union{Nothing, ...}
+                elseif eff_type >: Nothing # e.g. Union{Nothing, ...}
                     defaults[param] = nothing
-                elseif eff_type >: Missing     # e.g. Union{Missing, ...} (unlikely)
+                elseif eff_type >: Missing  # e.g. Union{Missing, ...} (unlikely)
                     defaults[param] = missing
                 else
-                    @error "A default value for parameter '$param' (type '$type') must be given"
+                    @error(
+                        "A default value for parameter"*
+                        " '$param' (type '$type') must be given"
+                    )
                 end
             end
         end
@@ -123,15 +130,22 @@ definition. When the constructor is called, the `clean!` function is called
 as well to check that parameter assignments are valid.
 """
 function _model_constructor(modelname, params, defaults)
-    Expr(:function, Expr(:call, modelname, Expr(:parameters, (Expr(:kw, p, defaults[p]) for p in params)...)),
+    Expr(
+        :function,
+        Expr(
+            :call,
+            modelname,
+            Expr(:parameters, (Expr(:kw, p, defaults[p]) for p in params)...)
+        ),
         # body of the function
-        Expr(:block,
-             Expr(:(=), :model, Expr(:call, :new, params...)),
-             :(message = MLJModelInterface.clean!(model)),
-			 :(isempty(message) || @warn message),
-			 :(return model)
-			 )
-	 	)
+        Expr(
+            :block,
+            Expr(:(=), :model, Expr(:call, :new, params...)),
+            :(message = MLJModelInterface.clean!(model)),
+			:(isempty(message) || @warn message),
+			:(return model)
+		)
+	)
 end
 
 
@@ -142,29 +156,42 @@ Build the expression of the cleaner associated with the constraints specified
 in a model def.
 """
 function _model_cleaner(modelname, defaults, constraints)
-    Expr(:function, :(MLJModelInterface.clean!(model::$modelname)),
+    Expr(
+        :function,
+        :(MLJModelInterface.clean!(model::$modelname)),
         # body of the function
-        Expr(:block,
-             :(warning = ""),
-             # condition and action for each constraint
-             # each parameter is given as field::Type = default::constraint
-             # here we recuperate the constraint and express it as an if statement
-             # for instance if we had
-             #     alpha::Real = 0.0::(arg > 0.0)
-             # this would become
-             #     if !(alpha > 0.0)
-             (Expr(:if, Expr(:call, :!, _unpack!(constr, :(model.$param))),
+        Expr(
+            :block,
+            :(warning = ""),
+            # condition and action for each constraint
+            # each parameter is given as field::Type = default::constraint
+            # here we recuperate the constraint and express it as an if statement
+            # for instance if we had
+            #     alpha::Real = 0.0::(arg > 0.0)
+            # this would become
+            #     if !(alpha > 0.0)
+            (
+                Expr(
+                    :if,
+                    Expr(:call, :!, _unpack!(constr, :(model.$param))),
                    # action of the constraint is violated:
                    # add a message and use default for the parameter
-                   Expr(:block,
-                        :(warning *= $("Constraint `$constr` failed; using default: $param=$(defaults[param]).")),
-                        :(model.$param = $(defaults[param]))
-                        )
-                   ) for (param, constr) in constraints)...,
-             # return full message
-             :(return warning)
-            )
+                   Expr(
+                       :block,
+                       :(
+                           warning *= $(
+                               "Constraint `$constr` failed; "*
+                               "using default: $param=$(defaults[param])."
+                           )
+                        ),
+                       :(model.$param = $(defaults[param]))
+                    )
+                ) for (param, constr) in constraints
+            )...,
+            # return full message
+            :(return warning)
         )
+    )
 end
 
 """

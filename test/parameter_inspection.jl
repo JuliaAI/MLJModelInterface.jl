@@ -23,9 +23,13 @@ end
     t= Transparent(6, Opaque(5))
     m = Dummy(t, Opaque(7), 42)
 
-    @test params(m) == (t = (A = 6,
-                             B = Opaque(5)),
-                        o = Opaque(7),
-                        n = 42)
+    @test params(m) == (
+        t = (
+            A = 6,
+            B = Opaque(5)
+        ),
+        o = Opaque(7),
+        n = 42
+    )
 end
 true

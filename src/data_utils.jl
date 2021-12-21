@@ -257,7 +257,7 @@ table(::LightInterface, X; kw...) = errlight("table")
 """
     nrows(X)
 
-return the number of rows for a table, abstractvector or abtractmatrix, `X`.
+Return the number of rows for a table, `AbstractVector` or `AbtractMatrix`, `X`.
 """
 function nrows(X)
     m = get_interface_mode()

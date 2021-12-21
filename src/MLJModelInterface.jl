@@ -1,7 +1,7 @@
 module MLJModelInterface
 
-const MODEL_TRAITS =
-    [:input_scitype,
+const MODEL_TRAITS = [
+    :input_scitype,
     :output_scitype,
     :target_scitype,
     :fit_data_scitype,
@@ -29,25 +29,27 @@ const MODEL_TRAITS =
     :hyperparameter_ranges,
     :iteration_parameter,
     :supports_training_losses,
-    :deep_properties]
+    :deep_properties
+]
 
-const ABSTRACT_MODEL_SUBTYPES =
-    [:Supervised,
-     :Unsupervised,
-     :Probabilistic,
-     :Deterministic,
-     :Interval,
-     :JointProbabilistic,
-     :Static,
-     :Annotator,
-     :SupervisedAnnotator,
-     :UnsupervisedAnnotator,
-     :SupervisedDetector,
-     :UnsupervisedDetector,
-     :ProbabilisticSupervisedDetector,
-     :ProbabilisticUnsupervisedDetector,
-     :DeterministicSupervisedDetector,
-     :DeterministicUnsupervisedDetector]
+const ABSTRACT_MODEL_SUBTYPES = [
+    :Supervised,
+    :Unsupervised,
+    :Probabilistic,
+    :Deterministic,
+    :Interval,
+    :JointProbabilistic,
+    :Static,
+    :Annotator,
+    :SupervisedAnnotator,
+    :UnsupervisedAnnotator,
+    :SupervisedDetector,
+    :UnsupervisedDetector,
+    :ProbabilisticSupervisedDetector,
+    :ProbabilisticUnsupervisedDetector,
+    :DeterministicSupervisedDetector,
+    :DeterministicUnsupervisedDetector
+]
 
 
 # ------------------------------------------------------------------------
@@ -55,6 +57,8 @@ const ABSTRACT_MODEL_SUBTYPES =
 using ScientificTypesBase
 using StatisticalTraits
 using Random
+
+import StatisticalTraits: info
 
 # ------------------------------------------------------------------------
 # exports
@@ -64,6 +68,7 @@ export LightInterface, FullInterface
 
 # model types
 export MLJType, Model
+
 for T in ABSTRACT_MODEL_SUBTYPES
     @eval(export $T)
 end
@@ -89,29 +94,29 @@ end
 
 # data operations
 export matrix, int, classes, decoder, table,
-       nrows, selectrows, selectcols, select
+    nrows, selectrows, selectcols, select, info
 
 # equality
 export is_same_except, isrepresented
 
 # re-exports from ScientificTypesBase
 export Scientific, Found, Unknown, Known, Finite, Infinite,
-       OrderedFactor, Multiclass, Count, Continuous, Textual,
-       Binary, ColorImage, GrayImage, Image, Table
-export scitype, scitype_union, elscitype, nonmissing, trait, info
+    OrderedFactor, Multiclass, Count, Continuous, Textual,
+    Binary, ColorImage, GrayImage, Image, Table, nonmissing
 
 # ------------------------------------------------------------------------
 # To be extended
 
 import Base.==
 import Base: in, isequal
-#
+
 # ------------------------------------------------------------------------
 # Mode trick
 
-abstract type Mode end
-struct LightInterface <: Mode end
-struct FullInterface  <: Mode end
+struct LightInterface end
+struct FullInterface end
+
+const Mode = Union{LightInterface, FullInterface}
 
 const INTERFACE_MODE = Ref{Mode}(LightInterface())
 
@@ -124,33 +129,33 @@ struct InterfaceError <: Exception
 end
 
 abstract type MLJType end
-abstract type Model   <: MLJType end
+abstract type Model <: MLJType end
 
 # ------------------------------------------------------------------------
 # Model subtypes
 
-abstract type          Supervised <: Model end
-abstract type        Unsupervised <: Model end
-abstract type           Annotator <: Model end
+abstract type Supervised <: Model end
+abstract type Unsupervised <: Model end
+abstract type Annotator <: Model end
 
 abstract type Probabilistic <: Supervised end
 abstract type Deterministic <: Supervised end
-abstract type      Interval <: Supervised end
+abstract type Interval <: Supervised end
 
 abstract type JointProbabilistic <: Probabilistic end
 
-abstract type Static                <: Unsupervised end
+abstract type Static <: Unsupervised end
 
-abstract type SupervisedAnnotator   <: Annotator end
+abstract type SupervisedAnnotator <: Annotator end
 abstract type UnsupervisedAnnotator <: Annotator end
 
 abstract type UnsupervisedDetector <: UnsupervisedAnnotator end
-abstract type SupervisedDetector   <: SupervisedAnnotator end
+abstract type SupervisedDetector <: SupervisedAnnotator end
 
-abstract type ProbabilisticSupervisedDetector   <: SupervisedDetector end
+abstract type ProbabilisticSupervisedDetector <: SupervisedDetector end
 abstract type ProbabilisticUnsupervisedDetector <: UnsupervisedDetector end
 
-abstract type DeterministicSupervisedDetector   <: SupervisedDetector end
+abstract type DeterministicSupervisedDetector <: SupervisedDetector end
 abstract type DeterministicUnsupervisedDetector <: UnsupervisedDetector end
 
 # ------------------------------------------------------------------------
@@ -163,6 +168,5 @@ include("model_traits.jl")
 include("model_def.jl")
 include("model_api.jl")
 include("equality.jl")
-
 
 end # module

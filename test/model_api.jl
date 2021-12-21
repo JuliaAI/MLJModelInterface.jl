@@ -43,10 +43,9 @@ struct DummyUnivariateFinite end
 mutable struct UnivariateFiniteFitter <: Probabilistic end
 
 @testset "models fitting a distribution to data" begin
+    MMI = MLJModelInterface
 
-    function MLJModelInterface.fit(model::UnivariateFiniteFitter,
-                                   verbosity::Int, X, y)
-
+    function MMI.fit(model::UnivariateFiniteFitter, verbosity::Int, X, y)
         fitresult = DummyUnivariateFinite()
         report = nothing
         cache = nothing
@@ -56,22 +55,21 @@ mutable struct UnivariateFiniteFitter <: Probabilistic end
         return fitresult, cache, report
     end
 
-    MLJModelInterface.predict(model::UnivariateFiniteFitter,
-                          fitresult,
-                          X) = fill(fitresult, length(X))
+    function MMI.predict(model::UnivariateFiniteFitter, fitresult, X)
+        return fill(fitresult, length(X))
+    end
 
-    MLJModelInterface.input_scitype(::Type{<:UnivariateFiniteFitter}) =
-        Nothing
-    MLJModelInterface.target_scitype(::Type{<:UnivariateFiniteFitter}) =
-        AbstractVector{<:Finite}
+    MMI.input_scitype(::Type{<:UnivariateFiniteFitter}) = Nothing
+    
+    MMI.target_scitype(::Type{<:UnivariateFiniteFitter}) = AbstractVector{<:Finite}
 
-    y =categorical(collect("aabbccaa"))
+    y = categorical(collect("aabbccaa"))
     X = nothing
     model = UnivariateFiniteFitter()
-    fitresult, cache, report = MLJModelInterface.fit(model, 1, X, y)
+    fitresult, cache, report = MMI.fit(model, 1, X, y)
 
-    @test cache == nothing
-    @test report == nothing
+    @test cache === nothing
+    @test report === nothing
 
     ytest = y[1:3]
     yhat = predict(model, fitresult, fill(nothing, 3))

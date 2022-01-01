@@ -55,6 +55,7 @@ const ABSTRACT_MODEL_SUBTYPES = [
 # ------------------------------------------------------------------------
 # Dependencies
 using ScientificTypesBase
+import ScientificTypesBase.scitype
 using StatisticalTraits
 using Random
 
@@ -101,7 +102,8 @@ export is_same_except, isrepresented
 # re-exports from ScientificTypesBase
 export Scientific, Found, Unknown, Known, Finite, Infinite,
     OrderedFactor, Multiclass, Count, Continuous, Textual,
-    Binary, ColorImage, GrayImage, Image, Table, nonmissing
+    Binary, ColorImage, GrayImage, Image, Table, nonmissing,
+    scitype
 
 # ------------------------------------------------------------------------
 # To be extended

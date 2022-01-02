@@ -93,7 +93,7 @@ end
 
 # data operations
 export matrix, int, classes, decoder, table,
-    nrows, selectrows, selectcols, select, info
+    nrows, selectrows, selectcols, select, info, scitype
 
 # equality
 export is_same_except, isrepresented

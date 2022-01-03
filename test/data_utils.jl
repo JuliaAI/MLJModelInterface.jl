@@ -3,12 +3,14 @@
     x = 1:5
     @test_throws M.InterfaceError M.categorical(x)
 end
+
 @testset "cat-full" begin
     setfull()
     M.categorical(::FI, a...; kw...) = categorical(a...; kw...)
     x = 1:5
     @test M.categorical(x) == categorical(x)
 end
+
 # ------------------------------------------------------------------------
 @testset "matrix-light" begin
     setlight()
@@ -25,18 +27,21 @@ end
     X = (a=[1, 2, 3], b=[1, 2, 3])
     @test_throws M.InterfaceError matrix(X)
 end
+
 @testset "matrix-full" begin
     setfull()
     M.matrix(::FI, ::Val{:table}, X; kw...) = Tables.matrix(X; kw...)
     X = (a=[1, 2, 3], b=[1, 2, 3])
     @test matrix(X) == hcat([1, 2, 3], [1, 2, 3])
 end
+
 # ------------------------------------------------------------------------
 @testset "int-light" begin
     setlight()
     x = categorical([1, 2, 3])
     @test_throws M.InterfaceError int(x)
 end
+
 @testset "int-full" begin
     setfull()
     M.int(::FI, x::CategoricalValue) = CategoricalArrays.refcode(x)
@@ -61,6 +66,31 @@ end
     x = categorical(['a','b','a'])
     @test classes(x[1]) == ['a', 'b']
 end
+
+# ------------------------------------------------------------------------
+@testset "scitype-light" begin
+    # throw error for any input anyway
+    setlight()
+
+    ary = rand(10, 3)
+    @test_throws M.InterfaceError M.scitype(ary)
+
+    df = DataFrame(rand(10, 3), :auto)
+    @test_throws M.InterfaceError M.scitype(df)
+end
+
+@testset "scitype-full" begin
+    setfull()
+    M.scitype(::FI, v, X) = ScientificTypes.scitype(X)
+
+    ary = rand(10, 3)
+    @test M.scitype(ary) == AbstractArray{Continuous, 2}
+
+    df = DataFrame(A = rand(10), B = categorical(rand('a':'c', 10)))
+    sch = M.scitype(df)
+    @test sch <: Table(Continuous, Multiclass)
+end
+
 # ------------------------------------------------------------------------
 @testset "schema-light" begin
     # throw error for any input anyway
@@ -70,14 +100,14 @@ end
     df = DataFrame(rand(10, 3), :auto)
     @test_throws M.InterfaceError M.schema(df)
 end
+
 @testset "schema-full" begin
     setfull()
-    ary = rand(10, 3)
-    M.schema(::FI, ::Val{:table}, X; kw...) =
-        ScientificTypes.schema(X; kw...)
-    M.schema(::FI, ::Val{:other}, X; kw...) = nothing
+    M.schema(::FI, v, X) = ScientificTypes.schema(X)
 
-    @test M.schema(ary) === nothing 
+    ary = rand(10, 3)
+    @test_throws ArgumentError M.schema(ary)
+
     df = DataFrame(A = rand(10), B = categorical(rand('a':'c', 10)))
     sch = M.schema(df)
     @test sch.names == (:A, :B)
@@ -86,6 +116,7 @@ end
     @test sch.scitypes[1] <: Continuous
     @test sch.scitypes[2] <: Multiclass
 end
+
 # ------------------------------------------------------------------------
 @testset "istable" begin
     # Nothing stops someone from implementing a Tables.jl
@@ -106,24 +137,28 @@ end
     X = DataFrame(A=rand(10))
     @test M.istable(X)
 end
+
 # ------------------------------------------------------------------------
 @testset "decoder-light" begin
     setlight()
     x = 5
     @test_throws M.InterfaceError decoder(x)
 end
+
 @testset "decoder-full" begin
     setfull()
     # toy test because I don't want to copy the decoder logic here
     M.decoder(::FI, x) = 0
     @test decoder(nothing) == 0
 end
+
 # ------------------------------------------------------------------------
 @testset "table-light" begin
     setlight()
     X = ones(3, 2)
     @test_throws M.InterfaceError table(X)
 end
+
 @testset "table-full" begin
     setfull()
     function M.table(::FI, A::AbstractMatrix; names=nothing)
@@ -135,6 +170,7 @@ end
     @test Tables.istable(T)
     @test Tables.matrix(T) == X
 end
+
 # ------------------------------------------------------------------------
 @testset "nrows-light" begin
     setlight()
@@ -142,6 +178,7 @@ end
     @test_throws M.InterfaceError nrows(X)
     @test nrows(nothing) == 0
 end
+
 @testset "nrows-full" begin
     setfull()
     X = ones(5)
@@ -157,6 +194,7 @@ end
     X = (a=[4, 2, 1], b=[3, 2, 1])
     @test nrows(X) == 3
 end
+
 # ------------------------------------------------------------------------
 @testset "select-light" begin
     setlight()
@@ -179,6 +217,7 @@ end
     @test_throws M.InterfaceError selectcols(X, 1)
     @test_throws M.InterfaceError select(X, 1, 1)
 end
+
 @testset "select-full" begin
     setfull()
    

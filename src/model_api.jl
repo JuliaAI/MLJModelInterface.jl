@@ -18,8 +18,8 @@ fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
 # fallback for unsupervised annotators when labels or weights appear:
 # this is useful for evaluation and mixed composite models that combine
 # both supervised and unsupervised annotators
-fit(m::UnsupervisedAnnotator, verbosity, X, y) =  fit(m, verbosity, X)
-fit(m::UnsupervisedAnnotator, verbosity, X, y, w) =  fit(m, verbosity, X)
+fit(m::UnsupervisedAnnotator, verbosity, X, y) = fit(m, verbosity, X)
+fit(m::UnsupervisedAnnotator, verbosity, X, y, w) = fit(m, verbosity, X)
 
 """
     MLJModelInterface.update(model, verbosity, fitresult, cache, data...)
@@ -28,8 +28,9 @@ Models may optionally implement an `update` method. The fallback calls
 `fit`.
 
 """
-update(m::Model, verbosity, fitresult, cache, data...) =
-    fit(m, verbosity, data...)
+function update(m::Model, verbosity, fitresult, cache, data...)
+    return fit(m, verbosity, data...)
+end
 
 """
     MLJModelInterface.training_losses(model::M, report)
@@ -118,6 +119,7 @@ overload `predict_mean`.
 
 """
 function predict_mean end
+
 """
 
 Models types `M` for which `prediction_type(M) == :probablisitic` may

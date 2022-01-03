@@ -11,8 +11,7 @@ end
 mutable struct Bar{names} <: MLJType
     rng::AbstractRNG
     v::Tuple{Int,Int}
-    Bar{names}(rng, x, y) where names =
-        new{names}(rng, (x, y))
+    Bar{names}(rng, x, y) where names = new{names}(rng, (x, y))
 end
 
 Bar(rng, x, y) = Bar{(:x, :y)}(rng, x, y)
@@ -21,6 +20,7 @@ Bar(rng, x, y) = Bar{(:x, :y)}(rng, x, y)
 # the names given in `names` (which will be (:x, :y) when using
 # the above constructor):
 Base.propertynames(::Bar{names}) where names = (:rng, names...)
+
 function Base.getproperty(b::Bar{names}, name::Symbol) where names
     name === :rng && return getfield(b, :rng)
     v = getfield(b, :v)
@@ -35,7 +35,7 @@ function Base.setproperty!(b::Bar{names}, name::Symbol, value) where names
         return value
     end
     setfield!(b, :v, (v[1], value))
-    value
+    return value
 end
 
 mutable struct Super <: MLJType
@@ -63,14 +63,12 @@ mutable struct Super2 <: MLJType
     z::Int
 end
 
-
 MLJModelInterface.deep_properties(::Type{<:Super2}) = (:sub,)
 
 @testset "_isdefined" begin
     b = Bar(MersenneTwister(), 2, 3)
     @test MLJModelInterface._isdefined(b, :x)
 end
-
 
 @testset "_equal_to_depth_one" begin
     d1 = Deep(1, 2)
@@ -83,7 +81,6 @@ end
     d2 = Deep(1, Sub(2))
     @test !MLJModelInterface._equal_to_depth_one(d1, d2)
 end
-
 
 @testset "equality for MLJType" begin
     f1 = Foo(MersenneTwister(7), 1, 2)
@@ -111,8 +108,10 @@ end
 
     @test !(f1 == Super(f1, 4))
 
-    @test !(isequal(Foo(MersenneTwister(1), 1, 2),
-                    Foo(MersenneTwister(1), 1, 2)))
+    @test !isequal(
+        Foo(MersenneTwister(1), 1, 2),
+        Foo(MersenneTwister(1), 1, 2)
+    )
 
     p1 = Partial(1)
     p2 = Partial(1)

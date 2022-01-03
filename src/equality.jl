@@ -11,7 +11,7 @@ function _equal_to_depth_one(x1, x2)
     names = propertynames(x1)
     names === propertynames(x2) || return false
     for name in names
-            getproperty(x1, name) == getproperty(x2, name) || return false
+        getproperty(x1, name) == getproperty(x2, name) || return false
     end
     return true
 end
@@ -39,28 +39,34 @@ See also [`is_same_except`](@ref)
 Consider an `MLJType` subtype `Foo`, with a single field of
 type `Bar` which is *not* a subtype of `MLJType`:
 
-    mutable struct Bar
-        x::Int
-    end
+```julia
+mutable struct Bar
+    x::Int
+end
 
-    mutable struct Foo <: MLJType
-        bar::Bar
-    end
+mutable struct Foo <: MLJType
+    bar::Bar
+end
+```
 
 Then the mutability of `Foo` implies `Foo(1) != Foo(1)` and so, by the
 definition `==` for `MLJType` objects (see [`is_same_except`](@ref))
 we have
 
-    Bar(Foo(1)) != Bar(Foo(1))
+```julia
+Bar(Foo(1)) != Bar(Foo(1))
+```
 
 However after the declaration
 
-    MLJModelInterface.deep_properties(::Type{<:Foo}) = (:bar,)
-
+```julia
+MLJModelInterface.deep_properties(::Type{<:Foo}) = (:bar,)
+```
 We have
 
-    Bar(Foo(1)) == Bar(Foo(1))
-
+```julia
+Bar(Foo(1)) == Bar(Foo(1))
+```
 """
 StatisticalTraits.deep_properties
 
@@ -94,9 +100,11 @@ If `m1` or `m2` are not `MLJType` objects, then return `==(m1, m2)`.
 
 """
 is_same_except(x1, x2) = ==(x1, x2)
+
 function is_same_except(m1::M1,
-                        m2::M2,
-                        exceptions::Symbol...) where {M1<:MLJType,M2<:MLJType}
+    m2::M2,
+    exceptions::Symbol...
+) where {M1<:MLJType, M2<:MLJType}
     typeof(m1) === typeof(m2) || return false
     names = propertynames(m1)
     propertynames(m2) === names || return false
@@ -107,13 +115,19 @@ function is_same_except(m1::M1,
                !_isdefined(m2, name) || return false
             elseif _isdefined(m2, name)
                 if name in deep_properties(M1)
-                    _equal_to_depth_one(getproperty(m1,name),
-                                        getproperty(m2, name)) || return false
+                    _equal_to_depth_one(
+                        getproperty(m1,name),
+                        getproperty(m2, name)
+                    ) || return false
                 else
-                    (is_same_except(getproperty(m1, name),
-                                    getproperty(m2, name)) ||
-                     getproperty(m1, name) isa AbstractRNG ||
-                     getproperty(m2, name) isa AbstractRNG) || return false
+                    (
+                        is_same_except(
+                            getproperty(m1, name),
+                            getproperty(m2, name)
+                        ) || 
+                        getproperty(m1, name) isa AbstractRNG ||
+                        getproperty(m2, name) isa AbstractRNG
+                    ) || return false
                 end
             else
                 return false
@@ -123,7 +137,7 @@ function is_same_except(m1::M1,
     return true
 end
 
-==(m1::M1, m2::M2) where {M1<:MLJType,M2<:MLJType} = is_same_except(m1, m2)
+==(m1::M1, m2::M2) where {M1<:MLJType, M2<:MLJType} = is_same_except(m1, m2)
 
 # for using `replace` or `replace!` on collections of MLJType objects
 # (eg, Model objects in a learning network) we need a stricter
@@ -139,6 +153,7 @@ function special_in(x, itr)::Union{Bool,Missing}
     end
     return false
 end
+
 Base.in(x::MLJType, itr::Set) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractVector) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
@@ -156,6 +171,7 @@ Here we say `m1` *respresents* `m2` if `is_same_except(m1, m2)` is
 
 """
 isrepresented(object::MLJType, ::Nothing) = false
+
 function isrepresented(object::MLJType, itr)::Union{Bool,Missing}
     for m in itr
         ismissing(m) && return missing

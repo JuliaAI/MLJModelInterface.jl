@@ -38,21 +38,21 @@ bar(::P1) = nothing
     @test target_scitype(ms) == Unknown
     @test is_pure_julia(ms)  == false
 
-    @test package_name(ms)    == "unknown"
+    @test package_name(ms) == "unknown"
     @test package_license(ms) == "unknown"
-    @test load_path(ms)       == "unknown"
-    @test package_uuid(ms)    == "unknown"
-    @test package_url(ms)     == "unknown"
+    @test load_path(ms) == "unknown"
+    @test package_uuid(ms) == "unknown"
+    @test package_url(ms) == "unknown"
 
-    @test is_wrapper(ms)       == false
-    @test supports_online(ms)  == false
+    @test is_wrapper(ms) == false
+    @test supports_online(ms) == false
     @test supports_weights(ms) == false
     @test iteration_parameter(ms) === nothing
 
     @test hyperparameter_ranges(md) == (nothing,)
 
     @test docstring(ms) == "S1 from unknown.jl.\n[Documentation](unknown)."
-    @test name(ms)      == "S1"
+    @test name(ms) == "S1"
 
     @test is_supervised(ms)
     @test is_supervised(sa)
@@ -69,9 +69,13 @@ bar(::P1) = nothing
     # implemented methods is deferred
     setlight()
     @test_throws M.InterfaceError implemented_methods(mp)
+    
     setfull()
-    M.implemented_methods(::FI, M::Type{<:MLJType}) =
-        getfield.(methodswith(M), :name)
+    
+    function M.implemented_methods(::FI, M::Type{<:MLJType})
+        return getfield.(methodswith(M), :name)
+    end
+
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 end
 
@@ -92,8 +96,10 @@ end
 
 @testset "`_density` - helper for predict_scitype fallback" begin
     for T in [Continuous, Count, Textual]
-        @test M._density(AbstractArray{T,3}) ==
+        @test ==(
+            M._density(AbstractArray{T,3}),
             AbstractArray{Density{T},3}
+        )
     end
 
     for T in [Finite,
@@ -103,16 +109,22 @@ end
               Continuous,
               Count,
               Textual]
-        @test M._density(AbstractVector{<:T}) ==
+        @test ==(
+            M._density(AbstractVector{<:T}),
             AbstractVector{Density{<:T}}
+        )
         @test M._density(Table(T)) == Table(Density{T})
     end
 
     for T in [Finite, Multiclass, OrderedFactor]
-        @test M._density(AbstractArray{<:T{2},3}) ==
+        @test ==(
+            M._density(AbstractArray{<:T{2},3}),
             AbstractArray{Density{<:T{2}},3}
-        @test M._density(AbstractArray{T{2},3}) ==
+        )
+        @test ==(
+            M._density(AbstractArray{T{2},3}),
             AbstractArray{Density{T{2}},3}
+        )
         @test M._density(Table(T{2})) == Table(Density{T{2}})
     end
 end
@@ -146,8 +158,10 @@ end
     @test abstract_type(D1()) == Deterministic
     @test abstract_type(P1()) == Probabilistic
 
-    @test fit_data_scitype(P2()) ==
-        Tuple{Table(Continuous),AbstractVector{<:Multiclass}}
+    @test ==(
+        fit_data_scitype(P2()),
+        Tuple{Table(Continuous), AbstractVector{<:Multiclass}}
+    )
     @test fit_data_scitype(U2()) == Tuple{Table(Continuous)}
     @test fit_data_scitype(S2()) == Tuple{}
 end

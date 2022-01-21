@@ -1,11 +1,11 @@
-@mlj_model mutable struct APIx0 <: Supervised
+@mlj_model mutable struct APIx0 <: Model
     f0::Int
 end
-@mlj_model mutable struct APIx0b <: Supervised
+@mlj_model mutable struct APIx0b <: Model
     f0::Int
 end
 
-mutable struct APIx1 <: Static end
+mutable struct APIx1 <: Model end
 
 @testset "selectrows(model, data...)" begin
     X = (x1 = [2, 4, 6],)
@@ -16,8 +16,9 @@ end
 @testset "fit-x" begin
     m0 = APIx0(f0=1)
     m1 = APIx0b(f0=3)
-    # no weight support: fallback
+    # no weight support: explicit fallback
     M.fit(m::APIx0, v::Int, X, y) = (5, nothing, nothing)
+    M.fit(m::APIx0, v::Int, X, y, w) = (5, nothing, nothing)
     @test fit(m0, 1, randn(2), randn(2), 5) == (5, nothing, nothing)
     # with weight support: use
     M.fit(m::APIx0b, v::Int, X, y, w) = (7, nothing, nothing)
@@ -26,13 +27,8 @@ end
     @test M.fitted_params(m1, 7) == (fitresult=7,)
     # default iteration_parameter
     @test M.training_losses(m0, nothing) === nothing
-    # static
-    s1 = APIx1()
-    @test fit(s1, 1, 0) == (nothing, nothing, nothing)
-
     #update fallback = fit
     @test update(m0, 1, 5, nothing, randn(2), 5) == (5, nothing, nothing)
-
     # training losses:
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
     @test M.training_losses(m0, r) === nothing

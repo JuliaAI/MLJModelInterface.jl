@@ -9,18 +9,6 @@ thereof. The fallback of `reformat` returns the user-provided data
 """
 function fit end
 
-# fallback for static transformations
-fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
-
-# fallbacks for supervised models that don't support sample weights:
-fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)
-
-# fallback for unsupervised annotators when labels or weights appear:
-# this is useful for evaluation and mixed composite models that combine
-# both supervised and unsupervised annotators
-fit(m::UnsupervisedAnnotator, verbosity, X, y) = fit(m, verbosity, X)
-fit(m::UnsupervisedAnnotator, verbosity, X, y, w) = fit(m, verbosity, X)
-
 """
     MLJModelInterface.update(model, verbosity, fitresult, cache, data...)
 
@@ -105,9 +93,7 @@ fitted_params(::Model, fitresult) = (fitresult=fitresult,)
 
     predict(model, fitresult, new_data...)
 
-`Supervised` and `SupervisedAnnotator` models must implement the
-`predict` operation. Here `new_data` is the output of `reformat`
-called on user-specified data.
+Here `new_data` is the output of `reformat` called on user-specified data.
 
 """
 function predict end

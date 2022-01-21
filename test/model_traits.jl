@@ -1,8 +1,10 @@
-@mlj_model mutable struct S1 <: Supervised
-end
+using StatisticalTraits
 
-@mlj_model mutable struct U1 <: Unsupervised
-end
+@mlj_model mutable struct S1 <: Model end
+
+function M.fit(m::S1, X, verbosity; y) end
+
+@mlj_model mutable struct U1 <: Model end
 
 @mlj_model mutable struct D1 <: Deterministic
     a::Int = 1::(_ > 0)
@@ -12,14 +14,7 @@ end
     a::Int = 1::(_ > 0)
 end
 
-@mlj_model mutable struct I1 <: Interval
-end
-
-@mlj_model mutable struct SA <: SupervisedAnnotator
-end
-
-@mlj_model mutable struct UA <: UnsupervisedAnnotator
-end
+@mlj_model mutable struct I1 <: Interval end
 
 foo(::P1) = 0
 bar(::P1) = nothing
@@ -30,13 +25,11 @@ bar(::P1) = nothing
     md = D1()
     mp = P1()
     mi = I1()
-    sa = SA()
-    ua = UA()
 
-    @test input_scitype(ms)  == Unknown
+    @test input_scitype(ms) == Unknown
     @test output_scitype(ms) == Unknown
     @test target_scitype(ms) == Unknown
-    @test is_pure_julia(ms)  == false
+    @test is_pure_julia(ms) == false
 
     @test package_name(ms) == "unknown"
     @test package_license(ms) == "unknown"
@@ -51,13 +44,11 @@ bar(::P1) = nothing
 
     @test hyperparameter_ranges(md) == (nothing,)
 
-    @test docstring(ms) == "S1 from unknown.jl.\n[Documentation](unknown)."
+    @test docstring(ms) == "S1"
     @test name(ms) == "S1"
 
     @test is_supervised(ms)
-    @test is_supervised(sa)
     @test !is_supervised(mu)
-    @test !is_supervised(ua)
     @test prediction_type(ms) == :unknown
     @test prediction_type(md) == :deterministic
     @test prediction_type(mp) == :probabilistic
@@ -69,14 +60,14 @@ bar(::P1) = nothing
     # implemented methods is deferred
     setlight()
     @test_throws M.InterfaceError implemented_methods(mp)
-    
+
     setfull()
-    
+
     function M.implemented_methods(::FI, M::Type{<:MLJType})
         return getfield.(methodswith(M), :name)
     end
 
-    @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
+    @test Set(implemented_methods(mp)) == Set([:clean!, :bar, :foo])
 end
 
 module Fruit
@@ -103,12 +94,12 @@ end
     end
 
     for T in [Finite,
-              Multiclass,
-              OrderedFactor,
-              Infinite,
-              Continuous,
-              Count,
-              Textual]
+        Multiclass,
+        OrderedFactor,
+        Infinite,
+        Continuous,
+        Count,
+        Textual]
         @test ==(
             M._density(AbstractVector{<:T}),
             AbstractVector{Density{<:T}}
@@ -130,16 +121,18 @@ end
 end
 
 @mlj_model mutable struct P2 <: Probabilistic end
+function MLJModelInterface.fit(::P2, X, verbosity; y) end
 M.target_scitype(::Type{<:P2}) = AbstractVector{<:Multiclass}
 M.input_scitype(::Type{<:P2}) = Table(Continuous)
 
-@mlj_model mutable struct U2 <: Unsupervised end
+@mlj_model mutable struct U2 <: Model end
 M.output_scitype(::Type{<:U2}) = AbstractVector{<:Multiclass}
 M.input_scitype(::Type{<:U2}) = Table(Continuous)
 
-@mlj_model mutable struct S2 <: Static end
-M.output_scitype(::Type{<:S2}) = AbstractVector{<:Multiclass}
-M.input_scitype(::Type{<:S2}) = Table(Continuous)
+# TODO: STATIC
+# @mlj_model mutable struct S2 <: Model end
+# M.output_scitype(::Type{<:S2}) = AbstractVector{<:Multiclass}
+# M.input_scitype(::Type{<:S2}) = Table(Continuous)
 
 @testset "operation scitypes" begin
     @test predict_scitype(P2()) == AbstractVector{Density{<:Multiclass}}
@@ -147,23 +140,25 @@ M.input_scitype(::Type{<:S2}) = Table(Continuous)
     @test transform_scitype(U2()) == AbstractVector{<:Multiclass}
     @test inverse_transform_scitype(U2()) == Table(Continuous)
     @test predict_scitype(U2()) == Unknown
-    @test transform_scitype(S2()) == AbstractVector{<:Multiclass}
-    @test inverse_transform_scitype(S2()) == Table(Continuous)
+    # TODO: STATIC
+    # @test transform_scitype(S2()) == AbstractVector{<:Multiclass}
+    # @test inverse_transform_scitype(S2()) == Table(Continuous)
 end
 
 @testset "abstract_type, fit_data_scitype" begin
     @test abstract_type(P2()) == Probabilistic
-    @test abstract_type(S1()) == Supervised
-    @test abstract_type(U1()) == Unsupervised
+    @test abstract_type(S1()) == Model
+    @test abstract_type(U1()) == Model
     @test abstract_type(D1()) == Deterministic
     @test abstract_type(P1()) == Probabilistic
 
     @test ==(
         fit_data_scitype(P2()),
-        Tuple{Table(Continuous), AbstractVector{<:Multiclass}}
+        Tuple{Table(Continuous),AbstractVector{<:Multiclass}}
     )
     @test fit_data_scitype(U2()) == Tuple{Table(Continuous)}
-    @test fit_data_scitype(S2()) == Tuple{}
+    # TODO: STATIC
+    # @test fit_data_scitype(S2()) == Tuple{}
 end
 
 true

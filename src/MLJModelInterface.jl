@@ -29,28 +29,13 @@ const MODEL_TRAITS = [
     :hyperparameter_ranges,
     :iteration_parameter,
     :supports_training_losses,
-    :deep_properties
-]
+    :deep_properties]
 
-const ABSTRACT_MODEL_SUBTYPES = [
-    :Supervised,
-    :Unsupervised,
-    :Probabilistic,
-    :Deterministic,
-    :Interval,
-    :JointProbabilistic,
-    :Static,
-    :Annotator,
-    :SupervisedAnnotator,
-    :UnsupervisedAnnotator,
-    :SupervisedDetector,
-    :UnsupervisedDetector,
-    :ProbabilisticSupervisedDetector,
-    :ProbabilisticUnsupervisedDetector,
-    :DeterministicSupervisedDetector,
-    :DeterministicUnsupervisedDetector
-]
-
+const ABSTRACT_MODEL_SUBTYPES =
+    [:Probabilistic,
+        :Deterministic,
+        :Interval,
+        :JointProbabilistic]
 
 # ------------------------------------------------------------------------
 # Dependencies
@@ -115,7 +100,7 @@ import Base: in, isequal
 struct LightInterface end
 struct FullInterface end
 
-const Mode = Union{LightInterface, FullInterface}
+const Mode = Union{LightInterface,FullInterface}
 
 const INTERFACE_MODE = Ref{Mode}(LightInterface())
 
@@ -133,29 +118,10 @@ abstract type Model <: MLJType end
 # ------------------------------------------------------------------------
 # Model subtypes
 
-abstract type Supervised <: Model end
-abstract type Unsupervised <: Model end
-abstract type Annotator <: Model end
-
-abstract type Probabilistic <: Supervised end
-abstract type Deterministic <: Supervised end
-abstract type Interval <: Supervised end
-
+abstract type Probabilistic <: Model end
+abstract type Deterministic <: Model end
+abstract type Interval <: Model end
 abstract type JointProbabilistic <: Probabilistic end
-
-abstract type Static <: Unsupervised end
-
-abstract type SupervisedAnnotator <: Annotator end
-abstract type UnsupervisedAnnotator <: Annotator end
-
-abstract type UnsupervisedDetector <: UnsupervisedAnnotator end
-abstract type SupervisedDetector <: SupervisedAnnotator end
-
-abstract type ProbabilisticSupervisedDetector <: SupervisedDetector end
-abstract type ProbabilisticUnsupervisedDetector <: UnsupervisedDetector end
-
-abstract type DeterministicSupervisedDetector <: SupervisedDetector end
-abstract type DeterministicUnsupervisedDetector <: UnsupervisedDetector end
 
 # ------------------------------------------------------------------------
 # includes

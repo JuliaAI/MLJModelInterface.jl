@@ -4,15 +4,15 @@
 Internal function to help generate the docstring for a package. See
 [`metadata_model`](@ref).
 """
-function docstring_ext(T; descr::String="")
+function docstring_ext(T; descr::String = "")
     package_name = MLJModelInterface.package_name(T)
-    package_url  = MLJModelInterface.package_url(T)
-    model_name   = MLJModelInterface.name(T)
+    package_url = MLJModelInterface.package_url(T)
+    model_name = MLJModelInterface.name(T)
     # the message to return
     message = "$descr"
     message *= "\n→ based on [$package_name]($package_url)."
     message *= "\n→ do `@load $model_name pkg=\"$package_name\"` to " *
-        "use the model."
+               "use the model."
     message *= "\n→ do `?$model_name` for documentation."
 end
 
@@ -47,19 +47,19 @@ metadata_pkg.((KNNRegressor, KNNClassifier),
 function metadata_pkg(
     T;
     # aliases:
-    name::String="unknown",
-    uuid::String="unknown",
-    url::String="unknown",
-    julia::Union{Missing,Bool}=missing,
-    license::String="unknown",
-    is_wrapper::Bool=false,
+    name::String = "unknown",
+    uuid::String = "unknown",
+    url::String = "unknown",
+    julia::Union{Missing,Bool} = missing,
+    license::String = "unknown",
+    is_wrapper::Bool = false,
 
     # preferred names, corresponding to trait names:
-    package_name=name,
-    package_uuid=uuid,
-    package_url=url,
-    is_pure_julia=julia,
-    package_license=license,
+    package_name = name,
+    package_uuid = uuid,
+    package_url = url,
+    is_pure_julia = julia,
+    package_license = license
 )
     ex = quote
         MLJModelInterface.package_name(::Type{<:$T}) = $package_name
@@ -97,24 +97,26 @@ metadata_model(KNNRegressor,
     load_path="NearestNeighbors.KNNRegressor")
 ```
 """
-function metadata_model(
-    T;
+function metadata_model(T;
+
     # aliases:
-    input=Unknown,
-    target=Unknown,
-    output=Unknown,
-    weights::Bool=false,
-    descr::String="",
-    path::String="",
+    input = Unknown,
+    target = Unknown,
+    output = Unknown,
+    weights::Bool = false,
+    online::Bool = false,
+    supervised::Bool = true,
+    descr::String = "",
+    path::String = "",
 
     # preferred names, corresponding to trait names:
-    input_scitype=input,
-    target_scitype=target,
-    output_scitype=output,
-    supports_weights=weights,
-    docstring=descr,
-    load_path=path,
-)
+    input_scitype = input,
+    target_scitype = target,
+    output_scitype = output,
+    supports_weights = weights,
+    supports_online = online,
+    docstring = descr,
+    load_path = path)
     if isempty(load_path)
         pname = MLJModelInterface.package_name(T)
         mname = MLJModelInterface.name(T)
@@ -125,10 +127,11 @@ function metadata_model(
         MLJModelInterface.output_scitype(::Type{<:$T}) = $output_scitype
         MLJModelInterface.target_scitype(::Type{<:$T}) = $target_scitype
         MLJModelInterface.supports_weights(::Type{<:$T}) = $supports_weights
+        MLJModelInterface.supports_online(::Type{<:$T}) = $supports_online
         MLJModelInterface.load_path(::Type{<:$T}) = $load_path
 
         function MLJModelInterface.docstring(::Type{<:$T})
-            return MLJModelInterface.docstring_ext($T; descr=$docstring)
+            return MLJModelInterface.docstring_ext($T; descr = $docstring)
         end
     end
     parentmodule(T).eval(ex)

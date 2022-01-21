@@ -40,7 +40,7 @@ metadata_model(FooRegressor,
     @test !infos[:supports_online]
     @test startswith(infos[:docstring], "La di da")
     @test infos[:name] == "FooRegressor"
-    @test infos[:is_supervised]
+    @test !infos[:is_supervised]
     @test infos[:prediction_type] == :deterministic
     @test infos[:implemented_methods] == [:clean!]
     @test infos[:hyperparameters] == (:a, :b)

@@ -152,6 +152,41 @@ classes(x) = classes(get_interface_mode(), x)
 classes(::LightInterface, x) = errlight("classes")
 
 # ------------------------------------------------------------------------
+# scitype
+
+"""
+    scitype(X)
+
+The scientific type (interpretation) of `X`, distinct from its
+machine type.
+
+### Examples
+```julia
+julia> scitype(3.14)
+Continuous
+
+julia> scitype([1, 2, missing])
+AbstractVector{Union{Missing, Count}} 
+
+julia> scitype((5, "beige"))
+Tuple{Count, Textual}
+
+julia> using CategoricalArrays
+
+julia> X = (gender = categorical(['M', 'M', 'F', 'M', 'F']),
+        ndevices = [1, 3, 2, 3, 2]);
+
+julia> scitype(X)
+Table{Union{AbstractVector{Count}, AbstractVector{Multiclass{2}}}}
+```
+"""
+scitype(X) = scitype(get_interface_mode(), vtrait(X, "scitype"), X)
+
+function scitype(::LightInterface, m, X)
+    return errlight("scitype")
+end
+
+# ------------------------------------------------------------------------
 # schema
 
 """
@@ -187,14 +222,15 @@ istable(::Mode, ::Val{:table}) = true
 # decoder
 
 """
-    d = decoder(x)
+    decoder(x)
 
-A callable object for decoding the integer representation of a
+Return a callable object for decoding the integer representation of a
 `CategoricalString` or `CategoricalValue` sharing the same pool as
 `x`. (Here `x` is of one of these two types.) Specifically, one has
-`d(int(y)) == y` for all `y in classes(x)`. One can also call `d` on
-integer arrays, in which case `d` is broadcast over all elements.
+`decoder(x)(int(y)) == y` for all `y in classes(x)`. One can also call `decoder(x)` on
+integer arrays, in which case `decoder(x)` is broadcast over all elements.
 
+### Examples
 ```julia
 julia> v = categorical(["c", "b", "c", "a"])
 4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:

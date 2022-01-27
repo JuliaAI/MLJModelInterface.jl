@@ -54,10 +54,10 @@ function supervised_fit_data_scitype(M)
     T = target_scitype(M)
     ret = Tuple{I, T}
     if supports_weights(M)
-        W = AbstractVector{Union{Continuous, Count}} # weight scitype
+        W = AbstractVector{<:Union{Continuous, Count}} # weight scitype
         return Union{ret, Tuple{I, T, W}}
     elseif supports_class_weights(M)
-        W = AbstractDict{Finite, Union{Continuous, Count}}
+        W = AbstractDict{Finite, <:Union{Continuous, Count}}
         return Union{ret, Tuple{I, T, W}}
     end
     return ret
@@ -67,7 +67,7 @@ StatTraits.fit_data_scitype(M::Type{<:Unsupervised}) = Tuple{input_scitype(M)}
 StatTraits.fit_data_scitype(::Type{<:Static}) = Tuple{}
 StatTraits.fit_data_scitype(M::Type{<:Supervised}) = supervised_fit_data_scitype(M)
 
-# In special case of `UnsupervisedAnnotator`, we allow the target 
+# In special case of `UnsupervisedAnnotator`, we allow the target
 # as an optional argument to `fit` (that is ignored) so that the
 # `machine` constructor will accept it as a valid argument, which
 # then enables *evaluation* of the detector with labeled data:

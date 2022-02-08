@@ -110,6 +110,7 @@ function metadata_model(
     supports_class_weights::Union{Nothing,Bool}=weights,
     docstring::Union{Nothing,String}=descr,
     load_path::Union{Nothing,String}=path,
+    human_name::Union{Nothing,String}=nothing
 )
 
     load_path === nothing && @warn WARN_MISSING_LOAD_PATH
@@ -126,6 +127,7 @@ function metadata_model(
     _extend!(program, :supports_class_weights,supports_class_weights, T)
     _extend!(program, :docstring, docstring, T)
     _extend!(program, :load_path, load_path, T)
+    _extend!(program, :human_name, human_name, T)
 
     parentmodule(T).eval(program)
 end

@@ -51,7 +51,7 @@ bar(::P1) = nothing
 
     @test hyperparameter_ranges(md) == (nothing,)
 
-    @test docstring(ms) == "S1 from unknown.jl.\n[Documentation](unknown)."
+    @test contains(docstring(ms), "No documentation")
     @test name(ms) == "S1"
 
     @test is_supervised(ms)
@@ -69,29 +69,14 @@ bar(::P1) = nothing
     # implemented methods is deferred
     setlight()
     @test_throws M.InterfaceError implemented_methods(mp)
-    
+
     setfull()
-    
+
     function M.implemented_methods(::FI, M::Type{<:MLJType})
         return getfield.(methodswith(M), :name)
     end
 
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
-end
-
-module Fruit
-
-import MLJModelInterface.MLJType
-
-struct Banana <: MLJType end
-
-end
-
-import .Fruit
-
-@testset "extras" begin
-    @test docstring(Float64) == "Float64"
-    @test docstring(Fruit.Banana) == "Banana"
 end
 
 @testset "`_density` - helper for predict_scitype fallback" begin

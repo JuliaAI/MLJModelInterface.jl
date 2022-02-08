@@ -1,22 +1,4 @@
 """
-    docstring_ext
-
-Internal function to help generate the docstring for a package. See
-[`metadata_model`](@ref).
-"""
-function docstring_ext(T; descr::String="")
-    package_name = MLJModelInterface.package_name(T)
-    package_url  = MLJModelInterface.package_url(T)
-    model_name   = MLJModelInterface.name(T)
-    # the message to return
-    message = "$descr"
-    message *= "\n→ based on [$package_name]($package_url)."
-    message *= "\n→ do `@load $model_name pkg=\"$package_name\"` to " *
-        "use the model."
-    message *= "\n→ do `?$model_name` for documentation."
-end
-
-"""
     metadata_pkg(T; args...)
 
 Helper function to write the metadata for a package providing model `T`.
@@ -72,6 +54,19 @@ function metadata_pkg(
     parentmodule(T).eval(ex)
 end
 
+# Extend `program` (an expression) to include trait definition for
+# specified `trait` and type `T`.
+function _extend!(program::Expr, trait::Symbol, value, T)
+    if value !== nothing
+        push!(program.args, quote
+              MLJModelInterface.$trait(::Type{<:$T}) = $value
+              end)
+    end
+end
+
+const WARN_MISSING_LOAD_PATH = "No `load_path` defined. "
+
+
 """
     metadata_model(`T`; args...)
 
@@ -79,12 +74,11 @@ Helper function to write the metadata for a model `T`.
 
 ## Keywords
 
-* `input_scitype=Unknown` : allowed scientific type of the input data
-* `target_scitype=Unknown`: allowed sc. type of the target (supervised)
-* `output_scitype=Unknown`: allowed sc. type of the transformed data (unsupervised)
-* `supports_weights=false` : whether the model supports sample weights
-* `docstring=""` : short description of the model
-* `load_path=""` : where the model is (usually `PackageName.ModelName`)
+* `input_scitype=Unknown`: allowed scientific type of the input data
+* `target_scitype=Unknown`: allowed scitype of the target (supervised)
+* `output_scitype=Unkonwn`: allowed scitype of the transformed data (unsupervised)
+* `supports_weights=false`: whether the model supports sample weights
+* `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
 
 ## Example
 
@@ -93,43 +87,40 @@ metadata_model(KNNRegressor,
     input_scitype=MLJModelInterface.Table(MLJModelInterface.Continuous),
     target_scitype=AbstractVector{MLJModelInterface.Continuous},
     supports_weights=true,
-    docstring="K-Nearest Neighbors classifier: ...",
     load_path="NearestNeighbors.KNNRegressor")
 ```
 """
 function metadata_model(
     T;
     # aliases:
-    input=Unknown,
-    target=Unknown,
-    output=Unknown,
-    weights::Bool=false,
-    descr::String="",
-    path::String="",
+    input=nothing,
+    target=nothing,
+    output=nothing,
+    weights::Union{Nothing,Bool}=nothing,
+    descr::Union{Nothing,String}=nothing,
+    path::Union{Nothing,String}=nothing,
 
     # preferred names, corresponding to trait names:
     input_scitype=input,
     target_scitype=target,
     output_scitype=output,
-    supports_weights=weights,
-    docstring=descr,
-    load_path=path,
+    supports_weights::Union{Nothing,Bool}=weights,
+    docstring::Union{Nothing,String}=descr,
+    load_path::Union{Nothing,String}=path,
 )
-    if isempty(load_path)
-        pname = MLJModelInterface.package_name(T)
-        mname = MLJModelInterface.name(T)
-        load_path = "MLJModels.$(pname)_.$(mname)"
-    end
-    ex = quote
-        MLJModelInterface.input_scitype(::Type{<:$T}) = $input_scitype
-        MLJModelInterface.output_scitype(::Type{<:$T}) = $output_scitype
-        MLJModelInterface.target_scitype(::Type{<:$T}) = $target_scitype
-        MLJModelInterface.supports_weights(::Type{<:$T}) = $supports_weights
-        MLJModelInterface.load_path(::Type{<:$T}) = $load_path
+    load_path === nothing && @warn WARN_MISSING_LOAD_PATH
 
-        function MLJModelInterface.docstring(::Type{<:$T})
-            return MLJModelInterface.docstring_ext($T; descr=$docstring)
-        end
-    end
-    parentmodule(T).eval(ex)
+    program = quote end
+
+    # Note: Naively using metaprogramming to roll up the following
+    # code does not work. Only change this if you really know what
+    # you're doing.
+    _extend!(program, :input_scitype, input_scitype, T)
+    _extend!(program, :target_scitype, target_scitype, T)
+    _extend!(program, :output_scitype, output_scitype, T)
+    _extend!(program, :supports_weights, supports_weights, T)
+    _extend!(program, :docstring, docstring, T)
+    _extend!(program, :load_path, load_path, T)
+
+    parentmodule(T).eval(program)
 end

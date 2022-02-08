@@ -13,12 +13,7 @@ const DeterministicDetector = Union{
 
 const StatTraits = StatisticalTraits
 
-StatTraits.docstring(M::Type{<:MLJType}) = name(M)
-
-function StatTraits.docstring(M::Type{<:Model})
-    return "$(name(M)) from $(package_name(M)).jl.\n" *
-        "[Documentation]($(package_url(M)))."
-end
+StatTraits.docstring(M::Type{<:Model}) = Base.Docs.doc(M) |> string
 
 StatTraits.is_supervised(::Type{<:Supervised}) = true
 StatTraits.is_supervised(::Type{<:SupervisedAnnotator}) = true

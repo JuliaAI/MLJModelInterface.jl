@@ -29,6 +29,7 @@ M.implemented_methods(::FI, M::Type{<:MLJType}) =
 metadata_model(FooRegressor,
                input_scitype=Table(Continuous),
                target_scitype=AbstractVector{Continuous},
+               supports_class_weights=true,
                load_path="goo goo")
 
 infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
@@ -46,6 +47,7 @@ infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
     @test infos[:package_url] == "http://existentialcomics.com/"
     @test !infos[:is_wrapper]
     @test !infos[:supports_weights]
+    @test infos[:supports_class_weights]
     @test !infos[:supports_online]
     @test infos[:docstring] == "Cool model\n"
     @test infos[:name] == "FooRegressor"

@@ -78,6 +78,7 @@ Helper function to write the metadata for a model `T`.
 * `target_scitype=Unknown`: allowed scitype of the target (supervised)
 * `output_scitype=Unkonwn`: allowed scitype of the transformed data (unsupervised)
 * `supports_weights=false`: whether the model supports sample weights
+* `supports_class_weights=false`: whether the model supports class weights
 * `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
 
 ## Example
@@ -97,6 +98,7 @@ function metadata_model(
     target=nothing,
     output=nothing,
     weights::Union{Nothing,Bool}=nothing,
+    class_weights::Union{Nothing,Bool}=nothing,
     descr::Union{Nothing,String}=nothing,
     path::Union{Nothing,String}=nothing,
 
@@ -105,9 +107,11 @@ function metadata_model(
     target_scitype=target,
     output_scitype=output,
     supports_weights::Union{Nothing,Bool}=weights,
+    supports_class_weights::Union{Nothing,Bool}=weights,
     docstring::Union{Nothing,String}=descr,
     load_path::Union{Nothing,String}=path,
 )
+
     load_path === nothing && @warn WARN_MISSING_LOAD_PATH
 
     program = quote end
@@ -119,6 +123,7 @@ function metadata_model(
     _extend!(program, :target_scitype, target_scitype, T)
     _extend!(program, :output_scitype, output_scitype, T)
     _extend!(program, :supports_weights, supports_weights, T)
+    _extend!(program, :supports_class_weights,supports_class_weights, T)
     _extend!(program, :docstring, docstring, T)
     _extend!(program, :load_path, load_path, T)
 

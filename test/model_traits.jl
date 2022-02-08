@@ -51,7 +51,7 @@ bar(::P1) = nothing
 
     @test hyperparameter_ranges(md) == (nothing,)
 
-    @test contains(docstring(ms), "No documentation")
+    @test docstring(ms)[1:16] == "No documentation"[1:16]
     @test name(ms) == "S1"
 
     @test is_supervised(ms)

@@ -107,7 +107,7 @@ function metadata_model(
     target_scitype=target,
     output_scitype=output,
     supports_weights::Union{Nothing,Bool}=weights,
-    supports_class_weights::Union{Nothing,Bool}=weights,
+    supports_class_weights::Union{Nothing,Bool}=class_weights,
     docstring::Union{Nothing,String}=descr,
     load_path::Union{Nothing,String}=path,
     human_name::Union{Nothing,String}=nothing

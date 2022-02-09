@@ -133,3 +133,36 @@ function metadata_model(
     end
     parentmodule(T).eval(ex)
 end
+
+function doc_header(model)
+    name = MLJModelInterface.name(model)
+    human_name = MLJModelInterface.human_name(model)
+    package_name = MLJModelInterface.package_name(model)
+    package_url = MLJModelInterface.package_url(model)
+    params = MLJModelInterface.hyperparameters(model)
+
+    ret =
+"""
+    $name
+
+Model type for $human_name, based on [$package_name]($package_url).
+
+From MLJ, the type can be imported using
+
+    $name = @load $name pkg=$package_name
+
+Construct an instance with default hyper-parameters using the syntax
+`model = $name()`.
+""" |> chomp
+
+    isempty(params) && return ret
+
+    p = first(params)
+    ret *=
+"""
+ Provide keyword arguments to override hyper-parameter defaults, as in
+`$name($p=...)`.
+""" |> chomp
+
+    return ret
+end

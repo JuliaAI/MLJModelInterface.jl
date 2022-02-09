@@ -20,6 +20,14 @@ metadata_model(FooRegressor,
     target=AbstractVector{Continuous},
     descr="La di da")
 
+const HEADER = MLJModelInterface.doc_header(FooRegressor)
+
+@doc """
+$HEADER
+
+Yes, we have no bananas. We have no bananas today!
+""" FooRegressor
+
 @testset "metadata" begin
     setfull()
     M.implemented_methods(::FI, M::Type{<:MLJType}) =
@@ -46,4 +54,35 @@ metadata_model(FooRegressor,
     @test infos[:hyperparameters] == (:a, :b)
     @test infos[:hyperparameter_types] == ("Int64", "Any")
     @test infos[:hyperparameter_ranges] == (nothing, nothing)
+end
+
+@testset "doc_header(model)" begin
+
+    # we test markdown parsed strings for less fussy comparison
+
+    header  = Markdown.parse(HEADER)
+    comparison =
+"""
+```
+FooRegressor
+```
+
+Model type for foo regressor, based on [FooRegressorPkg](http://existentialcomics.com/).
+
+From MLJ, the type can be imported using
+
+```
+FooRegressor = @load FooRegressor pkg=FooRegressorPkg
+```
+
+Construct an instance with default hyper-parameters using the syntax
+`model = FooRegressor()`. Provide keyword arguments to override hyper-parameter
+defaults, as in `FooRegressor(a=...)`.
+""" |> chomp |> Markdown.parse
+
+end
+
+@testset "document string" begin
+    doc = (@doc FooRegressor) |> string |> chomp
+    @test endswith(doc, "We have no bananas today!")
 end

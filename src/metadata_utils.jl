@@ -61,6 +61,7 @@ function _extend!(program::Expr, trait::Symbol, value, T)
         push!(program.args, quote
               MLJModelInterface.$trait(::Type{<:$T}) = $value
               end)
+        return nothing
     end
 end
 

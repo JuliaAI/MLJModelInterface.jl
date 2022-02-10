@@ -56,7 +56,7 @@ Yes, we have no bananas. We have no bananas today!
     @test infos[:hyperparameter_ranges] == (nothing, nothing)
 end
 
-@testset "doc_header(model)" begin
+@testset "doc_header(ModelType)" begin
 
     # we test markdown parsed strings for less fussy comparison
 

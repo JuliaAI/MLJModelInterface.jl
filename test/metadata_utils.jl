@@ -58,7 +58,7 @@ infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
     @test !infos[:supports_weights]
     @test infos[:supports_class_weights]
     @test !infos[:supports_online]
-    @test infos[:docstring] == "Cool model\n"
+    @test infos[:docstring] == (@doc FooRegressor) |> string
     @test infos[:name] == "FooRegressor"
     @test infos[:human_name] == "foo regressor"
     @test infos[:is_supervised]

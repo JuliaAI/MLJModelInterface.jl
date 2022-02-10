@@ -32,6 +32,15 @@ metadata_model(FooRegressor,
                supports_class_weights=true,
                load_path="goo goo")
 
+const HEADER = MLJModelInterface.doc_header(FooRegressor)
+
+@doc """
+$HEADER
+
+Yes, we have no bananas. We have no bananas today!
+""" FooRegressor
+
+
 infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
               trait in M.MODEL_TRAITS)
 
@@ -58,4 +67,35 @@ infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
     @test infos[:hyperparameters] == (:a, :b)
     @test infos[:hyperparameter_types] == ("Int64", "Any")
     @test infos[:hyperparameter_ranges] == (nothing, nothing)
+end
+
+@testset "doc_header(ModelType)" begin
+
+    # we test markdown parsed strings for less fussy comparison
+
+    header  = Markdown.parse(HEADER)
+    comparison =
+"""
+```
+FooRegressor
+```
+
+Model type for foo regressor, based on [FooRegressorPkg.jl](http://existentialcomics.com/).
+
+From MLJ, the type can be imported using
+
+```
+FooRegressor = @load FooRegressor pkg=FooRegressorPkg
+```
+
+Do `model = FooRegressor()` to construct an instance with default hyper-parameters.
+Provide keyword arguments to override hyper-parameter
+defaults, as in `FooRegressor(a=...)`.
+""" |> chomp |> Markdown.parse
+
+end
+
+@testset "document string" begin
+    doc = (@doc FooRegressor) |> string |> chomp
+    @test endswith(doc, "We have no bananas today!")
 end

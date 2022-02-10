@@ -132,3 +132,103 @@ function metadata_model(
 
     parentmodule(T).eval(program)
 end
+
+# TODO: After `human_name` trait is added as model trait, include in
+# example given in the docstring for `doc_header`.
+
+"""
+    MLJModelInterface.doc_header(SomeModelType)
+
+Return a string suitable for interpolation in the document string of
+an MLJ model type. In the example given below, the header expands to
+something like this:
+
+>    `FooRegressor`
+>
+>Model type for foo regressor, based on [FooRegressorPkg.jl](http://existentialcomics.com/).
+>
+>From MLJ, the type can be imported using
+>
+>
+>    `FooRegressor = @load FooRegressor pkg=FooRegressorPkg`
+>
+>Construct an instance with default hyper-parameters using the syntax
+>`model = FooRegressor()`. Provide keyword arguments to override
+>hyper-parameter defaults, as in `FooRegressor(a=...)`.
+
+Ordinarily, `doc_header` is used in document strings defined *after*
+the model type definition, as `doc_header` assumes model traits (in
+particular, `package_name` and `package_url`) to be defined; see also
+[`MLJModelInterface.metadata_pkg`](@ref).
+
+
+### Example
+
+Suppose a model type and traits have been defined by:
+
+```
+mutable struct FooRegressor
+    a::Int
+    b::Float64
+end
+
+metadata_pkg(FooRegressor,
+    name="FooRegressorPkg",
+    uuid="10745b16-79ce-11e8-11f9-7d13ad32a3b2",
+    url="http://existentialcomics.com/",
+    )
+metadata_model(FooRegressor,
+    input=Table(Continuous),
+    target=AbstractVector{Continuous},
+    descr="La di da")
+```
+
+Then the docstring is defined post-facto with the following code:
+
+```
+const HEADER = MLJModelInterface.doc_header(FooRegressor)
+
+@doc \"\"\"
+\$HEADER
+
+### Training data
+
+In MLJ or MLJBase, bind an instance `model` ...
+
+<rest of doc string goes here>
+
+\"\"\" FooRegressor
+```
+
+"""
+function doc_header(SomeModelType)
+    name = MLJModelInterface.name(SomeModelType)
+    human_name = MLJModelInterface.human_name(SomeModelType)
+    package_name = MLJModelInterface.package_name(SomeModelType)
+    package_url = MLJModelInterface.package_url(SomeModelType)
+    params = MLJModelInterface.hyperparameters(SomeModelType)
+
+    ret =
+"""
+    $name
+
+Model type for $human_name, based on [$(package_name).jl]($package_url).
+
+From MLJ, the type can be imported using
+
+    $name = @load $name pkg=$package_name
+
+Do `model = $name()` to construct an instance with default hyper-parameters.
+""" |> chomp
+
+    isempty(params) && return ret
+
+    p = first(params)
+    ret *=
+"""
+ Provide keyword arguments to override hyper-parameter defaults, as in
+`$name($p=...)`.
+""" |> chomp
+
+    return ret
+end

@@ -157,7 +157,7 @@ something like this:
 >`model = FooRegressor()`. Provide keyword arguments to override
 >hyper-parameter defaults, as in `FooRegressor(a=...)`.
 
-Ordinarily `doc_header` is used in document strings defined *after*
+Ordinarily, `doc_header` is used in document strings defined *after*
 the model type definition, as `doc_header` assumes model traits (in
 particular, `package_name` and `package_url`) to be defined; see also
 [`MLJModelInterface.metadata_pkg`](@ref).

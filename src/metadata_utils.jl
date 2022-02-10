@@ -146,7 +146,7 @@ something like this:
 
 >    `FooRegressor`
 >
->Model type for foo regressor, based on [FooRegressorPkg](http://existentialcomics.com/).
+>Model type for foo regressor, based on [FooRegressorPkg.jl](http://existentialcomics.com/).
 >
 >From MLJ, the type can be imported using
 >
@@ -213,7 +213,7 @@ function doc_header(SomeModelType)
 """
     $name
 
-Model type for $human_name, based on [$package_name]($package_url).jl.
+Model type for $human_name, based on [$(package_name).jl]($package_url).
 
 From MLJ, the type can be imported using
 

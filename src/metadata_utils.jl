@@ -219,8 +219,7 @@ From MLJ, the type can be imported using
 
     $name = @load $name pkg=$package_name
 
-Construct an instance with default hyper-parameters using the syntax
-`model = $name()`.
+Do `model = $name()` to construct an instance with default hyper-parameters.
 """ |> chomp
 
     isempty(params) && return ret

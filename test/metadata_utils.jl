@@ -75,8 +75,8 @@ From MLJ, the type can be imported using
 FooRegressor = @load FooRegressor pkg=FooRegressorPkg
 ```
 
-Construct an instance with default hyper-parameters using the syntax
-`model = FooRegressor()`. Provide keyword arguments to override hyper-parameter
+Do `model = FooRegressor()` to construct an instance with default hyper-parameters.
+Provide keyword arguments to override hyper-parameter
 defaults, as in `FooRegressor(a=...)`.
 """ |> chomp |> Markdown.parse
 

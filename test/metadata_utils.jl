@@ -67,7 +67,7 @@ end
 FooRegressor
 ```
 
-Model type for foo regressor, based on [FooRegressorPkg](http://existentialcomics.com/).
+Model type for foo regressor, based on [FooRegressorPkg.jl](http://existentialcomics.com/).
 
 From MLJ, the type can be imported using
 

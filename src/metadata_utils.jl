@@ -213,7 +213,7 @@ function doc_header(SomeModelType)
 """
     $name
 
-Model type for $human_name, based on [$package_name]($package_url).
+Model type for $human_name, based on [$package_name]($package_url).jl.
 
 From MLJ, the type can be imported using
 

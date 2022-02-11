@@ -225,10 +225,11 @@ function doc_header(SomeModelType)
         Do `model = $name()` to construct an instance with default hyper-parameters.
         """ |> chomp
 
+    ret *= " "
+
     isempty(params) && return ret
 
     p = first(params)
-    ret *= " "
     ret *=
         """
         Provide keyword arguments to override hyper-parameter defaults, as in

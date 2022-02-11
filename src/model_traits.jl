@@ -13,7 +13,13 @@ const DeterministicDetector = Union{
 
 const StatTraits = StatisticalTraits
 
-StatTraits.docstring(M::Type{<:Model}) = Base.Docs.doc(M) |> string
+function StatTraits.docstring(M::Type{<:Model})
+    docstring = Base.Docs.doc(M) |> string
+    if occursin("No documentation found", docstring)
+        docstring = synthesize_docstring(M)
+    end
+    return docstring
+end
 
 StatTraits.is_supervised(::Type{<:Supervised}) = true
 StatTraits.is_supervised(::Type{<:SupervisedAnnotator}) = true

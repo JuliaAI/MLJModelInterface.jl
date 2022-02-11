@@ -209,26 +209,71 @@ function doc_header(SomeModelType)
     params = MLJModelInterface.hyperparameters(SomeModelType)
 
     ret =
-"""
-    $name
+        """
+        ```
+        $name
+        ```
 
-Model type for $human_name, based on [$(package_name).jl]($package_url).
+        Model type for $human_name, based on [$(package_name).jl]($package_url).
 
-From MLJ, the type can be imported using
+        From MLJ, the type can be imported using
 
-    $name = @load $name pkg=$package_name
+        ```
+        $name = @load $name pkg=$package_name
+        ```
 
-Do `model = $name()` to construct an instance with default hyper-parameters.
-""" |> chomp
+        Do `model = $name()` to construct an instance with default hyper-parameters.
+        """ |> chomp
 
     isempty(params) && return ret
 
     p = first(params)
+    ret *= " "
     ret *=
-"""
- Provide keyword arguments to override hyper-parameter defaults, as in
-`$name($p=...)`.
-""" |> chomp
+        """
+        Provide keyword arguments to override hyper-parameter defaults, as in
+        `$name($p=...)`.
+        """ |> chomp
 
+    return ret
+end
+
+"""
+    synthesize_docstring
+
+Private method.
+
+Generates a value for the `docstring` trait for use with a model which
+does not have a standard document string, to use as the fallback. See
+[`metadata_model`](@ref).
+
+"""
+function synthesize_docstring(M)
+    package_name = MLJModelInterface.package_name(M)
+    package_url  = MLJModelInterface.package_url(M)
+    model_name   = MLJModelInterface.name(M)
+    human_name   = MLJModelInterface.human_name(M)
+    hyperparameters = MLJModelInterface.hyperparameters(M)
+
+    # generate text for the section on hyperparameters
+    text_for_params = ""
+    if !is_wrapper(M)
+        model = M()
+        isempty(hyperparameters) || (text_for_params *= "### Hyper-parameters")
+        for p in hyperparameters
+            value = getproperty(model, p)
+            text_for_params *= "\n\n- `$p = $value`"
+        end
+    end
+
+    ret = doc_header(M)
+    if !isempty(text_for_params)
+        ret *=
+            """
+
+            $text_for_params
+
+            """
+    end
     return ret
 end

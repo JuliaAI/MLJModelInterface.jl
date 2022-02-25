@@ -69,7 +69,9 @@ M.human_name(::Type{<:U1}) = "my model"
         U1
         ```
 
-        Model type for my model, based on [Bach.jl](www.did_he_write_565.com).
+        Model type for my model, based on
+        [Bach.jl](www.did_he_write_565.com), and implementing the MLJ
+        model interface.
 
         From MLJ, the type can be imported using
 
@@ -81,7 +83,7 @@ M.human_name(::Type{<:U1}) = "my model"
         Provide keyword arguments to override hyper-parameter defaults, as in
         `U1(a=...)`.
 
-        ### Hyper-parameters
+        # Hyper-parameters
 
         - `a = 0`
 

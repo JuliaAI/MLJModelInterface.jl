@@ -214,7 +214,9 @@ function doc_header(SomeModelType)
         $name
         ```
 
-        Model type for $human_name, based on [$(package_name).jl]($package_url).
+        Model type for $human_name, based on
+        [$(package_name).jl]($package_url), and implementing the MLJ
+        model interface.
 
         From MLJ, the type can be imported using
 
@@ -260,7 +262,7 @@ function synthesize_docstring(M)
     text_for_params = ""
     if !is_wrapper(M)
         model = M()
-        isempty(hyperparameters) || (text_for_params *= "### Hyper-parameters")
+        isempty(hyperparameters) || (text_for_params *= "# Hyper-parameters")
         for p in hyperparameters
             value = getproperty(model, p)
             text_for_params *= "\n\n- `$p = $value`"

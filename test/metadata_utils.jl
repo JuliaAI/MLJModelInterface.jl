@@ -21,11 +21,6 @@ setfull()
 M.implemented_methods(::FI, M::Type{<:MLJType}) =
     getfield.(methodswith(M), :name)
 
-@test_logs(
-    (:warn, MLJModelInterface.WARN_MISSING_LOAD_PATH),
-    metadata_model(BarGoo)
-)
-
 metadata_model(FooRegressor,
                input_scitype=Table(Continuous),
                target_scitype=AbstractVector{Continuous},

@@ -65,9 +65,6 @@ function _extend!(program::Expr, trait::Symbol, value, T)
     end
 end
 
-const WARN_MISSING_LOAD_PATH = "No `load_path` defined. "
-
-
 """
     metadata_model(`T`; args...)
 
@@ -113,8 +110,6 @@ function metadata_model(
     load_path::Union{Nothing,String}=path,
     human_name::Union{Nothing,String}=nothing
 )
-
-    load_path === nothing && @warn WARN_MISSING_LOAD_PATH
 
     program = quote end
 

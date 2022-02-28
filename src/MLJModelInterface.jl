@@ -20,6 +20,7 @@ const MODEL_TRAITS = [
     :supports_online,
     :docstring,
     :name,
+    :human_name,
     :is_supervised,
     :prediction_type,
     :abstract_type,

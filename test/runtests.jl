@@ -2,6 +2,7 @@ using Test, MLJModelInterface
 using ScientificTypesBase, ScientificTypes
 using Tables, Distances, CategoricalArrays, InteractiveUtils
 import DataFrames: DataFrame
+import Markdown
 
 const M  = MLJModelInterface
 const FI = M.FullInterface

@@ -253,10 +253,15 @@ function synthesize_docstring(M)
     human_name   = MLJModelInterface.human_name(M)
     hyperparameters = MLJModelInterface.hyperparameters(M)
 
-    # generate text for the section on hyperparameters
     text_for_params = ""
-    if !is_wrapper(M)
-        model = M()
+    model = try
+        M()
+    catch ex
+        return ""
+    end
+
+    # generate text for the section on hyperparameters
+    if !is_wrapper(M) 
         isempty(hyperparameters) || (text_for_params *= "# Hyper-parameters")
         for p in hyperparameters
             value = getproperty(model, p)

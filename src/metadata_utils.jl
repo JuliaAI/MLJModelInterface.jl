@@ -181,10 +181,8 @@ metadata_model(FooRegressor,
 Then the docstring is defined post-facto with the following code:
 
 ```
-const HEADER = MLJModelInterface.doc_header(FooRegressor)
-
-@doc \"\"\"
-\$HEADER
+\"\"\"
+\$(MLJModelInterface.doc_header(FooRegressor))
 
 ### Training data
 
@@ -192,7 +190,9 @@ In MLJ or MLJBase, bind an instance `model` ...
 
 <rest of doc string goes here>
 
-\"\"\" FooRegressor
+\"\"\"
+FooRegressor
+
 ```
 
 """
@@ -261,7 +261,7 @@ function synthesize_docstring(M)
     end
 
     # generate text for the section on hyperparameters
-    if !is_wrapper(M) 
+    if !is_wrapper(M)
         isempty(hyperparameters) || (text_for_params *= "# Hyper-parameters")
         for p in hyperparameters
             value = getproperty(model, p)

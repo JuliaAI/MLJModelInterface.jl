@@ -1,10 +1,90 @@
+##  SYNTHETIC DOCSTRING
+
+# model type `M` for which `M()` is implemented (typical case):
+
+"""Cool model"""
+@mlj_model mutable struct FooClassifier <: Deterministic
+    a::Int = 0::(_ ≥ 0)
+    b
+end
+
+metadata_pkg(FooClassifier,
+    name="FooClassifierPkg",
+    uuid="10745b16-79ce-11e8-11f9-7d13ad32a3b2",
+    url="http://existentialcomics.com/",
+    julia=true,
+    license="MIT",
+    is_wrapper=false
+    )
+
+metadata_model(FooClassifier,
+               input_scitype=Table(Continuous),
+               target_scitype=AbstractVector{Continuous},
+               supports_class_weights=true,
+               load_path="goo goo")
+
+
+# model type `M` for which `M()` is not implemented:
+
+"""Cool model"""
+mutable struct FooBad <: Deterministic
+    a::Int
+    b
+end
+
+metadata_pkg(FooBad,
+    name="FooBadPkg",
+    uuid="10745b16-79ce-11e8-11f9-7d13ad32a3b2",
+    url="http://existentialcomics.com/",
+    julia=true,
+    license="MIT",
+    is_wrapper=false
+    )
+
+metadata_model(FooBad,
+               input_scitype=Table(Continuous),
+               target_scitype=AbstractVector{Continuous},
+               supports_class_weights=true,
+               load_path="goo goo")
+
+synthetic = M.synthesize_docstring(FooClassifier) |> Markdown.parse
+comparison =
+    """
+        FooClassifier
+
+    Model type for foo classifier, based on
+    [FooClassifierPkg.jl](http://existentialcomics.com/),
+    and implementing the MLJ model interface.
+
+    From MLJ, the type can be imported using
+
+        FooClassifier = @load FooClassifier pkg=FooClassifierPkg
+
+    Do `model = FooClassifier()` to construct an instance with default hyper-parameters.
+    Provide keyword arguments to override hyper-parameter defaults, as in
+    `FooClassifier(a=...)`.
+
+    # Hyper-parameters
+
+    - `a = 0`
+
+    - `b = missing`
+    """ |> Markdown.parse
+
+@testset "synthisise_docstring" begin
+    @test synthetic == comparison
+    @test isempty(M.synthesize_docstring(FooBad))
+end
+
+
+# METADATA_PKG, METADATA_MODEL, DOCUMENT STRINGS
+
+
 """Cool model"""
 @mlj_model mutable struct FooRegressor <: Deterministic
     a::Int = 0::(_ ≥ 0)
     b
 end
-
-struct BarGoo <: Deterministic end
 
 metadata_pkg(FooRegressor,
     name="FooRegressorPkg",

@@ -52,7 +52,7 @@ comparison =
     """
         FooClassifier
 
-    Model type for foo classifier, based on
+    A model type for constructing a foo classifier, based on
     [FooClassifierPkg.jl](http://existentialcomics.com/),
     and implementing the MLJ model interface.
 
@@ -155,7 +155,8 @@ end
 FooRegressor
 ```
 
-Model type for foo regressor, based on [FooRegressorPkg.jl](http://existentialcomics.com/).
+A model type for constructing a foo regressor, based on
+[FooRegressorPkg.jl](http://existentialcomics.com/).
 
 From MLJ, the type can be imported using
 

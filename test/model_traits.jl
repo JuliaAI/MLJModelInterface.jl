@@ -32,7 +32,7 @@ M.human_name(::Type{<:S1}) = "silly model"
 
 M.package_name(::Type{<:U1}) = "Bach"
 M.package_url(::Type{<:U1}) = "www.did_he_write_565.com"
-M.human_name(::Type{<:U1}) = "my model"
+M.human_name(::Type{<:U1}) = "funky model"
 
 @testset "traits" begin
     ms = S1()
@@ -69,7 +69,7 @@ M.human_name(::Type{<:U1}) = "my model"
         U1
         ```
 
-        Model type for my model, based on
+        A model type for constructing a funky model, based on
         [Bach.jl](www.did_he_write_565.com), and implementing the MLJ
         model interface.
 

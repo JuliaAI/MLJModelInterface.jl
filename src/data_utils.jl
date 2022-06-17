@@ -111,7 +111,7 @@ int(::LightInterface, x) = errlight("int")
 
 All the categorical elements with the same pool as `x` (including
 `x`), returned as a list, with an ordering consistent with the pool.
-Here `x` has `CategoricalValue` or `CategoricalString` type, and
+Here `x` has `CategoricalValue` type, and
 `classes(x)` is a vector of the same eltype. Note that `x in
 classes(x)` is always true.
 
@@ -225,10 +225,11 @@ istable(::Mode, ::Val{:table}) = true
     decoder(x)
 
 Return a callable object for decoding the integer representation of a
-`CategoricalString` or `CategoricalValue` sharing the same pool as
-`x`. (Here `x` is of one of these two types.) Specifically, one has
-`decoder(x)(int(y)) == y` for all `y in classes(x)`. One can also call `decoder(x)` on
-integer arrays, in which case `decoder(x)` is broadcast over all elements.
+`CategoricalValue` sharing the same pool the `CategoricalValue`
+`x`. Specifically, one has `decoder(x)(int(y)) == y` for all
+`CategoricalValue`s `y` having the same pool as `x`. One can also call
+`decoder(x)` on integer arrays, in which case `decoder(x)` is
+broadcast over all elements.
 
 ### Examples
 ```julia
@@ -255,7 +256,7 @@ true
 
 It is *not* true that `int(d(u)) == u` always holds.
 
-See also: [`int`](@ref), [`classes`](@ref).
+See also: [`int`](@ref).
 """
 decoder(x) = decoder(get_interface_mode(), x)
 

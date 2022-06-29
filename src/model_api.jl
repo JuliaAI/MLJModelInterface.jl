@@ -174,7 +174,7 @@ abstract vector of `feature::Symbol => importance::Real` pairs
 (e.g `[:gender =>0.23, :height =>0.7, :weight => 0.1]`).  
 
 The following trait overload is also required:
-`:reports_intrinsic_importances(::Type{<:M}) = true`
+`reports_intrinsic_importances(::Type{<:M}) = true`
 
 """
 intrinsic_importances(model, fitresult, report) = nothing

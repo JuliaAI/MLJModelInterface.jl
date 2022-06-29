@@ -40,7 +40,7 @@ implement this method to return an `AbstractVector` of the losses
 in historical order. If the model calculates scores instead, then the
 sign of the scores should be reversed.
 
-The following trait overload is alse required:
+The following trait overload is also required:
 `supports_training_losses(::Type{<:M}) = true`
 
 """
@@ -164,3 +164,17 @@ function restore end
 some meta-models may choose to implement the `evaluate` operations
 """
 function evaluate end
+
+"""
+    intrinsic_importances(model::M, fitresult, report)
+
+For a given `model` of model type `M` supporting intrinsic feature importances, calculate 
+the intrinsic feature importances from the model's `fitresult` and `report` as an 
+abstract vector of `feature::Symbol => importance::Real` pairs 
+(e.g `[:gender =>0.23, :height =>0.7, :weight => 0.1]`).  
+
+The following trait overload is also required:
+`:reports_intrinsic_importances(::Type{<:M}) = true`
+
+"""
+intrinsic_importances(model, fitresult, report) = nothing

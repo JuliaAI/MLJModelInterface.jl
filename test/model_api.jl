@@ -36,6 +36,10 @@ end
     # training losses:
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
     @test M.training_losses(m0, r) === nothing
+    
+    # intrinsic_importances
+    f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
+    @test M.intrinsic_importances(m0, f, r) === nothing
 end
 
 struct DummyUnivariateFinite end

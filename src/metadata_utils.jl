@@ -44,12 +44,12 @@ function metadata_pkg(
     package_license=license,
 )
     ex = quote
-        MLJModelInterface.package_name(::Type{<:$T}) = $package_name
-        MLJModelInterface.package_uuid(::Type{<:$T}) = $package_uuid
-        MLJModelInterface.package_url(::Type{<:$T}) = $package_url
-        MLJModelInterface.is_pure_julia(::Type{<:$T}) = $is_pure_julia
-        MLJModelInterface.package_license(::Type{<:$T}) = $package_license
-        MLJModelInterface.is_wrapper(::Type{<:$T}) = $is_wrapper
+        $MLJModelInterface.package_name(::Type{<:$T}) = $package_name
+        $MLJModelInterface.package_uuid(::Type{<:$T}) = $package_uuid
+        $MLJModelInterface.package_url(::Type{<:$T}) = $package_url
+        $MLJModelInterface.is_pure_julia(::Type{<:$T}) = $is_pure_julia
+        $MLJModelInterface.package_license(::Type{<:$T}) = $package_license
+        $MLJModelInterface.is_wrapper(::Type{<:$T}) = $is_wrapper
     end
     parentmodule(T).eval(ex)
 end
@@ -59,7 +59,7 @@ end
 function _extend!(program::Expr, trait::Symbol, value, T)
     if value !== nothing
         push!(program.args, quote
-              MLJModelInterface.$trait(::Type{<:$T}) = $value
+              $MLJModelInterface.$trait(::Type{<:$T}) = $value
               end)
         return nothing
     end

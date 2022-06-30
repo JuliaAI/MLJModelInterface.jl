@@ -319,13 +319,13 @@ end
     @test_throws M.InterfaceError UnivariateFinite(randn(2), randn(2))
 end
 
-@testset "don't assume MLJModelInterface at user-side" begin
-    module UserSide
-        import MLJModelInterface: metadata_model, metadata_pkg
-        struct A end
-        descr = "something"
-        # Smoke tests.
-        metadata_model(A; descr=descr)
-        metadata_pkg(A)
-    end
+@testset "not assuming MLJModelInterface symbol at user-side" begin
+    eval(:(module UserSide
+            import MLJModelInterface: metadata_model, metadata_pkg
+            struct A end
+            descr = "something"
+            # Smoke tests.
+            metadata_model(A; descr=descr)
+            metadata_pkg(A)
+    end))
 end

@@ -77,7 +77,6 @@ Helper function to write the metadata for a model `T`.
 * `output_scitype=Unkonwn`: allowed scitype of the transformed data (unsupervised)
 * `supports_weights=false`: whether the model supports sample weights
 * `supports_class_weights=false`: whether the model supports class weights
-* `docstring=nothing`: docstring for the model
 * `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
 * `human_name=nothing`: human name of the model
 

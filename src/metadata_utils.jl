@@ -78,6 +78,7 @@ Helper function to write the metadata for a model `T`.
 * `supports_weights=false`: whether the model supports sample weights
 * `supports_class_weights=false`: whether the model supports class weights
 * `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
+* `human_name=nothing`: human name of the model
 
 ## Example
 

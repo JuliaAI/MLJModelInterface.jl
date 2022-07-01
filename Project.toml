@@ -1,7 +1,7 @@
 name = "MLJModelInterface"
 uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
 authors = ["Thibaut Lienart and Anthony Blaom"]
-version = "1.4.3"
+version = "1.4.4"
 
 [deps]
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"

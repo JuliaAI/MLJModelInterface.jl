@@ -117,7 +117,7 @@ function metadata_model(
     load_path::Union{Nothing,String}=path,
     human_name::Union{Nothing,String}=nothing
 )
-    isnothing(docstring) || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
+    docstring === nothing || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
 
     program = quote end
 

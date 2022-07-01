@@ -65,8 +65,14 @@ function _extend!(program::Expr, trait::Symbol, value, T)
     end
 end
 
+const DEPWARN_DOCSTRING =
+    "`metadata_model` should not be called with the keyword argument "*
+    "`descr` or `docstring`. Implementers of the MLJ model interface "*
+    "should instead create an MLJ-compliant docstring in the usual way. "*
+    "See https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings for details. "
+
 """
-    metadata_model(`T`; args...)
+    metadata_model(T; args...)
 
 Helper function to write the metadata for a model `T`.
 
@@ -111,6 +117,7 @@ function metadata_model(
     load_path::Union{Nothing,String}=path,
     human_name::Union{Nothing,String}=nothing
 )
+    isnothing(docstring) || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
 
     program = quote end
 

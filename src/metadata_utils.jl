@@ -44,12 +44,12 @@ function metadata_pkg(
     package_license=license,
 )
     ex = quote
-        MLJModelInterface.package_name(::Type{<:$T}) = $package_name
-        MLJModelInterface.package_uuid(::Type{<:$T}) = $package_uuid
-        MLJModelInterface.package_url(::Type{<:$T}) = $package_url
-        MLJModelInterface.is_pure_julia(::Type{<:$T}) = $is_pure_julia
-        MLJModelInterface.package_license(::Type{<:$T}) = $package_license
-        MLJModelInterface.is_wrapper(::Type{<:$T}) = $is_wrapper
+        $MLJModelInterface.package_name(::Type{<:$T}) = $package_name
+        $MLJModelInterface.package_uuid(::Type{<:$T}) = $package_uuid
+        $MLJModelInterface.package_url(::Type{<:$T}) = $package_url
+        $MLJModelInterface.is_pure_julia(::Type{<:$T}) = $is_pure_julia
+        $MLJModelInterface.package_license(::Type{<:$T}) = $package_license
+        $MLJModelInterface.is_wrapper(::Type{<:$T}) = $is_wrapper
     end
     parentmodule(T).eval(ex)
 end
@@ -59,14 +59,20 @@ end
 function _extend!(program::Expr, trait::Symbol, value, T)
     if value !== nothing
         push!(program.args, quote
-              MLJModelInterface.$trait(::Type{<:$T}) = $value
+              $MLJModelInterface.$trait(::Type{<:$T}) = $value
               end)
         return nothing
     end
 end
 
+const DEPWARN_DOCSTRING =
+    "`metadata_model` should not be called with the keyword argument "*
+    "`descr` or `docstring`. Implementers of the MLJ model interface "*
+    "should instead create an MLJ-compliant docstring in the usual way. "*
+    "See https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings for details. "
+
 """
-    metadata_model(`T`; args...)
+    metadata_model(T; args...)
 
 Helper function to write the metadata for a model `T`.
 
@@ -78,6 +84,7 @@ Helper function to write the metadata for a model `T`.
 * `supports_weights=false`: whether the model supports sample weights
 * `supports_class_weights=false`: whether the model supports class weights
 * `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
+* `human_name=nothing`: human name of the model
 
 ## Example
 
@@ -110,6 +117,7 @@ function metadata_model(
     load_path::Union{Nothing,String}=path,
     human_name::Union{Nothing,String}=nothing
 )
+    docstring === nothing || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
 
     program = quote end
 

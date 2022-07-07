@@ -176,5 +176,8 @@ abstract vector of `feature::Symbol => importance::Real` pairs
 The following trait overload is also required:
 `reports_feature_importances(::Type{<:M}) = true`
 
+If for some reason a model is sometimes unable to report feature importances then
+`feature_importances` should return all importances as 0.0, as in 
+`[:gender =>0.0, :height =>0.0, :weight => 0.0]`. 
 """
 function feature_importances end

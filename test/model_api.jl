@@ -5,6 +5,7 @@ end
     f0::Int
 end
 
+
 mutable struct APIx1 <: Static end
 
 @testset "selectrows(model, data...)" begin
@@ -30,12 +31,18 @@ end
     s1 = APIx1()
     @test fit(s1, 1, 0) == (nothing, nothing, nothing)
 
-    #update fallback = fit
+    # update fallback = fit
     @test update(m0, 1, 5, nothing, randn(2), 5) == (5, nothing, nothing)
 
     # training losses:
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
     @test M.training_losses(m0, r) === nothing
+    
+    # intrinsic_importances
+    f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
+    MLJModelInterface.reports_feature_importances(::Type{APIx0}) = true
+    MLJModelInterface.feature_importances(::APIx0, fitresult, report) = [:a=>0, :b=>0]
+    @test MLJModelInterface.feature_importances(m0, f, r) == [:a=>0, :b=>0]
 end
 
 struct DummyUnivariateFinite end

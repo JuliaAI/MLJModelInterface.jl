@@ -39,7 +39,7 @@ end
     
     # intrinsic_importances
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
-    @test M.intrinsic_importances(m0, f, r) === nothing
+    @test M.feature_importances(m0, f, r) === nothing
 end
 
 struct DummyUnivariateFinite end

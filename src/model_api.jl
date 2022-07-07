@@ -166,15 +166,15 @@ some meta-models may choose to implement the `evaluate` operations
 function evaluate end
 
 """
-    intrinsic_importances(model::M, fitresult, report)
+    feature_importances(model::M, fitresult, report)
 
 For a given `model` of model type `M` supporting intrinsic feature importances, calculate 
-the intrinsic feature importances from the model's `fitresult` and `report` as an 
+the feature importances from the model's `fitresult` and `report` as an 
 abstract vector of `feature::Symbol => importance::Real` pairs 
 (e.g `[:gender =>0.23, :height =>0.7, :weight => 0.1]`).  
 
 The following trait overload is also required:
-`reports_intrinsic_importances(::Type{<:M}) = true`
+`reports_feature_importances(::Type{<:M}) = true`
 
 """
-intrinsic_importances(model, fitresult, report) = nothing
+feature_importances(model, fitresult, report) = nothing

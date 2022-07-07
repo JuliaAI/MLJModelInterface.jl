@@ -30,7 +30,7 @@ const MODEL_TRAITS = [
     :hyperparameter_ranges,
     :iteration_parameter,
     :supports_training_losses,
-    :reports_intrinsic_importances,
+    :reports_feature_importances,
     :deep_properties
 ]
 

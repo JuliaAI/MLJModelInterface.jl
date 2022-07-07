@@ -177,4 +177,4 @@ The following trait overload is also required:
 `reports_feature_importances(::Type{<:M}) = true`
 
 """
-feature_importances(model, fitresult, report) = nothing
+function feature_importances end

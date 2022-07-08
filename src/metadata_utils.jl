@@ -85,6 +85,9 @@ Helper function to write the metadata for a model `T`.
 * `supports_class_weights=false`: whether the model supports class weights
 * `load_path="unknown"`: where the model is (usually `PackageName.ModelName`)
 * `human_name=nothing`: human name of the model
+* `supports_training_losses=nothing`: whether the (necessarily iterative) model can report
+  training losses
+* `reports_feature_importances=nothing`: whether the model reports feature importances
 
 ## Example
 
@@ -115,7 +118,9 @@ function metadata_model(
     supports_class_weights::Union{Nothing,Bool}=class_weights,
     docstring::Union{Nothing,String}=descr,
     load_path::Union{Nothing,String}=path,
-    human_name::Union{Nothing,String}=nothing
+    human_name::Union{Nothing,String}=nothing,
+    supports_training_losses::Union{Nothing,Bool}=nothing,
+    reports_feature_importances::Union{Nothing,Bool}=nothing,
 )
     docstring === nothing || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
 
@@ -132,6 +137,8 @@ function metadata_model(
     _extend!(program, :docstring, docstring, T)
     _extend!(program, :load_path, load_path, T)
     _extend!(program, :human_name, human_name, T)
+    _extend!(program, :supports_training_losses, supports_training_losses, T)
+    _extend!(program, :reports_feature_importances, reports_feature_importances, T)
 
     parentmodule(T).eval(program)
 end

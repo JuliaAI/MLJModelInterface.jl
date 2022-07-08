@@ -142,6 +142,8 @@ infos =  Dict(trait => eval(:(MLJModelInterface.$trait))(FooRegressor) for
     @test infos[:hyperparameters] == (:a, :b)
     @test infos[:hyperparameter_types] == ("Int64", "Any")
     @test infos[:hyperparameter_ranges] == (nothing, nothing)
+    @test !infos[:supports_training_losses] 
+    @test !infos[:reports_feature_importances]
 end
 
 @testset "doc_header(ModelType)" begin

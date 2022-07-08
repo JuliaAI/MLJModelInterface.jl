@@ -46,9 +46,13 @@ M.feature_importances(::APIx0, fitresult, report) = [:a=>0, :b=>0]
 
     # training losses:
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
-    @test M.training_losses(m0, r) == [1.0, 2.0, 3.0]
+    @test M.training_losses(m0, r) == dummy_losses
 
-    # intrinsic_importances
+    # training losses:
+    f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
+    @test M.training_losses(m0, r) == dummy_losses
+
+    # feature_importances
     f, c, r = MLJModelInterface.fit(m0, 1, rand(2), rand(2))
     @test MLJModelInterface.feature_importances(m0, f, r) == [:a=>0, :b=>0]
 end
@@ -75,7 +79,7 @@ mutable struct UnivariateFiniteFitter <: Probabilistic end
     end
 
     MMI.input_scitype(::Type{<:UnivariateFiniteFitter}) = Nothing
-    
+
     MMI.target_scitype(::Type{<:UnivariateFiniteFitter}) = AbstractVector{<:Finite}
 
     y = categorical(collect("aabbccaa"))

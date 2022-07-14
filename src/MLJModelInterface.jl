@@ -31,7 +31,8 @@ const MODEL_TRAITS = [
     :iteration_parameter,
     :supports_training_losses,
     :reports_feature_importances,
-    :deep_properties
+    :deep_properties,
+    :reporting_operations,
 ]
 
 const ABSTRACT_MODEL_SUBTYPES = [

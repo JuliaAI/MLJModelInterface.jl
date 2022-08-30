@@ -173,6 +173,8 @@ the feature importances from the model's `fitresult` and `report` as an
 abstract vector of `feature::Symbol => importance::Real` pairs
 (e.g `[:gender =>0.23, :height =>0.7, :weight => 0.1]`).
 
+# New model implementations
+
 The following trait overload is also required:
 `MLJModelInterface.reports_feature_importances(::Type{<:M}) = true`
 
@@ -182,3 +184,37 @@ If for some reason a model is sometimes unable to report feature importances the
 
 """
 function feature_importances end
+
+_named_tuple(named_tuple) = named_tuple
+_named_tuple(::Nothing) = NamedTuple()
+
+"""
+    MLJModelInterface.report(model, report_given_method)
+
+Merge the reports in the dictionary `report_given_method` into a single
+property-accessible object. The possible keys of the dictionary are `:fit` and the
+symbolic names of MLJModelInterface.jl operations, such as `:predict` or
+`:transform`. Each value will be the `report` component returned by a training method
+(`fit` or `update`), in the case of `:fit`, or the corresponding operation.
+
+# New model implementations
+
+Overloading this method is optional, unless some value in the dictionary
+`report_given_method` is possibly neither a named tuple nor `nothing`.
+
+A fallback returns the usual named tuple merge of the dictionary values, ignoring any
+`nothing` values. It is the responsibility of the implementation to ensure individual
+reports will never have clashing keys.
+
+"""
+function report(model, report_given_method)
+
+    # Note that we want to avoid copying values in each individual report named tuple, and
+    # merge the reports in a reproducible order.
+
+    methods = collect(keys(report_given_method)) |> sort!
+    reports = [report_given_method[method] for method in methods]
+
+    return merge(reports...)
+end
+

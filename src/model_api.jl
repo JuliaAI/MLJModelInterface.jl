@@ -213,8 +213,7 @@ function report(model, report_given_method)
     # merge the reports in a reproducible order.
 
     methods = collect(keys(report_given_method)) |> sort!
-    reports = [report_given_method[method] for method in methods]
+    reports = [_named_tuple(report_given_method[method]) for method in methods]
 
     return merge(reports...)
 end
-

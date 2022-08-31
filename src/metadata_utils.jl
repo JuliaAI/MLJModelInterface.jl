@@ -75,6 +75,8 @@ const depwarn_docstring(T) =
     for details.
 
     """
+
+"""
     metadata_model(T; args...)
 
 Helper function to write the metadata for a model `T`.

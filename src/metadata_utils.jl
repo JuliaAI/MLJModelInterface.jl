@@ -65,11 +65,16 @@ function _extend!(program::Expr, trait::Symbol, value, T)
     end
 end
 
-const DEPWARN_DOCSTRING =
-    "`metadata_model` should not be called with the keyword argument "*
-    "`descr` or `docstring`. Implementers of the MLJ model interface "*
-    "should instead create an MLJ-compliant docstring in the usual way. "*
-    "See https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings for details. "
+const depwarn_docstring(T) =
+    """
+
+    Regarding $T: `metadata_model` should not be called with the keyword argument `descr`
+    or `docstring`. Implementers of the MLJ model interface should instead create an
+    MLJ-compliant docstring in the usual way.  See
+    https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings
+    for details.
+
+    """
 
 """
     metadata_model(T; args...)
@@ -122,7 +127,7 @@ function metadata_model(
     supports_training_losses::Union{Nothing,Bool}=nothing,
     reports_feature_importances::Union{Nothing,Bool}=nothing,
 )
-    docstring === nothing || Base.depwarn(DEPWARN_DOCSTRING, :metadata_model)
+    docstring === nothing || Base.depwarn(depwarn_docstring(T), :metadata_model)
 
     program = quote end
 

@@ -187,6 +187,8 @@ function feature_importances end
 
 _named_tuple(named_tuple) = named_tuple
 _named_tuple(::Nothing) = NamedTuple()
+_keys(named_tuple) = keys(named_tuple)
+_keys(::Nothing) = ()
 
 """
     MLJModelInterface.report(model, report_given_method)
@@ -195,25 +197,35 @@ Merge the reports in the dictionary `report_given_method` into a single
 property-accessible object. The possible keys of the dictionary are `:fit` and the
 symbolic names of MLJModelInterface.jl operations, such as `:predict` or
 `:transform`. Each value will be the `report` component returned by a training method
-(`fit` or `update`), in the case of `:fit`, or the corresponding operation.
+(`fit` or `update`) dispatched on the `model` type, in the case of `:fit`, or the
+corresponding operation.
 
 # New model implementations
 
-Overloading this method is optional, unless some value in the dictionary
-`report_given_method` is possibly neither a named tuple nor `nothing`.
+Overloading this method is optional, unless `fit`/`update` or an operation generates a
+report that is niether a named tuple nor `nothing`.
 
 A fallback returns the usual named tuple merge of the dictionary values, ignoring any
-`nothing` values. It is the responsibility of the implementation to ensure individual
-reports will never have clashing keys.
+`nothing` values, assuming there are no conflicts between the keys of the dictionary
+values. In that case, each report is first wrapped in a named tuple with one entry, such
+as `(predict=predict_report,)`.
 
 """
 function report(model, report_given_method)
+
+    return_keys = vcat(collect.(_keys.(values(report_given_method)))...)
+    need_to_wrap = return_keys != unique(return_keys)
 
     # Note that we want to avoid copying values in each individual report named tuple, and
     # merge the reports in a reproducible order.
 
     methods = collect(keys(report_given_method)) |> sort!
-    reports = [_named_tuple(report_given_method[method]) for method in methods]
+    reports = map(methods) do method
+        tup = _named_tuple(report_given_method[method])
+        isempty(tup) ? NamedTuple() :
+            need_to_wrap ? NamedTuple{(method,)}((tup,)) :
+            tup
+    end
 
     return merge(reports...)
 end

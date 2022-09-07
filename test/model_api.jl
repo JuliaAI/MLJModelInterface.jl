@@ -104,4 +104,13 @@ end
         )
     @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
         (x=1, z=3, y=7)
+
+    report_given_method =
+        OrderedCollections.OrderedDict(
+            :predict=>(y=7,),
+            :fit=>(y=1, z=3),
+            :transform=>nothing,
+        )
+    @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
+        (fit=(y=1, z=3), predict=(y=7,))
 end

@@ -227,5 +227,7 @@ function report(model, report_given_method)
             tup
     end
 
-    return merge(reports...)
+    ret = merge(reports...)
+    isempty(ret) && return nothing
+    return ret
 end

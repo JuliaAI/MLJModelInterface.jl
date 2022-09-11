@@ -113,4 +113,9 @@ end
         )
     @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
         (y=1, z=3, predict=(y=7,))
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => nothing, :transform => NamedTuple()),
+    ) == nothing
 end

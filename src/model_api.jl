@@ -194,8 +194,8 @@ _keys(::Nothing) = ()
     MLJModelInterface.report(model, report_given_method)
 
 Merge the reports in the dictionary `report_given_method` into a single
-property-accessible object. The possible keys of the dictionary are `:fit` and the
-symbolic names of MLJModelInterface.jl operations, such as `:predict` or
+property-accessible object. It is supposed that the possible keys of the dictionary are
+`:fit` and the symbolic names of MLJModelInterface.jl operations, such as `:predict` or
 `:transform`. Each value will be the `report` component returned by a training method
 (`fit` or `update`) dispatched on the `model` type, in the case of `:fit`, or the
 corresponding operation.
@@ -203,12 +203,12 @@ corresponding operation.
 # New model implementations
 
 Overloading this method is optional, unless `fit`/`update` or an operation generates a
-report that is niether a named tuple nor `nothing`.
+report that is neither a named tuple nor `nothing`.
 
 A fallback returns the usual named tuple merge of the dictionary values, ignoring any
-`nothing` values, assuming there are no conflicts between the keys of the dictionary
-values. In that case, each report is first wrapped in a named tuple with one entry, such
-as `(predict=predict_report,)`.
+`nothing` values, and assuming there are no conflicts between the keys of the dictionary
+values (the individual reports). If there is a key conflict, all operation reports are
+first wrapped in a named tuple of length one, as in `(predict=predict_report,)`.
 
 """
 function report(model, report_given_method)
@@ -223,7 +223,7 @@ function report(model, report_given_method)
     reports = map(methods) do method
         tup = _named_tuple(report_given_method[method])
         isempty(tup) ? NamedTuple() :
-            need_to_wrap ? NamedTuple{(method,)}((tup,)) :
+            (need_to_wrap && method !== :fit) ? NamedTuple{(method,)}((tup,)) :
             tup
     end
 

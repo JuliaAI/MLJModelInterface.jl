@@ -112,5 +112,5 @@ end
             :transform=>nothing,
         )
     @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
-        (fit=(y=1, z=3), predict=(y=7,))
+        (y=1, z=3, predict=(y=7,))
 end

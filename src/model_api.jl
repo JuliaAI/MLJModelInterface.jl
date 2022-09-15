@@ -100,7 +100,7 @@ part of the tuple returned by `fit`.
 
 """
 fitted_params(::Model, fitresult) = (fitresult=fitresult,)
-
+fitted_params(::Static, ::Nothing) = nothing
 """
 
     predict(model, fitresult, new_data...)

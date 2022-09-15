@@ -188,6 +188,8 @@ function feature_importances end
 _named_tuple(named_tuple::NamedTuple) = named_tuple
 _named_tuple(::Nothing) = NamedTuple()
 _named_tuple(something_else) = (report=something_else,)
+_scrub(x) = x
+_scrub(x::NamedTuple) = isempty(x) ? nothing : x
 _keys(named_tuple) = keys(named_tuple)
 _keys(::Nothing) = ()
 
@@ -213,7 +215,7 @@ reports). If there is a key conflict, all operation reports are first wrapped in
 tuple of length one, as in `(predict=predict_report,)`.
 
 If any dictionary `value` is neither a named tuple nor `nothing`, it is first wrapped as
-`(report=value, )`
+`(report=value, )` before merging.
 
 """
 function report(model, report_given_method)
@@ -224,16 +226,13 @@ function report(model, report_given_method)
     # merge the reports in a reproducible order.
 
     methods = collect(keys(report_given_method)) |> sort!
-    length(methods) == 1 && return report_given_method[only(methods)]
+    length(methods) == 1 && return _scrub(report_given_method[only(methods)])
     need_to_wrap = return_keys != unique(return_keys)
     reports = map(methods) do method
         tup = _named_tuple(report_given_method[method])
         isempty(tup) ? NamedTuple() :
             (need_to_wrap && method !== :fit) ? NamedTuple{(method,)}((tup,)) :
-            tup
+                tup
     end
-
-    ret = merge(reports...)
-    isempty(ret) && return nothing
-    return ret
+    return _scrub(merge(reports...))
 end

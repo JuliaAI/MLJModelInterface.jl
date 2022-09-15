@@ -118,4 +118,11 @@ end
         APIx0(f0=1),
         OrderedCollections.OrderedDict(:fit => nothing, :transform => NamedTuple()),
     ) == nothing
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => 42),
+    ) == 42
+
+
 end

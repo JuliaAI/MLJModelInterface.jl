@@ -185,8 +185,9 @@ If for some reason a model is sometimes unable to report feature importances the
 """
 function feature_importances end
 
-_named_tuple(named_tuple) = named_tuple
+_named_tuple(named_tuple::NamedTuple) = named_tuple
 _named_tuple(::Nothing) = NamedTuple()
+_named_tuple(something_else) = (report=something_else,)
 _keys(named_tuple) = keys(named_tuple)
 _keys(::Nothing) = ()
 
@@ -194,32 +195,37 @@ _keys(::Nothing) = ()
     MLJModelInterface.report(model, report_given_method)
 
 Merge the reports in the dictionary `report_given_method` into a single
-property-accessible object. It is supposed that the possible keys of the dictionary are
+property-accessible object. It is supposed that the keys of the dictionary are
 `:fit` and the symbolic names of MLJModelInterface.jl operations, such as `:predict` or
 `:transform`. Each value will be the `report` component returned by a training method
 (`fit` or `update`) dispatched on the `model` type, in the case of `:fit`, or the
-corresponding operation.
+report component returned by an operation that supports reporting.
 
 # New model implementations
 
-Overloading this method is optional, unless `fit`/`update` or an operation generates a
-report that is neither a named tuple nor `nothing`.
+Overloading this method is optional, unless the model generates reports that are neither
+named tuples nor `nothing`.
 
-A fallback returns the usual named tuple merge of the dictionary values, ignoring any
-`nothing` values, and assuming there are no conflicts between the keys of the dictionary
-values (the individual reports). If there is a key conflict, all operation reports are
-first wrapped in a named tuple of length one, as in `(predict=predict_report,)`.
+Assuming each dictionary value is a named tuple or `nothing`, the fallback returns the
+usual named tuple merge of the dictionary values, ignoring any `nothing` values, and
+assuming there are no conflicts between the keys of the dictionary values (the individual
+reports). If there is a key conflict, all operation reports are first wrapped in a named
+tuple of length one, as in `(predict=predict_report,)`.
+
+If any dictionary `value` is neither a named tuple nor `nothing`, it is first wrapped as
+`(report=value, )`
 
 """
 function report(model, report_given_method)
 
     return_keys = vcat(collect.(_keys.(values(report_given_method)))...)
-    need_to_wrap = return_keys != unique(return_keys)
 
     # Note that we want to avoid copying values in each individual report named tuple, and
     # merge the reports in a reproducible order.
 
     methods = collect(keys(report_given_method)) |> sort!
+    length(methods) == 1 && return report_given_method[only(methods)]
+    need_to_wrap = return_keys != unique(return_keys)
     reports = map(methods) do method
         tup = _named_tuple(report_given_method[method])
         isempty(tup) ? NamedTuple() :

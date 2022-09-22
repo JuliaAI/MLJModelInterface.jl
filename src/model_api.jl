@@ -208,10 +208,11 @@ supports reporting.
 Overloading this method is optional, unless the model generates reports that are neither
 named tuples nor `nothing`.
 
-Assuming each dictionary value is a named tuple or `nothing`, the fallback returns the
-usual named tuple merge of the dictionary values, ignoring any `nothing` values, and
-assuming there are no conflicts between the keys of the dictionary values (the individual
-reports). If there is a key conflict, all operation reports are first wrapped in a named
+Assuming each value in the `report_given_method` dictionary is either a named tuple 
+or `nothing`, and there are no conflicts between the keys of the dictionary values 
+(the individual reports), the fallback returns the usual named tuple merge of the 
+dictionary values, ignoring any `nothing` value. If there is a key conflict, all operation 
+reports are first wrapped in a named
 tuple of length one, as in `(predict=predict_report,)`. A `:fit` report is never wrapped.
 
 If any dictionary `value` is neither a named tuple nor `nothing`, it is first wrapped as

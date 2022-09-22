@@ -197,11 +197,11 @@ _keys(::Nothing) = ()
     MLJModelInterface.report(model, report_given_method)
 
 Merge the reports in the dictionary `report_given_method` into a single
-property-accessible object. It is supposed that the keys of the dictionary are
-`:fit` and the symbolic names of MLJModelInterface.jl operations, such as `:predict` or
-`:transform`. Each value will be the `report` component returned by a training method
-(`fit` or `update`) dispatched on the `model` type, in the case of `:fit`, or the
-report component returned by an operation that supports reporting.
+property-accessible object. It is supposed that each key of the dictionary is either
+`:fit` or the name of an operation, such as `:predict` or `:transform`. Each value will be
+the `report` component returned by a training method (`fit` or `update`) dispatched on the
+`model` type, in the case of `:fit`, or the report component returned by an operation that
+supports reporting.
 
 # New model implementations
 
@@ -212,7 +212,7 @@ Assuming each dictionary value is a named tuple or `nothing`, the fallback retur
 usual named tuple merge of the dictionary values, ignoring any `nothing` values, and
 assuming there are no conflicts between the keys of the dictionary values (the individual
 reports). If there is a key conflict, all operation reports are first wrapped in a named
-tuple of length one, as in `(predict=predict_report,)`.
+tuple of length one, as in `(predict=predict_report,)`. A `:fit` report is never wrapped.
 
 If any dictionary `value` is neither a named tuple nor `nothing`, it is first wrapped as
 `(report=value, )` before merging.

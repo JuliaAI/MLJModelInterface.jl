@@ -323,9 +323,9 @@ end
     eval(:(module UserSide
             import MLJModelInterface: metadata_model, metadata_pkg
             struct A end
-            descr = "something"
+            human_name = "Big Foot"
             # Smoke tests.
-            metadata_model(A; descr=descr)
+            metadata_model(A; human_name)
             metadata_pkg(A)
     end))
 end

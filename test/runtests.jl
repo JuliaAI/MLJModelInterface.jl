@@ -3,6 +3,7 @@ using ScientificTypesBase, ScientificTypes
 using Tables, Distances, CategoricalArrays, InteractiveUtils
 import DataFrames: DataFrame
 import Markdown
+import OrderedCollections
 
 const M  = MLJModelInterface
 const FI = M.FullInterface

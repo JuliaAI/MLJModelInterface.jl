@@ -65,7 +65,7 @@ function _extend!(program::Expr, trait::Symbol, value, T)
     end
 end
 
-const depwarn_docstring(T) =
+depwarn_docstring(T) =
     """
 
     Regarding $T: `metadata_model` should not be called with the keyword argument `descr`

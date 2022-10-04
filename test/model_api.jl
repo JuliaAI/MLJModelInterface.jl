@@ -5,7 +5,6 @@ end
     f0::Int
 end
 
-
 mutable struct APIx1 <: Static end
 
 @testset "selectrows(model, data...)" begin
@@ -95,3 +94,47 @@ mutable struct UnivariateFiniteFitter <: Probabilistic end
     @test yhat == fill(DummyUnivariateFinite(), 3)
 
 end
+
+@testset "fallback for `report()` method" begin
+    report_given_method =
+        OrderedCollections.OrderedDict(
+            :predict=>(y=7,),
+            :fit=>(x=1, z=3),
+            :transform=>nothing,
+        )
+    @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
+        (x=1, z=3, y=7)
+
+    report_given_method =
+        OrderedCollections.OrderedDict(
+            :predict=>(y=7,),
+            :fit=>(y=1, z=3),
+            :transform=>nothing,
+        )
+    @test MLJModelInterface.report(APIx0(f0=1), report_given_method) ==
+        (y=1, z=3, predict=(y=7,))
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => nothing, :transform => NamedTuple()),
+    ) |> isnothing
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => 42),
+    ) == 42
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => nothing),
+    ) |> isnothing
+
+    @test MLJModelInterface.report(
+        APIx0(f0=1),
+        OrderedCollections.OrderedDict(:fit => NamedTuple()),
+    ) |> isnothing
+
+
+end
+
+

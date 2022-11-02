@@ -10,7 +10,7 @@ thereof. The fallback of `reformat` returns the user-provided data
 function fit end
 
 # fallback for static transformations
-fit(::Static, ::Integer, data...) = (nothing, nothing, nothing)
+fit(::Static, verbosity, data...) = (nothing, nothing, nothing)
 
 # fallbacks for supervised models that don't support sample weights:
 fit(m::Supervised, verbosity, X, y, w) = fit(m, verbosity, X, y)

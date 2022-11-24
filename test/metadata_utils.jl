@@ -219,10 +219,6 @@ Yes, we have no bananas. We have no bananas today!
     header  = Markdown.parse(HEADER2)
     comparison =
 """
-```
-FooRegressor2
-```
-
 From MLJ, the `FooRegressor2` type can be imported using
 
 ```

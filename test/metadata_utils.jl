@@ -158,7 +158,8 @@ FooRegressor
 ```
 
 A model type for constructing a foo regressor, based on
-[FooRegressorPkg.jl](http://existentialcomics.com/).
+[FooRegressorPkg.jl](http://existentialcomics.com/), and implementing the MLJ model
+interface.
 
 From MLJ, the type can be imported using
 
@@ -171,9 +172,69 @@ Provide keyword arguments to override hyper-parameter
 defaults, as in `FooRegressor(a=...)`.
 """ |> chomp |> Markdown.parse
 
+    @test string(header) == string(comparison)
 end
 
 @testset "document string" begin
     doc = (@doc FooRegressor) |> string |> chomp
+    @test endswith(doc, "We have no bananas today!")
+end
+
+
+# # DOC STRING - AUGMENTED CASE
+
+"""Cool model"""
+@mlj_model mutable struct FooRegressor2 <: Deterministic
+    a::Int = 0::(_ ≥ 0)
+    b
+end
+
+metadata_pkg(FooRegressor2,
+    name="FooRegressor2Pkg",
+    uuid="10745b16-79ce-11e8-11f9-7d13ad32a3b2",
+    url="http://existentialcomics.com/",
+    julia=true,
+    license="MIT",
+    is_wrapper=false
+    )
+
+# this is added in MLJBase but not in MLJModelInterface, to avoid
+# InteractiveUtils as dependency:
+setfull()
+M.implemented_methods(::FI, M::Type{<:MLJType}) =
+    getfield.(methodswith(M), :name)
+
+const HEADER2 = MLJModelInterface.doc_header(FooRegressor2, augment=true)
+
+@doc """
+$HEADER2
+
+Yes, we have no bananas. We have no bananas today!
+""" FooRegressor2
+
+@testset "doc_header(ModelType, augment=true)" begin
+
+    # we test markdown parsed strings for less fussy comparison
+
+    header  = Markdown.parse(HEADER2)
+    comparison =
+"""
+From MLJ, the `FooRegressor2` type can be imported using
+
+```
+FooRegressor2 = @load FooRegressor2 pkg=FooRegressor2Pkg
+```
+
+Do `model = FooRegressor2()` to construct an instance with default hyper-parameters.
+Provide keyword arguments to override hyper-parameter
+defaults, as in `FooRegressor2(a=...)`.
+""" |> chomp |> Markdown.parse
+
+    @test string(header) == string(comparison)
+
+end
+
+@testset "document string" begin
+    doc = (@doc FooRegressor2) |> string |> chomp
     @test endswith(doc, "We have no bananas today!")
 end

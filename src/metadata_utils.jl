@@ -152,7 +152,7 @@ end
 # example given in the docstring for `doc_header`.
 
 """
-    MLJModelInterface.doc_header(SomeModelType)
+    MLJModelInterface.doc_header(SomeModelType; augment=false)
 
 Return a string suitable for interpolation in the document string of
 an MLJ model type. In the example given below, the header expands to
@@ -199,7 +199,7 @@ metadata_model(FooRegressor,
     descr="La di da")
 ```
 
-Then the docstring is defined post-facto with the following code:
+Then the docstring is defined after these declarations with the following code:
 
 ```
 \"\"\"
@@ -216,15 +216,37 @@ FooRegressor
 
 ```
 
+# Variation to augment existing document string
+
+For models that have a native API with separate documentation, one may want to call
+`doc_header(FooRegressor, augment=true)` instead. In that case, the output will look like
+this:
+
+>From MLJ, the `FooRegressor` type can be imported using
+>
+>
+>    `FooRegressor = @load FooRegressor pkg=FooRegressorPkg`
+>
+>Construct an instance with default hyper-parameters using the syntax
+>`model = FooRegressor()`. Provide keyword arguments to override
+>hyper-parameter defaults, as in `FooRegressor(a=...)`.
+
+To prevent an existing document string being *replaced* instead of augmented, the
+`doc_header` declaration must appear in a different module from the original.
+
 """
-function doc_header(SomeModelType)
+function doc_header(SomeModelType; augment=false)
     name = MLJModelInterface.name(SomeModelType)
     human_name = MLJModelInterface.human_name(SomeModelType)
     package_name = MLJModelInterface.package_name(SomeModelType)
     package_url = MLJModelInterface.package_url(SomeModelType)
     params = MLJModelInterface.hyperparameters(SomeModelType)
 
-    ret =
+    top = augment ?
+        """
+        From MLJ, the `$name` type can be imported using
+
+        """ :
         """
         ```
         $name
@@ -235,7 +257,9 @@ function doc_header(SomeModelType)
         model interface.
 
         From MLJ, the type can be imported using
-
+        """
+    ret = top*
+        """
         ```
         $name = @load $name pkg=$package_name
         ```

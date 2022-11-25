@@ -231,9 +231,6 @@ this:
 >`model = FooRegressor()`. Provide keyword arguments to override
 >hyper-parameter defaults, as in `FooRegressor(a=...)`.
 
-To prevent an existing document string being *replaced* instead of augmented, the
-`doc_header` declaration must appear in a different module from the original.
-
 """
 function doc_header(SomeModelType; augment=false)
     name = MLJModelInterface.name(SomeModelType)

@@ -41,6 +41,7 @@ const ABSTRACT_MODEL_SUBTYPES = [
     :Probabilistic,
     :Deterministic,
     :Interval,
+    :ProbabilisticSet,
     :JointProbabilistic,
     :Static,
     :Annotator,
@@ -143,6 +144,7 @@ abstract type Annotator <: Model end
 abstract type Probabilistic <: Supervised end
 abstract type Deterministic <: Supervised end
 abstract type Interval <: Supervised end
+abstract type ProbabilisticSet <: Supervised end
 
 abstract type JointProbabilistic <: Probabilistic end
 

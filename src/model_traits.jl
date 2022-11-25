@@ -27,6 +27,7 @@ StatTraits.is_supervised(::Type{<:SupervisedAnnotator}) = true
 StatTraits.prediction_type(::Type{<:Deterministic}) = :deterministic
 StatTraits.prediction_type(::Type{<:Probabilistic}) = :probabilistic
 StatTraits.prediction_type(::Type{<:Interval}) = :interval
+StatTraits.prediction_type(::Type{<:ProbabilisticSet}) = :probabilistic_set
 StatTraits.prediction_type(::Type{<:ProbabilisticDetector}) = :probabilistic
 StatTraits.prediction_type(::Type{<:DeterministicDetector}) = :deterministic
 

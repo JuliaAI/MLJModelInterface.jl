@@ -195,8 +195,7 @@ metadata_pkg(FooRegressor,
     )
 metadata_model(FooRegressor,
     input=Table(Continuous),
-    target=AbstractVector{Continuous},
-    descr="La di da")
+    target=AbstractVector{Continuous})
 ```
 
 Then the docstring is defined after these declarations with the following code:

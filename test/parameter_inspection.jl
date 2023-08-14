@@ -1,22 +1,23 @@
 using Test
 using MLJModelInterface
 
-struct Opaque
+struct Opaque <: Model
     a::Int
 end
 
-struct Transparent
+struct Transparent <: Model
     A::Int
     B::Opaque
 end
 
 MLJModelInterface.istransparent(::Transparent) = true
 
-struct Dummy <:MLJType
+struct Dummy <: Model
     t::Transparent
     o::Opaque
     n::Integer
 end
+
 
 @testset "params method" begin
 
@@ -26,10 +27,20 @@ end
     @test params(m) == (
         t = (
             A = 6,
-            B = Opaque(5)
+            B = (
+                a = 5,
+            )
         ),
-        o = Opaque(7),
+        o = (
+            a = 7,
+        ),
         n = 42
+    )
+    @test flat_params(m) == Dict(
+        "o__a" => 7,
+        "t__A" => 6,
+        "t__B__a" => 5,
+        "n" => 42
     )
 end
 true

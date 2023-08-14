@@ -30,6 +30,33 @@ function params(m, ::Val{true})
     return NamedTuple{fields}(Tuple([params(getfield(m, field)) for field in fields]))
 end
 
+isamodel(::Any) = false
+isamodel(::Model) = true
 
+"""
+    flat_params(m::Model)
 
+Recursively convert any object subtyping `Model` into a named tuple, keyed on
+the property names of `m`. The named tuple is possibly nested because
+`flat_params` is recursively applied to the property values, which themselves
+might subtype `Model`.
 
+For most `Model` objects, properties are synonymous with fields, but this is
+not a hard requirement.
+
+    julia> flat_params(EnsembleModel(atom=ConstantClassifier()))
+    (atom = (target_type = Bool,),
+     weights = Float64[],
+     bagging_fraction = 0.8,
+     rng_seed = 0,
+     n = 100,
+     parallel = true,)
+
+"""
+flat_params(m; prefix="") = flat_params(m, Val(isamodel(m)); prefix=prefix)
+flat_params(m, ::Val{false}; prefix="") = NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
+function flat_params(m, ::Val{true}; prefix="")
+    fields = propertynames(m)
+    prefix = prefix == "" ? "" : prefix * "__"
+    merge([flat_params(getproperty(m, field); prefix="$(prefix)$(field)") for field in fields]...)
+end

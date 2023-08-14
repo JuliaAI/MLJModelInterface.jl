@@ -36,8 +36,8 @@ isamodel(::Model) = true
 """
     flat_params(m::Model)
 
-Recursively convert any object subtyping `Model` into a dictionary, keyed on
-the property names of `m`. The dictionary is possibly nested because
+Recursively convert any object subtyping `Model` into a named tuple, keyed on
+the property names of `m`. The named tuple is possibly nested because
 `flat_params` is recursively applied to the property values, which themselves
 might subtype `Model`.
 
@@ -54,7 +54,7 @@ not a hard requirement.
 
 """
 flat_params(m; prefix="") = flat_params(m, Val(isamodel(m)); prefix=prefix)
-flat_params(m, ::Val{false}; prefix="") = Dict(prefix=>m)
+flat_params(m, ::Val{false}; prefix="") = NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
 function flat_params(m, ::Val{true}; prefix="")
     fields = propertynames(m)
     prefix = prefix == "" ? "" : prefix * "__"

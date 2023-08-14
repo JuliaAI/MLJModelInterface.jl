@@ -80,7 +80,7 @@ end
 export UnivariateFinite
 
 # parameter_inspection:
-export params, flat_params
+export params
 
 # model constructor + metadata
 export @mlj_model, metadata_pkg, metadata_model

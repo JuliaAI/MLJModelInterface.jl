@@ -35,8 +35,8 @@ end
 end
 
 struct ChildModel <: Model
-    x::Int
-    y::String
+    r::Int
+    s
 end
 
 struct ParentModel <: Model
@@ -46,18 +46,20 @@ struct ParentModel <: Model
     second_child::ChildModel
 end
 
+struct Missy <: Model end
+
 @testset "flat_params method" begin
 
     m = ParentModel(1, "parent", ChildModel(2, "child1"),
-        ChildModel(3, "child2"))
+        ChildModel(3, Missy()))
 
     @test MLJModelInterface.flat_params(m) == (
         x = 1,
         y = "parent",
-        first_child__x = 2,
-        first_child__y = "child1",
-        second_child__x = 3,
-        second_child__y = "child2"
+        first_child__r = 2,
+        first_child__s = "child1",
+        second_child__r = 3,
+        second_child__s = Missy()
     )
 end
 true

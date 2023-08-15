@@ -30,8 +30,8 @@ function params(m, ::Val{true})
     return NamedTuple{fields}(Tuple([params(getfield(m, field)) for field in fields]))
 end
 
-isamodel(::Any) = false
-isamodel(::Model) = true
+isnotaleaf(::Any) = false
+isnotaleaf(m::Model) = length(propertynames(m)) > 0
 
 """
     flat_params(m::Model)
@@ -53,13 +53,10 @@ not a hard requirement.
      parallel = true,)
 
 """
-flat_params(m; prefix="") = flat_params(m, Val(isamodel(m)); prefix=prefix)
+flat_params(m; prefix="") = flat_params(m, Val(isnotaleaf(m)); prefix=prefix)
 flat_params(m, ::Val{false}; prefix="") = NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
 function flat_params(m, ::Val{true}; prefix="")
     fields = propertynames(m)
-    if isempty(fields)
-        return NamedTuple{(Symbol(prefix),)}((m,))
-    end
     prefix = prefix == "" ? "" : prefix * "__"
     merge([flat_params(getproperty(m, field); prefix="$(prefix)$(field)") for field in fields]...)
 end

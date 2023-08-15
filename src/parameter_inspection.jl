@@ -57,6 +57,9 @@ flat_params(m; prefix="") = flat_params(m, Val(isamodel(m)); prefix=prefix)
 flat_params(m, ::Val{false}; prefix="") = NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
 function flat_params(m, ::Val{true}; prefix="")
     fields = propertynames(m)
+    if isempty(fields)
+        return NamedTuple{(Symbol(prefix),)}((m,))
+    end
     prefix = prefix == "" ? "" : prefix * "__"
     merge([flat_params(getproperty(m, field); prefix="$(prefix)$(field)") for field in fields]...)
 end

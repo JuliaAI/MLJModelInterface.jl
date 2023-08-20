@@ -62,12 +62,12 @@ function _process_model_def(modl, ex)
             if line.head == :(=) # assignment for default
                 default = line.args[2]
                 # if a constraint is given (value::constraint)
-                if default isa Expr && length(default.args) > 1
+                if default isa Expr && default.head == :(::)
                     constraints[param] = default.args[2]
                     # now discard the constraint to keep only the value
                     default = default.args[1]
                 end
-                defaults[param] = default # this will be a value not an expr
+                defaults[param] = default
 
                 # name or name::Type (for the constructor)
                 ex.args[3].args[i] = line.args[1] 

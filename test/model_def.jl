@@ -151,3 +151,34 @@ end
     @test Cc().a === nothing
     @test Cd().a === missing
 end
+
+@testset "Expression defaults" begin
+    # Should work with and without constraint:
+    @mlj_model mutable struct Foo1
+        a::Vector{Int} = [1, 2, 3]
+    end
+    @test Foo1().a == [1, 2, 3]
+    @mlj_model mutable struct Foo2
+        a::Vector{Int} = [1, 2, 3]::(true)
+    end
+    @test Foo2().a == [1, 2, 3]
+
+    # Constraints applied
+    @mlj_model mutable struct Foo3
+        a::Vector{Int} = [1, 2, 3]::(all(>(0), _))
+    end
+    @test redirect_stderr(devnull) do
+        Foo3(; a = [-1]).a == [1, 2, 3]
+    end
+
+    # Negative number:
+    @mlj_model mutable struct Foo4
+        a::Float64 = -1.0
+    end
+    @test Foo4().a === -1.0
+    @mlj_model mutable struct Foo5
+        a::Float64 = (-1.0)::(true)
+    end
+    @test Foo5().a == -1.0
+
+end

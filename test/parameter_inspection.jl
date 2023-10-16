@@ -48,6 +48,8 @@ end
 
 struct Missy <: Model end
 
+struct EmptyModel <: Model end
+
 @testset "flat_params method" begin
 
     m = ParentModel(1, "parent", ChildModel(2, "child1"),
@@ -61,5 +63,7 @@ struct Missy <: Model end
         second_child__r = 3,
         second_child__s = Missy()
     )
+
+    @test MLJModelInterface.flat_params(EmptyModel()) == NamedTuple()
 end
 true

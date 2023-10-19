@@ -13,8 +13,8 @@ values, which themselves might be transparent.
 Most objects of type `MLJType` are transparent.
 
 ```julia
-julia> params(EnsembleModel(atom=ConstantClassifier()))
-(atom = (target_type = Bool,),
+julia> params(EnsembleModel(model=ConstantClassifier()))
+(model = (target_type = Bool,),
 weights = Float64[],
 bagging_fraction = 0.8,
 rng_seed = 0,
@@ -36,25 +36,42 @@ isnotaleaf(m::Model) = length(propertynames(m)) > 0
 """
     flat_params(m::Model)
 
-Recursively convert any object subtyping `Model` into a named tuple, keyed on
-the property names of `m`. The named tuple is possibly nested because
-`flat_params` is recursively applied to the property values, which themselves
-might subtype `Model`.
+Deconstruct any `Model` instance `model` as a flat named tuple, keyed on property
+names. Properties of nested model instances are recursively exposed,.as shown in the
+example below.  For most `Model` objects, properties are synonymous with fields, but this
+is not a hard requirement.
 
-For most `Model` objects, properties are synonymous with fields, but this is
-not a hard requirement.
+```julia
+using MLJModels
+using EnsembleModels
+tree = (@load DecisionTreeClassifier pkg=DecisionTree)
 
-    julia> flat_params(EnsembleModel(atom=ConstantClassifier()))
-    (atom = (target_type = Bool,),
-     weights = Float64[],
-     bagging_fraction = 0.8,
-     rng_seed = 0,
-     n = 100,
-     parallel = true,)
+julia> flat_params(EnsembleModel(model=tree))
+(model__max_depth = -1,
+ model__min_samples_leaf = 1,
+ model__min_samples_split = 2,
+ model__min_purity_increase = 0.0,
+ model__n_subfeatures = 0,
+ model__post_prune = false,
+ model__merge_purity_threshold = 1.0,
+ model__display_depth = 5,
+ model__feature_importance = :impurity,
+ model__rng = Random._GLOBAL_RNG(),
+ atomic_weights = Float64[],
+ bagging_fraction = 0.8,
+ rng = Random._GLOBAL_RNG(),
+ n = 100,
+ acceleration = CPU1{Nothing}(nothing),
+ out_of_bag_measure = Any[],)
+```
+
 
 """
 flat_params(m; prefix="") = flat_params(m, Val(isnotaleaf(m)); prefix=prefix)
-flat_params(m, ::Val{false}; prefix="") = NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
+function flat_params(m, ::Val{false}; prefix="")
+    prefix == "" && return NamedTuple()
+    NamedTuple{(Symbol(prefix),), Tuple{Any}}((m,))
+end
 function flat_params(m, ::Val{true}; prefix="")
     fields = propertynames(m)
     prefix = prefix == "" ? "" : prefix * "__"

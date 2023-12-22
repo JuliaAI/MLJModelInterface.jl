@@ -141,7 +141,7 @@ function _model_constructor(modelname, params, defaults)
         Expr(
             :block,
             Expr(:(=), :model, Expr(:call, :new, params...)),
-            :(message = MLJModelInterface.clean!(model)),
+            :(message = $MLJModelInterface.clean!(model)),
 			:(isempty(message) || @warn message),
 			:(return model)
 		)
@@ -158,7 +158,7 @@ in a model def.
 function _model_cleaner(modelname, defaults, constraints)
     Expr(
         :function,
-        :(MLJModelInterface.clean!(model::$modelname)),
+        :($MLJModelInterface.clean!(model::$modelname)),
         # body of the function
         Expr(
             :block,

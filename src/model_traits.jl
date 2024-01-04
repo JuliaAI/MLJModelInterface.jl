@@ -97,50 +97,39 @@ end
 # in `prediction_type` for models which, historically, have not
 # implemented the trait.
 
+# Actually, this has proven more trouble than it's worth and should be removed in 2.0.
+# See https://discourse.julialang.org/t/deconstructing-unionall-types/108328 to appreciate
+# some of the complications.
+
 function StatTraits.predict_scitype(
     M::Type{<:Union{Probabilistic, ProbabilisticDetector}}
 )
     return _density(target_scitype(M))
 end
 
-_density(::Any) = Unknown
+const SCALAR_SCITYPES_EXS =
+    [:Finite, :Multiclass, :OrderedFactor, :Infinite, :Continuous, :Count, :Textual]
 
-for T in [:Continuous, :Count, :Textual]
-    eval(
-        quote
-            function _density(::Type{AbstractArray{$T, D}}) where D
-                return AbstractArray{Density{$T}, D}
-            end
-        end
-    )
+const SCALAR_SCITYPES =
+    eval.([:Finite, :Multiclass, :OrderedFactor, :Infinite, :Continuous, :Count, :Textual])
+
+function _density(t)
+    for T in SCALAR_SCITYPES
+        t == AbstractVector{<:T} && return AbstractVector{Density{<:T}}
+        t == AbstractMatrix{<:T} && return AbstractMatrix{Density{<:T}}
+        t == Table(T) && return Table{<:AbstractVector{<:Density{<:T}}}
+    end
+    for T in  [Finite, Multiclass, OrderedFactor]
+        t == Table(T{2}) && return Table(Density{<:T{2}})
+    end
+    return Unknown
 end
 
-for T in [:Finite, :Multiclass, :OrderedFactor, :Infinite, :Continuous, :Count, :Textual]
-    eval(
+for T in SCALAR_SCITYPES_EXS
         quote
-            function _density(::Type{AbstractArray{<:$T, D}}) where D
-                return AbstractArray{Density{<:$T}, D}
-            end
-
-            _density(::Type{Table($T)}) = Table(Density{$T})
-        end
-    )
+            _density(::Type{<:AbstractArray{W, D}}) where {W<:$T, D} =
+                AbstractArray{Density{W}, D}
+            _density(::Type{<:Table{<:AbstractVector{W}}}) where W<:$T =
+                Table(Density{W})
+        end |> eval
 end
-
-
-for T in [:Finite, :Multiclass, :OrderedFactor]
-    eval(
-        quote
-            function _density(::Type{AbstractArray{<:$T{N}, D}}) where {N, D}
-                return AbstractArray{Density{<:$T{N}}, D}
-            end
-
-            function _density(::Type{AbstractArray{$T{N}, D}}) where {N, D}
-                return AbstractArray{Density{$T{N}}, D}
-            end
-
-            _density(::Type{Table($T{N})}) where N = Table(Density{$T{N}})
-        end
-    )
-end
-

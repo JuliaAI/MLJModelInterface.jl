@@ -198,12 +198,6 @@ metadata_pkg(FooRegressor2,
     is_wrapper=false
     )
 
-# this is added in MLJBase but not in MLJModelInterface, to avoid
-# InteractiveUtils as dependency:
-setfull()
-M.implemented_methods(::FI, M::Type{<:MLJType}) =
-    getfield.(methodswith(M), :name)
-
 const HEADER2 = MLJModelInterface.doc_header(FooRegressor2, augment=true)
 
 @doc """

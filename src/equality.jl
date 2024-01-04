@@ -124,7 +124,7 @@ function is_same_except(m1::M1,
                         is_same_except(
                             getproperty(m1, name),
                             getproperty(m2, name)
-                        ) || 
+                        ) ||
                         getproperty(m1, name) isa AbstractRNG ||
                         getproperty(m2, name) isa AbstractRNG
                     ) || return false
@@ -155,7 +155,8 @@ function special_in(x, itr)::Union{Bool,Missing}
 end
 
 Base.in(x::MLJType, itr::Set) = special_in(x, itr)
-Base.in(x::MLJType, itr::AbstractVector) = special_in(x, itr)
+Base.in(x::MLJType, itr::AbstractVector{<:MLJType}) = special_in(x, itr)
+Base.in(x::MLJType, itr::AbstractRange{<:MLJType}) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
 
 # A version of `in` that actually uses `==`:

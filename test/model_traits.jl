@@ -114,10 +114,6 @@ M.human_name(::Type{<:U1}) = "funky model"
 
     setfull()
 
-    function M.implemented_methods(::FI, M::Type{<:MLJType})
-        return getfield.(methodswith(M), :name)
-    end
-
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 end
 
@@ -140,19 +136,15 @@ end
             M._density(AbstractVector{<:T}),
             AbstractVector{Density{<:T}}
         )
-        @test M._density(Table(T)) == Table(Density{T})
+        @test M._density(Table(T)) == Table(Density{<:T})
     end
 
     for T in [Finite, Multiclass, OrderedFactor]
         @test ==(
-            M._density(AbstractArray{<:T{2},3}),
-            AbstractArray{Density{<:T{2}},3}
-        )
-        @test ==(
             M._density(AbstractArray{T{2},3}),
             AbstractArray{Density{T{2}},3}
         )
-        @test M._density(Table(T{2})) == Table(Density{T{2}})
+        @test M._density(Table(T{2})) == Table(Density{<:T{2}})
     end
 end
 

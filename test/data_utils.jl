@@ -23,14 +23,15 @@ end
     # needing the `FullInterface`.
     X = (1, 2, 3)
     @test_throws M.InterfaceError matrix(X)
-    
+
     X = (a=[1, 2, 3], b=[1, 2, 3])
     @test_throws M.InterfaceError matrix(X)
 end
 
 @testset "matrix-full" begin
     setfull()
-    M.matrix(::FI, ::Val{:table}, X; kw...) = Tables.matrix(X; kw...)
+    # next line commented out as already defined in test/mode.jl:
+    # M.matrix(::FI, ::Val{:table}, X; kw...) = Tables.matrix(X; kw...)
     X = (a=[1, 2, 3], b=[1, 2, 3])
     @test matrix(X) == hcat([1, 2, 3], [1, 2, 3])
 end
@@ -120,14 +121,14 @@ end
 # ------------------------------------------------------------------------
 @testset "istable" begin
     # Nothing stops someone from implementing a Tables.jl
-    # interface that subtypes `AbstractArray`, so therefore 
+    # interface that subtypes `AbstractArray`, so therefore
     # `istable` should throw an error for `LightInterface`
     setlight()
     X = rand(5)
     @test_throws M.InterfaceError M.istable(X)
     X = randn(5, 5)
     @test_throws M.InterfaceError M.istable(X)
-    
+
     # The method runs in `FullInterface`
     setfull()
     X = rand(5)
@@ -184,10 +185,10 @@ end
     X = ones(5)
     @test nrows(X) == 5
     X = ones(5, 3)
-    @test nrows(X) == 5 
-    # It doesn't make sense to get the numbers of rows for 
-    # `AbstractArray`'s of dimension 3 or more. Except if these are 
-    # defined as Tables. Hence `FullInterface` would be required to check this 
+    @test nrows(X) == 5
+    # It doesn't make sense to get the numbers of rows for
+    # `AbstractArray`'s of dimension 3 or more. Except if these are
+    # defined as Tables. Hence `FullInterface` would be required to check this
     X = ones(5, 3, 2)
     @test_throws ArgumentError nrows(X)
     M.nrows(::FI, ::Val{:table}, X) = Tables.rowcount(X)
@@ -220,13 +221,13 @@ end
 
 @testset "select-full" begin
     setfull()
-   
+
     # test fallback
     X = nothing
     @test selectrows(X, 1) === nothing
     @test selectcols(X, 1) === nothing
     @test select(X, 1, 2) === nothing
-    
+
     # vector
     X = ones(5)
     @test selectrows(X, 1) == [1.0]
@@ -273,11 +274,11 @@ end
 
     project(t::NamedTuple, label::Colon) = t
     project(t::NamedTuple, label::Symbol) = project(t, [label,])
-    
+
     function project(t::NamedTuple, indices::AbstractArray{<:Integer})
         return NamedTuple{tuple(keys(t)[indices]...)}(tuple([t[i] for i in indices]...))
     end
-    
+
     project(t::NamedTuple, i::Integer) = project(t, [i,])
 
     X = (x=[1, 2, 3], y=[4, 5, 6], z=[0, 0, 0])
@@ -292,7 +293,7 @@ end
     @test select(X, :, 1) == [1, 2, 3]
     @test selectcols(X, :x) == [1, 2, 3]
     @test select(X, 1:2, :z) == [0, 0]
-    
+
     # extra tests by Anthony
     X = (x=[1, 2, 3], y=[10, 20, 30], z= [:a, :b, :c])
     @test select(X, 2, :y) == 20

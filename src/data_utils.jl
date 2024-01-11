@@ -58,7 +58,7 @@ end
 # int
 
 """
-   int(x; type=nothing)
+   int(x)
 
 The positional integer of the `CategoricalString` or `CategoricalValue` `x`, in
 the ordering defined by the pool of `x`. The type of `int(x)` is the reference
@@ -96,9 +96,9 @@ julia> int(v)
 ```
 See also: [`decoder`](@ref).
 """
-function int(x; type::Union{Nothing, Type{T}}=nothing) where T <: Real
+function int(x; type=nothing)
     type === nothing && return int(get_interface_mode(), x)
-    return convert.(T, int(get_interface_mode(), x))
+    return convert.(type, int(get_interface_mode(), x))
 end
 
 int(::LightInterface, x) = errlight("int")

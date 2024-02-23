@@ -1,2 +1,10 @@
-*DS_Store
 Manifest.toml
+.ipynb_checkpoints
+*~
+#*
+.DS_Store
+sandbox/
+/docs/build/
+/docs/site/
+/docs/Manifest.toml
+.vscode

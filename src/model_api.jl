@@ -63,7 +63,7 @@ user-representation. When `reformat` is overloaded,
 `selectrows(::Model, ...)` must be as well (see
 [`selectrows`](@ref)). Furthermore, the model `fit` method(s), and
 operations, such as `predict` and `transform`, must be refactored to
-act on the model-specific representions of the data.
+act on the model-specific representations of the data.
 
 To implement the `reformat` data front-end for a model, refer to
 "Implementing a data front-end" in the [MLJ
@@ -88,7 +88,7 @@ new object and *not* a view is returned.
 selectrows(::Model, I, data...) = map(X -> selectrows(X, I), data)
 
 # this operation can be optionally overloaded to provide access to
-# fitted parameters (eg, coeficients of linear model):
+# fitted parameters (eg, coefficients of linear model):
 """
     fitted_params(model, fitresult) -> human_readable_fitresult # named_tuple
 

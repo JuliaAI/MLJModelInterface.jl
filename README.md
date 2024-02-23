@@ -16,4 +16,4 @@ machine learning models into
 combining and optimizing machine learning models in Julia. A third party package wanting
 to integrate their machine learning models into MLJ must import the module
 `MLJModelInterface` defined in this package, as described in the
-[documentation]((https://juliaai.github.io/MLJModelInterface.jl/stable/).
+[documentation](https://juliaai.github.io/MLJModelInterface.jl/stable/).

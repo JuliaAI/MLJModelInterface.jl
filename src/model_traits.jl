@@ -59,7 +59,7 @@ function supervised_fit_data_scitype(M)
         W = AbstractVector{<:Union{Continuous, Count}} # weight scitype
         return Union{ret, Tuple{I, T, W}}
     elseif supports_class_weights(M)
-        W = AbstractDict{Finite, <:Union{Continuous, Count}}
+        W = Any
         return Union{ret, Tuple{I, T, W}}
     end
     return ret

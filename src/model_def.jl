@@ -22,7 +22,7 @@ When no default field value is given a heuristic is to guess an
 appropriate default (eg, zero for a `Float64` parameter). To this end,
 the specified type expression is evaluated in the module `modl`.
 
- """
+"""
 function _process_model_def(modl, ex)
     defaults = Dict{Symbol, Any}()
     constraints = Dict{Symbol, Any}()
@@ -47,7 +47,7 @@ function _process_model_def(modl, ex)
             #
             # where line.args[1] will either be just `name`  or `name::Type`
             # and   line.args[2] will either be just `value` or `value::constraint`
-            # -----------------------------------------------------------------------------
+            # ---------------------------------------------------------------------
             # 1. decompose `line.args[1]` appropriately (name and type)
             if line.args[1] isa Symbol # case :a
                 param = line.args[1]
@@ -56,7 +56,7 @@ function _process_model_def(modl, ex)
                 param, type = line.args[1].args[1:2] # (:a, Int)
             end
             push!(params, param)
-            
+
             # ------------------------------------------------------------------
             # 2. decompose `line.args[2]` appropriately (values and constraints)
             if line.head == :(=) # assignment for default
@@ -70,10 +70,10 @@ function _process_model_def(modl, ex)
                 defaults[param] = default
 
                 # name or name::Type (for the constructor)
-                ex.args[3].args[i] = line.args[1] 
+                ex.args[3].args[i] = line.args[1]
             else
                 # these are simple heuristics when no default value is given for the
-                # field but an "obvious" one can be provided implicitly 
+                # field but an "obvious" one can be provided implicitly
                 # (ideally this should not be used as it's not very clear
                 # that the intention matches the usage)
                 eff_type = modl.eval(type)
@@ -142,10 +142,10 @@ function _model_constructor(modelname, params, defaults)
             :block,
             Expr(:(=), :model, Expr(:call, :new, params...)),
             :(message = $MLJModelInterface.clean!(model)),
-			:(isempty(message) || @warn message),
-			:(return model)
-		)
-	)
+                        :(isempty(message) || @warn message),
+                        :(return model)
+                )
+        )
 end
 
 
@@ -201,11 +201,11 @@ Macro to help define MLJ models with constraints on the default parameters.
 """
 macro mlj_model(ex)
     ex, modelname, params, defaults, constraints = _process_model_def(__module__, ex)
-	# keyword constructor
+    # keyword constructor
     const_ex = _model_constructor(modelname, params, defaults)
-	# associate the constructor with the definition of the struct
+    # associate the constructor with the definition of the struct
     push!(ex.args[3].args, const_ex)
-	# cleaner
+    # cleaner
     clean_ex = _model_cleaner(modelname, defaults, constraints)
     esc(
         quote

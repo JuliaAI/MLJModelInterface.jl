@@ -12,14 +12,14 @@ values, which themselves might be transparent.
 
 Most objects of type `MLJType` are transparent.
 
-```julia
+```julia-repl
 julia> params(EnsembleModel(model=ConstantClassifier()))
 (model = (target_type = Bool,),
-weights = Float64[],
-bagging_fraction = 0.8,
-rng_seed = 0,
-n = 100,
-parallel = true,)
+ weights = Float64[],
+ bagging_fraction = 0.8,
+ rng_seed = 0,
+ n = 100,
+ parallel = true,)
 ```
 """
 params(m) = params(m, Val(istransparent(m)))
@@ -41,10 +41,10 @@ names. Properties of nested model instances are recursively exposed,.as shown in
 example below.  For most `Model` objects, properties are synonymous with fields, but this
 is not a hard requirement.
 
-```julia
-using MLJModels
-using EnsembleModels
-tree = (@load DecisionTreeClassifier pkg=DecisionTree)
+```julia-repl
+julia> using MLJModels
+julia> using EnsembleModels
+julia> tree = (@load DecisionTreeClassifier pkg=DecisionTree)();
 
 julia> flat_params(EnsembleModel(model=tree))
 (model__max_depth = -1,

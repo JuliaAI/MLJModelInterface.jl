@@ -31,9 +31,9 @@ similar fashion. The main differences are:
   is the same as `transform`, as in
   `MLJModelInterface.inverse_transform(model, fitresult, Xout)`, which:
    - must make sense for any `Xout` for which `scitype(Xout) <:
-	 output_scitype(SomeSupervisedModel)` (see below); and
+     output_scitype(SomeSupervisedModel)` (see below); and
    - must return an object `Xin` satisfying `scitype(Xin) <:
-	 input_scitype(SomeSupervisedModel)`.
+     input_scitype(SomeSupervisedModel)`.
 
 For sample implementatations, see MLJ's [built-in
 transformers](https://github.com/JuliaAI/MLJModels.jl/blob/dev/src/builtins/Transformers.jl)

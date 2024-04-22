@@ -84,10 +84,12 @@ Suppose a supervised model type `SomeSupervised` supports sample
 weights, leading to two different `fit` signatures, and that it has a
 single operation `predict`:
 
-	fit(model::SomeSupervised, verbosity, X, y)
-	fit(model::SomeSupervised, verbosity, X, y, w)
+```julia
+fit(model::SomeSupervised, verbosity, X, y)
+fit(model::SomeSupervised, verbosity, X, y, w)
 
-	predict(model::SomeSupervised, fitresult, Xnew)
+predict(model::SomeSupervised, fitresult, Xnew)
+```
 
 Without a data front-end implemented, suppose `X` is expected to be a
 table and `y` a vector, but suppose the core algorithm always converts
@@ -95,19 +97,21 @@ table and `y` a vector, but suppose the core algorithm always converts
 a column in the table).  Then a new data-front end might look like
 this:
 
-	constant MMI = MLJModelInterface
+```julia
+constant MMI = MLJModelInterface
 
-	# for fit:
-	MMI.reformat(::SomeSupervised, X, y) = (MMI.matrix(X)', y)
-	MMI.reformat(::SomeSupervised, X, y, w) = (MMI.matrix(X)', y, w)
-	MMI.selectrows(::SomeSupervised, I, Xmatrix, y) =
-		(view(Xmatrix, :, I), view(y, I))
-	MMI.selectrows(::SomeSupervised, I, Xmatrix, y, w) =
-		(view(Xmatrix, :, I), view(y, I), view(w, I))
+# for fit:
+MMI.reformat(::SomeSupervised, X, y) = (MMI.matrix(X)', y)
+MMI.reformat(::SomeSupervised, X, y, w) = (MMI.matrix(X)', y, w)
+MMI.selectrows(::SomeSupervised, I, Xmatrix, y) =
+        (view(Xmatrix, :, I), view(y, I))
+MMI.selectrows(::SomeSupervised, I, Xmatrix, y, w) =
+        (view(Xmatrix, :, I), view(y, I), view(w, I))
 
-	# for predict:
-	MMI.reformat(::SomeSupervised, X) = (MMI.matrix(X)',)
-	MMI.selectrows(::SomeSupervised, I, Xmatrix) = (view(Xmatrix, :, I),)
+# for predict:
+MMI.reformat(::SomeSupervised, X) = (MMI.matrix(X)',)
+MMI.selectrows(::SomeSupervised, I, Xmatrix) = (view(Xmatrix, :, I),)
+```
 
 With these additions, `fit` and `predict` are refactored, so that `X`
 and `Xnew` represent matrices with features as rows.

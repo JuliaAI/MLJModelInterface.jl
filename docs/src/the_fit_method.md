@@ -7,21 +7,21 @@ MMI.fit(model::SomeSupervisedModel, verbosity, X, y) -> fitresult, cache, report
 ```
 
 1. `fitresult` is the fitresult in the sense above (which becomes an
-	argument for `predict` discussed below).
+    argument for `predict` discussed below).
 
 2.  `report` is a (possibly empty) `NamedTuple`, for example,
-	`report=(deviance=..., dof_residual=..., stderror=..., vcov=...)`.
-	Any training-related statistics, such as internal estimates of the
-	generalization error, and feature rankings, should be returned in
-	the `report` tuple. How, or if, these are generated should be
-	controlled by hyperparameters (the fields of `model`). Fitted
-	parameters, such as the coefficients of a linear model, do not go
-	in the report as they will be extractable from `fitresult` (and
-	accessible to MLJ through the `fitted_params` method described below).
+    `report=(deviance=..., dof_residual=..., stderror=..., vcov=...)`.
+    Any training-related statistics, such as internal estimates of the
+    generalization error, and feature rankings, should be returned in
+    the `report` tuple. How, or if, these are generated should be
+    controlled by hyperparameters (the fields of `model`). Fitted
+    parameters, such as the coefficients of a linear model, do not go
+    in the report as they will be extractable from `fitresult` (and
+    accessible to MLJ through the `fitted_params` method described below).
 
-3.	The value of `cache` can be `nothing`, unless one is also defining
-	an `update` method (see below). The Julia type of `cache` is not
-	presently restricted.
+3.  The value of `cache` can be `nothing`, unless one is also defining
+    an `update` method (see below). The Julia type of `cache` is not
+    presently restricted.
 
 !!! note
 

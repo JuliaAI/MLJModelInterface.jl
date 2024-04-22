@@ -89,7 +89,7 @@ following conditions all hold, and `false` otherwise:
 The meaining of "equal" depends on the type of the property value:
 
 - values that are themselves of `MLJType` are "equal" if they are
-equal in the sense of `is_same_except` with no exceptions.
+  equal in the sense of `is_same_except` with no exceptions.
 
 - values that are not of `MLJType` are "equal" if they are `==`.
 

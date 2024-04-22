@@ -8,32 +8,32 @@ import MLJModelInterface
 const MMI = MLJModelInterface
 
 mutable struct RidgeRegressor <: MMI.Deterministic
-	lambda::Float64
+    lambda::Float64
 end
 ```
 
-Models (which are mutable) should not be given internal
-constructors. It is recommended that they be given an external lazy
-keyword constructor of the same name. This constructor defines default values
-for every field, and optionally corrects invalid field values by calling a
-`clean!` method (whose fallback returns an empty message string):
+Models (which are mutable) should not be given internal constructors.
+It is recommended that they be given an external lazy keyword constructor
+of the same name. This constructor defines default values for every field,
+and optionally corrects invalid field values by calling a `clean!`
+method (whose fallback returns an empty message string):
 
 ```julia
 function MMI.clean!(model::RidgeRegressor)
-	warning = ""
-	if model.lambda < 0
-		warning *= "Need lambda ≥ 0. Resetting lambda=0. "
-		model.lambda = 0
-	end
-	return warning
+    warning = ""
+    if model.lambda < 0
+        warning *= "Need lambda ≥ 0. Resetting lambda=0. "
+        model.lambda = 0
+    end
+    return warning
 end
 
 # keyword constructor
 function RidgeRegressor(; lambda=0.0)
-	model = RidgeRegressor(lambda)
-	message = MMI.clean!(model)
-	isempty(message) || @warn message
-	return model
+    model = RidgeRegressor(lambda)
+    message = MMI.clean!(model)
+    isempty(message) || @warn message
+    return model
 end
 ```
 
@@ -96,8 +96,8 @@ following example:
 
 ```julia
 @mlj_model mutable struct YourModel <: MMI.Deterministic
-	a::Float64 = 0.5::(_ > 0)
-	b::String  = "svd"::(_ in ("svd","qr"))
+    a::Float64 = 0.5::(_ > 0)
+    b::String  = "svd"::(_ in ("svd","qr"))
 end
 ```
 
@@ -115,7 +115,7 @@ expects its value to be positive.
 You cannot use the `@mlj_model` macro if your model struct has type
 parameters.
 
-#### Known issue with @mlj_macro
+#### Known issue with `@mlj_macro`
 
 Defaults with negative values can trip up the `@mlj_macro` (see [this
 issue](https://github.com/JuliaAI/MLJBase.jl/issues/68)). So,
@@ -123,7 +123,7 @@ for example, this does not work:
 
 ```julia
 @mlj_model mutable struct Bar
-	a::Int = -1::(_ > -2)
+    a::Int = -1::(_ > -2)
 end
 ```
 
@@ -131,6 +131,6 @@ But this does:
 
 ```julia
 @mlj_model mutable struct Bar
-	a::Int = (-)(1)::(_ > -2)
+    a::Int = (-)(1)::(_ > -2)
 end
 ```

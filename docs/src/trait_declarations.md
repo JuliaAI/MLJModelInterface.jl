@@ -27,8 +27,7 @@ MMI.input_scitype(::Type{<:DecisionTreeClassifier}) = Table(Continuous)
 ```
 
 If, instead, columns were allowed to have either: (i) a mixture of `Continuous` and `Missing`
-values, or (ii) `Count` (i.e., integer) values, then the
-declaration would be
+values, or (ii) `Count` (i.e., integer) values, then the declaration would be
 
 ```julia
 MMI.input_scitype(::Type{<:DecisionTreeClassifier}) = Table(Union{Continuous,Missing},Count)

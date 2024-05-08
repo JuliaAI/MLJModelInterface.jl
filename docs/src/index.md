@@ -1,7 +1,7 @@
 # Adding Models for General Use
 
 The machine learning tools provided by
-[MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) can be applied to the models in
+[MLJ](https://JuliaAI.github.io/MLJ.jl/dev/) can be applied to the models in
 any package that imports 
 [MLJModelInterface](https://github.com/JuliaAI/MLJModelInterface.jl) and implements the
 API defined there, as outlined in this document. 
@@ -15,7 +15,7 @@ or by a stand-alone "interface-only" package, using the template
 [MLJExampleInterface.jl](https://github.com/JuliaAI/MLJExampleInterface.jl) (see [Where to
 place code implementing new models](@ref) below). For a list of packages implementing the
 MLJ model API (natively, and in interface packages) see
-[here](https://alan-turing-institute.github.io/MLJ.jl/dev/list_of_supported_models/).
+[here](https://JuliaAI.github.io/MLJ.jl/dev/list_of_supported_models/).
 
 ## Important
 
@@ -31,7 +31,7 @@ project's [extras] and [targets]. In testing, simply use `MLJBase` in
 place of `MLJModelInterface`.
 
 It is assumed the reader has read the [Getting
-Started](https://alan-turing-institute.github.io/MLJ.jl/dev/getting_started/) section of
+Started](https://JuliaAI.github.io/MLJ.jl/dev/getting_started/) section of
 the MLJ manual.  To implement the API described here, some familiarity with the following
 packages is also helpful:
 
@@ -52,5 +52,5 @@ packages is also helpful:
 In MLJ, the basic interface exposed to the user, built atop the model interface described
 here, is the *machine interface*. After a first reading of this document, the reader may
 wish to refer to [MLJ
-Internals](https://alan-turing-institute.github.io/MLJ.jl/dev/internals/) for context.
+Internals](https://JuliaAI.github.io/MLJ.jl/dev/internals/) for context.
 

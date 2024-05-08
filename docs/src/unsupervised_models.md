@@ -17,7 +17,7 @@ similar fashion. The main differences are:
   Static`, in which case there is no restriction.  A use-case for `predict` is K-means
   clustering that `predict`s labels and `transform`s input features into a space of lower
   dimension. See the [Transformers that also
-  predict](https://alan-turing-institute.github.io/MLJ.jl/dev/transformers/#Transformers-that-also-predict)
+  predict](https://JuliaAI.github.io/MLJ.jl/dev/transformers/#Transformers-that-also-predict)
   section of the MLJ manual for an example.
 
 - The `target_scitype` refers to the output of `predict`, if implemented. A new trait,

@@ -18,11 +18,11 @@ understanding of how things work with MLJ.  In particular, you are familiar with
 - [CategoricalArrays.jl](https://github.com/JuliaData/CategoricalArrays.jl), if working
   with finite discrete data, e.g., doing classification; see also the [Working with
   Categorical
-  Data](https://alan-turing-institute.github.io/MLJ.jl/dev/working_with_categorical_data/)
+  Data](https://JuliaAI.github.io/MLJ.jl/dev/working_with_categorical_data/)
   section of the MLJ manual.
 
 If you're not familiar with any one of these points, the [Getting
-Started](https://alan-turing-institute.github.io/MLJ.jl/dev/getting_started/) section of
+Started](https://JuliaAI.github.io/MLJ.jl/dev/getting_started/) section of
 the MLJ manual may help.
 
 *But tables don't make sense for my model!* If a case can be made that
@@ -273,7 +273,7 @@ implementation creates:
   affect the outcome of training. It is okay to add "control"
   parameters (such as specifying an `acceleration` parameter specifying
   computational resources, as
-  [here](https://github.com/alan-turing-institute/MLJ.jl/blob/master/src/ensembles.jl#L193)).
+  [here](https://github.com/JuliaAI/MLJ.jl/blob/master/src/ensembles.jl#L193)).
 - Use `report` to return *everything else*, including model-specific
   *methods* (or other callable objects). This includes feature rankings,
   decision boundaries, SVM support vectors, clustering centres,

@@ -56,7 +56,7 @@ of `nothing`.
 ### Hyperparameters for parallelization options
 
 The section [Acceleration and
-Parallelism](https://alan-turing-institute.github.io/MLJ.jl/dev/acceleration_and_parallelism/)
+Parallelism](https://JuliaAI.github.io/MLJ.jl/dev/acceleration_and_parallelism/)
 of the MLJ manual indicates how users specify an option to run an algorithm using
 distributed processing or multithreading. A hyperparameter specifying such an option
 should be called `acceleration`. Its value `a` should satisfy `a isa AbstractResource`
@@ -66,7 +66,7 @@ run on a GPU is ordinarily indicated with the `CUDALibs()` resource.
 ### hyperparameter access and mutation
 
 To support hyperparameter optimization (see the [Tuning
-Models](https://alan-turing-institute.github.io/MLJ.jl/dev/tuning_models/) section of the
+Models](https://JuliaAI.github.io/MLJ.jl/dev/tuning_models/) section of the
 MLJ manual) any hyperparameter to be individually controlled must be:
 
 - property-accessible; nested property access allowed, as in

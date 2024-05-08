@@ -12,7 +12,7 @@ to all MLJ users:
    algorithms implementing the interface. An example is
    [`EvoTrees.jl`](https://github.com/Evovest/EvoTrees.jl/blob/master/src/MLJ.jl). In
    this case, it is sufficient to open an issue at
-   [MLJ](https://github.com/alan-turing-institute/MLJ.jl) requesting
+   [MLJ](https://github.com/JuliaAI/MLJ.jl) requesting
    the package to be registered with MLJ. Registering a package allows
    the MLJ user to access its models' metadata and to selectively load
    them.

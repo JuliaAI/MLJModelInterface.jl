@@ -128,7 +128,7 @@ MMI.metadata_model(
 
 *Important.* Do not omit the `load_path` specification. If unsure what
 it should be, post an issue at
-[MLJ](https://github.com/alan-turing-institute/MLJ.jl/issues).
+[MLJ](https://github.com/JuliaAI/MLJ.jl/issues).
 
 ```@docs
 MMI.metadata_pkg

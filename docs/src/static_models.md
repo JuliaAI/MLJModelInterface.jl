@@ -2,7 +2,7 @@
 
 A model type subtypes `Static <: Unsupervised` if it does not generalize to new data but
 nevertheless has hyperparameters. See the [Static
-transformers](https://alan-turing-institute.github.io/MLJ.jl/dev/transformers/#Static-transformers)
+transformers](https://JuliaAI.github.io/MLJ.jl/dev/transformers/#Static-transformers)
 section of the MLJ manual for examples. In the `Static` case, `transform` can have
 multiple arguments and `input_scitype` refers to the allowed scitype of the slurped data,
 *even if there is only a single argument.* For example, if the signature is

@@ -18,11 +18,11 @@ understanding of how things work with MLJ.  In particular, you are familiar with
 - [CategoricalArrays.jl](https://github.com/JuliaData/CategoricalArrays.jl), if working
   with finite discrete data, e.g., doing classification; see also the [Working with
   Categorical
-  Data](https://alan-turing-institute.github.io/MLJ.jl/dev/working_with_categorical_data/)
+  Data](https://JuliaAI.github.io/MLJ.jl/dev/working_with_categorical_data/)
   section of the MLJ manual.
 
 If you're not familiar with any one of these points, the [Getting
-Started](https://alan-turing-institute.github.io/MLJ.jl/dev/getting_started/) section of
+Started](https://JuliaAI.github.io/MLJ.jl/dev/getting_started/) section of
 the MLJ manual may help.
 
 *But tables don't make sense for my model!* If a case can be made that
@@ -99,8 +99,7 @@ Further to the last point, `a::Float64 = 0.5::(_ > 0)` indicates that
 the field `a` is a `Float64`, takes `0.5` as its default value, and
 expects its value to be positive.
 
-Please see [this
-issue](https://github.com/JuliaAI/MLJBase.jl/issues/68)
+Please see [this issue](https://github.com/JuliaAI/MLJBase.jl/issues/68)
 for a known issue and workaround relating to the use of `@mlj_model`
 with negative defaults.
 
@@ -201,7 +200,7 @@ For a classifier, the steps are fairly similar to a regressor with these differe
 1. `y` will be a categorical vector and you will typically want to use
    the integer encoding of `y` instead of `CategoricalValue`s; use
    `MLJModelInterface.int` for this.
-1.  You will need to pass the full pool of target labels (not just
+2.  You will need to pass the full pool of target labels (not just
    those observed in the training data) and additionally, in the
    `Deterministic` case, the encoding, to make these available to
    `predict`. A simple way to do this is to pass `y[1]` in the
@@ -210,19 +209,19 @@ For a classifier, the steps are fairly similar to a regressor with these differe
    method for recovering categorical elements from their integer
    representations (e.g., `d(2)` is the categorical element with `2`
    as encoding).
-2. In the case of a *probabilistic* classifier you should pass all
+3. In the case of a *probabilistic* classifier you should pass all
    probabilities simultaneously to the [`UnivariateFinite`](@ref) constructor
    to get an abstract `UnivariateFinite` vector (type
    `UnivariateFiniteArray`) rather than use comprehension or
    broadcasting to get a vanilla vector. This is for performance
    reasons.
-   
+
 If implementing a classifier, you should probably consult the more
 detailed instructions at [The predict method](@ref).
 
 **Examples**:
 
--  GLM's [BinaryClassifier](https://github.com/JuliaAI/MLJModels.jl/blob/3687491b132be8493b6f7a322aedf66008caaab1/src/GLM.jl#L119-L131) (`Probabilistic`)
+- GLM's [BinaryClassifier](https://github.com/JuliaAI/MLJModels.jl/blob/3687491b132be8493b6f7a322aedf66008caaab1/src/GLM.jl#L119-L131) (`Probabilistic`)
 
 - LIBSVM's [SVC](https://github.com/JuliaAI/MLJModels.jl/blob/master/src/LIBSVM.jl) (`Deterministic`)
 
@@ -273,7 +272,7 @@ implementation creates:
   affect the outcome of training. It is okay to add "control"
   parameters (such as specifying an `acceleration` parameter specifying
   computational resources, as
-  [here](https://github.com/alan-turing-institute/MLJ.jl/blob/master/src/ensembles.jl#L193)).
+  [here](https://github.com/JuliaAI/MLJ.jl/blob/master/src/ensembles.jl#L193)).
 - Use `report` to return *everything else*, including model-specific
   *methods* (or other callable objects). This includes feature rankings,
   decision boundaries, SVM support vectors, clustering centres,
@@ -349,8 +348,8 @@ MLJModelInterface.metadata_model(YourModel1,
     output_scitype  = MLJModelInterface.Table(MLJModelInterface.Continuous),  # for an unsupervised, what output?
     supports_weights = false,                                                  # does the model support sample weights?
     descr   = "A short description of your model"
-	load_path    = "YourPackage.SubModuleContainingModelStructDefinition.YourModel1"
-    )
+    load_path    = "YourPackage.SubModuleContainingModelStructDefinition.YourModel1"
+)
 ```
 
 *Important.* Do not omit the `load_path` specification. Without a

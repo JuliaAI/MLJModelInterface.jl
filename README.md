@@ -2,7 +2,7 @@
 
 A light-weight interface for developers wanting to integrate
 machine learning models into
-[MLJ](https://github.com/alan-turing-institute/MLJ.jl).
+[MLJ](https://github.com/JuliaAI/MLJ.jl).
 
 
 | Linux | Coverage |
@@ -12,8 +12,8 @@ machine learning models into
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaai.github.io/MLJModelInterface.jl/dev/)
 
 
-[MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) is a framework for evaluating,
+[MLJ](https://JuliaAI.github.io/MLJ.jl/dev/) is a framework for evaluating,
 combining and optimizing machine learning models in Julia. A third party package wanting
 to integrate their machine learning models into MLJ must import the module
 `MLJModelInterface` defined in this package, as described in the
-[documentation](https://juliaai.github.io/MLJModelInterface.jl/dev/).
+[documentation](https://JuliaAI.github.io/MLJModelInterface.jl/dev/).

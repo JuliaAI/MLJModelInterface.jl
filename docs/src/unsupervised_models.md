@@ -17,7 +17,7 @@ similar fashion. The main differences are:
   Static`, in which case there is no restriction.  A use-case for `predict` is K-means
   clustering that `predict`s labels and `transform`s input features into a space of lower
   dimension. See the [Transformers that also
-  predict](https://alan-turing-institute.github.io/MLJ.jl/dev/transformers/#Transformers-that-also-predict)
+  predict](https://JuliaAI.github.io/MLJ.jl/dev/transformers/#Transformers-that-also-predict)
   section of the MLJ manual for an example.
 
 - The `target_scitype` refers to the output of `predict`, if implemented. A new trait,
@@ -31,9 +31,9 @@ similar fashion. The main differences are:
   is the same as `transform`, as in
   `MLJModelInterface.inverse_transform(model, fitresult, Xout)`, which:
    - must make sense for any `Xout` for which `scitype(Xout) <:
-	 output_scitype(SomeSupervisedModel)` (see below); and
+     output_scitype(SomeSupervisedModel)` (see below); and
    - must return an object `Xin` satisfying `scitype(Xin) <:
-	 input_scitype(SomeSupervisedModel)`.
+     input_scitype(SomeSupervisedModel)`.
 
 For sample implementatations, see MLJ's [built-in
 transformers](https://github.com/JuliaAI/MLJModels.jl/blob/dev/src/builtins/Transformers.jl)

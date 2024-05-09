@@ -18,11 +18,11 @@ If an MLJ `Machine` is being `fit!` and it is not the first time, then `update` 
 instead of `fit`, unless the machine `fit!` has been called with a new `rows` keyword
 argument. However, `MLJModelInterface` defines a fallback for `update` which just calls
 `fit`. For context, see the
-[Internals](https://alan-turing-institute.github.io/MLJ.jl/dev/internals/) section of the
+[Internals](https://JuliaAI.github.io/MLJ.jl/dev/internals/) section of the
 MLJ manual.
 
 Learning networks wrapped as models constitute one use case (see the [Composing
-Models](https://alan-turing-institute.github.io/MLJ.jl/dev/composing_models/) section of
+Models](https://JuliaAI.github.io/MLJ.jl/dev/composing_models/) section of
 the MLJ manual): one would like each component model to be retrained only when
 hyperparameter changes "upstream" make this necessary. In this case, MLJ provides a
 fallback (specifically, the fallback is for any subtype of `SupervisedNetwork =

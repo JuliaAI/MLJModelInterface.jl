@@ -10,7 +10,7 @@ implemented in languages other than Julia.
 
 The MLJ user can serialize and deserialize machines, as she would any other julia
 object. (This user has the option of first removing data from the machine. See the [Saving
-machines](https://alan-turing-institute.github.io/MLJ.jl/dev/machines/#Saving-machines)
+machines](https://JuliaAI.github.io/MLJ.jl/dev/machines/#Saving-machines)
 section of the MLJ manual for details.) However, a problem can occur if a model's
 `fitresult` (see [The fit method](@ref)) is not a persistent object. For example, it might
 be a C pointer that would have no meaning in a new Julia session.

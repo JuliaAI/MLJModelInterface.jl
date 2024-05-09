@@ -60,10 +60,10 @@ repeating such transformations unnecessarily, and can additionally
 make use of more efficient row subsampling, which is then based on the
 model-specific representation of data, rather than the
 user-representation. When `reformat` is overloaded,
-`selectrows(::Model, ...)` must be as well (see
-[`selectrows`](@ref)). Furthermore, the model `fit` method(s), and
-operations, such as `predict` and `transform`, must be refactored to
-act on the model-specific representations of the data.
+`selectrows(::Model, ...)` must be as well (see [`selectrows`](@ref)).
+Furthermore, the model `fit` method(s), and operations, such as
+`predict` and `transform`, must be refactored to act on
+the model-specific representations of the data.
 
 To implement the `reformat` data front-end for a model, refer to
 "Implementing a data front-end" in the [MLJ
@@ -208,15 +208,15 @@ supports reporting.
 Overloading this method is optional, unless the model generates reports that are neither
 named tuples nor `nothing`.
 
-Assuming each value in the `report_given_method` dictionary is either a named tuple 
-or `nothing`, and there are no conflicts between the keys of the dictionary values 
-(the individual reports), the fallback returns the usual named tuple merge of the 
-dictionary values, ignoring any `nothing` value. If there is a key conflict, all operation 
-reports are first wrapped in a named
-tuple of length one, as in `(predict=predict_report,)`. A `:fit` report is never wrapped.
+Assuming each value in the `report_given_method` dictionary is either a named tuple
+or `nothing`, and there are no conflicts between the keys of the dictionary values
+(the individual reports), the fallback returns the usual named tuple merge of
+the dictionary values, ignoring any `nothing` value. If there is a key conflict,
+all operation reports are first wrapped in a named tuple of length one,
+as in `(predict=predict_report,)`. A `:fit` report is never wrapped.
 
-If any dictionary `value` is neither a named tuple nor `nothing`, it is first wrapped as
-`(report=value, )` before merging.
+If any dictionary `value` is neither a named tuple nor `nothing`, it is first
+wrapped as `(report=value, )` before merging.
 
 """
 function report(model, report_given_method)

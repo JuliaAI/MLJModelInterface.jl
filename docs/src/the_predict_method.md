@@ -6,8 +6,7 @@ A compulsory `predict` method has the form
 MMI.predict(model::SomeSupervisedModel, fitresult, Xnew) -> yhat
 ```
 
-Here `Xnew` will have the same form as the `X` passed to
-`fit`.
+Here `Xnew` will have the same form as the `X` passed to `fit`.
 
 Note that while `Xnew` generally consists of multiple observations
 (e.g., has multiple rows in the case of a table) it is assumed, in view of
@@ -44,16 +43,16 @@ may look something like this:
 
 ```julia
 function MMI.fit(model::SomeSupervisedModel, verbosity, X, y)
-	yint = MMI.int(y)
-	a_target_element = y[1]                # a CategoricalValue/String
-	decode = MMI.decoder(a_target_element) # can be called on integers
+    yint = MMI.int(y)
+    a_target_element = y[1]                # a CategoricalValue/String
+    decode = MMI.decoder(a_target_element) # can be called on integers
 
-	core_fitresult = SomePackage.fit(X, yint, verbosity=verbosity)
+    core_fitresult = SomePackage.fit(X, yint, verbosity=verbosity)
 
-	fitresult = (decode, core_fitresult)
-	cache = nothing
-	report = nothing
-	return fitresult, cache, report
+    fitresult = (decode, core_fitresult)
+    cache = nothing
+    report = nothing
+    return fitresult, cache, report
 end
 ```
 
@@ -61,9 +60,9 @@ while a corresponding deterministic `predict` operation might look like this:
 
 ```julia
 function MMI.predict(model::SomeSupervisedModel, fitresult, Xnew)
-	decode, core_fitresult = fitresult
-	yhat = SomePackage.predict(core_fitresult, Xnew)
-	return decode.(yhat)
+    decode, core_fitresult = fitresult
+    yhat = SomePackage.predict(core_fitresult, Xnew)
+    return decode.(yhat)
 end
 ```
 
@@ -155,8 +154,8 @@ yhat = MLJModelInterface.UnivariateFinite([:FALSE, :TRUE], probs, augment=true, 
 ```
 
 The constructor has a lot of options, including passing a dictionary
-instead of vectors. See
-`CategoricalDistributions.UnivariateFinite`](@ref) for details.
+instead of vectors. See [`CategoricalDistributions.UnivariateFinite`](@ref)
+for details.
 
 See
 [LinearBinaryClassifier](https://github.com/JuliaAI/MLJModels.jl/blob/master/src/GLM.jl)

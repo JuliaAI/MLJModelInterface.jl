@@ -182,7 +182,7 @@ particular, `package_name` and `package_url`) to be defined; see also
 
 Suppose a model type and traits have been defined by:
 
-```
+```julia
 mutable struct FooRegressor
     a::Int
     b::Float64

@@ -10,7 +10,7 @@ function errlight(s)
     )
 end
 
-## Internal function to be extended in MLJBase (so do not export)                                   
+## Internal function to be extended in MLJBase (so do not export)
 vtrait(X, s="") = vtrait(get_interface_mode(), X, s)
 vtrait(::LightInterface, X, s) = errlight(s)
 
@@ -33,7 +33,7 @@ If `X isa AbstractMatrix`, return `X` or `permutedims(X)` if `transpose=true`.
 Otherwise if `X` is a Tables.jl compatible table source, convert `X` into a `Matrix`.
 
 """
-function matrix(X; kw...) 
+function matrix(X; kw...)
     m = get_interface_mode()
     return matrix(m, vtrait(m, X, "matrix"), X; kw...)
 end
@@ -58,7 +58,7 @@ end
 # int
 
 """
-   int(x)
+    int(x)
 
 The positional integer of the `CategoricalString` or `CategoricalValue` `x`, in
 the ordering defined by the pool of `x`. The type of `int(x)` is the reference
@@ -73,7 +73,7 @@ of `x`, but has the same type.
 
 Broadcasted versions of `int`.
 
-```julia
+```julia-repl
 julia> v = categorical(["c", "b", "c", "a"])
 4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
  "c"
@@ -117,8 +117,8 @@ classes(x)` is always true.
 
 Not to be confused with `levels(x.pool)`. See the example below.
 
-```julia
-julia>  v = categorical(["c", "b", "c", "a"])
+```julia-repl
+julia> v = categorical(["c", "b", "c", "a"])
 4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
  "c"
  "b"
@@ -161,7 +161,7 @@ The scientific type (interpretation) of `X`, distinct from its
 machine type.
 
 ### Examples
-```julia
+```julia-repl
 julia> scitype(3.14)
 Continuous
 
@@ -174,7 +174,7 @@ Tuple{Count, Textual}
 julia> using CategoricalArrays
 
 julia> X = (gender = categorical(['M', 'M', 'F', 'M', 'F']),
-        ndevices = [1, 3, 2, 3, 2]);
+            ndevices = [1, 3, 2, 3, 2]);
 
 julia> scitype(X)
 Table{Union{AbstractVector{Count}, AbstractVector{Multiclass{2}}}}
@@ -182,9 +182,7 @@ Table{Union{AbstractVector{Count}, AbstractVector{Multiclass{2}}}}
 """
 scitype(X) = scitype(get_interface_mode(), vtrait(X, "scitype"), X)
 
-function scitype(::LightInterface, m, X)
-    return errlight("scitype")
-end
+scitype(::LightInterface, m, X) = errlight("scitype")
 
 # ------------------------------------------------------------------------
 # schema
@@ -197,9 +195,7 @@ returns `nothing` if the column types and scitypes can't be inspected.
 """
 schema(X) = schema(get_interface_mode(), vtrait(X, "schema"), X)
 
-function schema(::LightInterface, m, X)
-    return errlight("schema")
-end
+schema(::LightInterface, m, X) = errlight("schema")
 
 # ------------------------------------------------------------------------
 # istable
@@ -232,7 +228,7 @@ Return a callable object for decoding the integer representation of a
 broadcast over all elements.
 
 ### Examples
-```julia
+```julia-repl
 julia> v = categorical(["c", "b", "c", "a"])
 4-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
  "c"
@@ -439,153 +435,152 @@ _squeeze(v) = first(v)
 # ------------------------------------------------------------------------
 # UnivariateFinite
 
-const UNIVARIATE_FINITE_DOCSTRING =
-    """
-        UnivariateFinite(
-            support,
-            probs;
-            pool=nothing,
-            augmented=false,
-            ordered=false
-        )
+"""
+    UnivariateFinite(
+        support,
+        probs;
+        pool=nothing,
+        augmented=false,
+        ordered=false
+    )
 
-    Construct a discrete univariate distribution whose finite support is
-    the elements of the vector `support`, and whose corresponding
-    probabilities are elements of the vector `probs`. Alternatively,
-    construct an abstract *array* of `UnivariateFinite` distributions by
-    choosing `probs` to be an array of one higher dimension than the array
-    generated.
+Construct a discrete univariate distribution whose finite support is
+the elements of the vector `support`, and whose corresponding
+probabilities are elements of the vector `probs`. Alternatively,
+construct an abstract *array* of `UnivariateFinite` distributions by
+choosing `probs` to be an array of one higher dimension than the array
+generated.
 
-    Here the word "probabilities" is an abuse of terminology as there is
-    no requirement that probabilities actually sum to one, only that they
-    be non-negative. So `UnivariateFinite` objects actually implement
-    arbitrary non-negative measures over finite sets of labelled points. A
-    `UnivariateDistribution` will be a bona fide probability measure when
-    constructed using the `augment=true` option (see below) or when
-    `fit` to data.
+Here the word "probabilities" is an abuse of terminology as there is
+no requirement that probabilities actually sum to one, only that they
+be non-negative. So `UnivariateFinite` objects actually implement
+arbitrary non-negative measures over finite sets of labelled points. A
+`UnivariateDistribution` will be a bona fide probability measure when
+constructed using the `augment=true` option (see below) or when
+`fit` to data.
 
-    Unless `pool` is specified, `support` should have type
-    `AbstractVector{<:CategoricalValue}` and all elements are assumed to
-    share the same categorical pool, which may be larger than `support`.
+Unless `pool` is specified, `support` should have type
+`AbstractVector{<:CategoricalValue}` and all elements are assumed to
+share the same categorical pool, which may be larger than `support`.
 
-    *Important.* All levels of the common pool have associated
-    probabilities, not just those in the specified `support`. However,
-    these probabilities are always zero (see example below).
+*Important.* All levels of the common pool have associated
+probabilities, not just those in the specified `support`. However,
+these probabilities are always zero (see example below).
 
-    If `probs` is a matrix, it should have a column for each class in
-    `support` (or one less, if `augment=true`). More generally, `probs`
-    will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
-    where `c = length(support)` (or one less, if `augment=true`) and the
-    constructor then returns an array of `UnivariateFinite` distributions
-    of size `(n1, n2, ..., nk)`.
+If `probs` is a matrix, it should have a column for each class in
+`support` (or one less, if `augment=true`). More generally, `probs`
+will be an array whose size is of the form `(n1, n2, ..., nk, c)`,
+where `c = length(support)` (or one less, if `augment=true`) and the
+constructor then returns an array of `UnivariateFinite` distributions
+of size `(n1, n2, ..., nk)`.
 
-    ## Examples
+## Examples
 
-    ```julia
-    julia> v = categorical(["x", "x", "y", "x", "z"])
-    5-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
-     "x"
-     "x"
-     "y"
-     "x"
-     "z"
+```julia-repl
+julia> v = categorical(["x", "x", "y", "x", "z"])
+5-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "x"
+ "x"
+ "y"
+ "x"
+ "z"
 
-    julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
-    UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
+julia> UnivariateFinite(classes(v), [0.2, 0.3, 0.5])
+UnivariateFinite{Multiclass{3}}(x=>0.2, y=>0.3, z=>0.5)
 
-    julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
-    UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
+julia> d = UnivariateFinite([v[1], v[end]], [0.1, 0.9])
+UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
 
-    julia> rand(d, 3)
-    3-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
-     "x"
-     "z"
-     "x"
+julia> rand(d, 3)
+3-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "x"
+ "z"
+ "x"
 
-    julia> levels(d)
-    3-element Vector{String}:
-     "x"
-     "y"
-     "z"
+julia> levels(d)
+3-element Vector{String}:
+ "x"
+ "y"
+ "z"
 
-    julia> pdf(d, "y")
-    0.0
+julia> pdf(d, "y")
+0.0
 
-    ```
+```
 
-    ### Specifying a pool
+### Specifying a pool
 
-    Alternatively, `support` may be a list of raw (non-categorical)
-    elements if `pool` is:
+Alternatively, `support` may be a list of raw (non-categorical)
+elements if `pool` is:
 
-    - some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
-    such that `support` is a subset of `levels(pool)`
+- some `CategoricalArray`, `CategoricalValue` or `CategoricalPool`,
+  such that `support` is a subset of `levels(pool)`
 
-    - `missing`, in which case a new categorical pool is created which has
-    `support` as its only levels.
+- `missing`, in which case a new categorical pool is created which has
+  `support` as its only levels.
 
-    In the last case, specify `ordered=true` if the pool is to be
-    considered ordered.
+In the last case, specify `ordered=true` if the pool is to be
+considered ordered.
 
-    ```julia
-    julia> UnivariateFinite(["x", "z"], [0.1, 0.9], pool=missing, ordered=true)
-    UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
+```julia-repl
+julia> UnivariateFinite(["x", "z"], [0.1, 0.9], pool=missing, ordered=true)
+UnivariateFinite{OrderedFactor{2}}(x=>0.1, z=>0.9)
 
-    julia> d = UnivariateFinite(["x", "z"], [0.1, 0.9], pool=v) # v defined above
-    UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
+julia> d = UnivariateFinite(["x", "z"], [0.1, 0.9], pool=v) # v defined above
+UnivariateFinite{Multiclass{3}}(x=>0.1, z=>0.9)
 
-    julia> pdf(d, "y") # allowed as `"y" in levels(v)`
-    0.0
+julia> pdf(d, "y") # allowed as `"y" in levels(v)`
+0.0
 
-    julia> v = categorical(["x", "x", "y", "x", "z", "w"])
-    6-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
-     "x"
-     "x"
-     "y"
-     "x"
-     "z"
-     "w"
+julia> v = categorical(["x", "x", "y", "x", "z", "w"])
+6-element CategoricalArrays.CategoricalArray{String,1,UInt32}:
+ "x"
+ "x"
+ "y"
+ "x"
+ "z"
+ "w"
 
-    julia> probs = rand(100, 3); probs = probs ./ sum(probs, dims=2);
+julia> probs = rand(100, 3); probs = probs ./ sum(probs, dims=2);
 
-    julia> UnivariateFinite(["x", "y", "z"], probs, pool=v)
-    100-element UnivariateFiniteVector{Multiclass{4}, String, UInt32, Float64}:
-     UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
-     UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
-     UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
-     ⋮
-     UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
-    ```
+julia> UnivariateFinite(["x", "y", "z"], probs, pool=v)
+100-element UnivariateFiniteVector{Multiclass{4}, String, UInt32, Float64}:
+ UnivariateFinite{Multiclass{4}}(x=>0.194, y=>0.3, z=>0.505)
+ UnivariateFinite{Multiclass{4}}(x=>0.727, y=>0.234, z=>0.0391)
+ UnivariateFinite{Multiclass{4}}(x=>0.674, y=>0.00535, z=>0.321)
+ ⋮
+ UnivariateFinite{Multiclass{4}}(x=>0.292, y=>0.339, z=>0.369)
+```
 
-    ### Probability augmentation
+### Probability augmentation
 
-    If `augment=true` the provided array is augmented by inserting
-    appropriate elements *ahead* of those provided, along the last
-    dimension of the array. This means the user only provides probabilities
-    for the classes `c2, c3, ..., cn`. The class `c1` probabilities are
-    chosen so that each `UnivariateFinite` distribution in the returned
-    array is a bona fide probability distribution.
+If `augment=true` the provided array is augmented by inserting
+appropriate elements *ahead* of those provided, along the last
+dimension of the array. This means the user only provides probabilities
+for the classes `c2, c3, ..., cn`. The class `c1` probabilities are
+chosen so that each `UnivariateFinite` distribution in the returned
+array is a bona fide probability distribution.
 
-    ---
+---
 
-        UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
+    UnivariateFinite(prob_given_class; pool=nothing, ordered=false)
 
-    Construct a discrete univariate distribution whose finite support is
-    the set of keys of the provided dictionary, `prob_given_class`, and
-    whose values specify the corresponding probabilities.
+Construct a discrete univariate distribution whose finite support is
+the set of keys of the provided dictionary, `prob_given_class`, and
+whose values specify the corresponding probabilities.
 
-    The type requirements on the keys of the dictionary are the same as
-    the elements of `support` given above with this exception: if
-    non-categorical elements (raw labels) are used as keys, then
-    `pool=...` must be specified and cannot be `missing`.
+The type requirements on the keys of the dictionary are the same as
+the elements of `support` given above with this exception: if
+non-categorical elements (raw labels) are used as keys, then
+`pool=...` must be specified and cannot be `missing`.
 
-    If the values (probabilities) are arrays instead of scalars, then an
-    abstract array of `UnivariateFinite` elements is created, with the
-    same size as the array.
+If the values (probabilities) are arrays instead of scalars, then an
+abstract array of `UnivariateFinite` elements is created, with the
+same size as the array.
 
-    """
+"""
+function UnivariateFinite end # method-less impl for docstring
 
-@doc UNIVARIATE_FINITE_DOCSTRING
 function UnivariateFinite(d::AbstractDict; kwargs...)
     return UnivariateFinite(get_interface_mode(), d; kwargs...)
 end

@@ -43,11 +43,11 @@ Optional, if `SomeSupervisedModel <: Probabilistic`:
 
 ```julia
 MMI.predict_mode(model::SomeSupervisedModel, fitresult, Xnew) =
-	mode.(predict(model, fitresult, Xnew))
+    mode.(predict(model, fitresult, Xnew))
 MMI.predict_mean(model::SomeSupervisedModel, fitresult, Xnew) =
-	mean.(predict(model, fitresult, Xnew))
+    mean.(predict(model, fitresult, Xnew))
 MMI.predict_median(model::SomeSupervisedModel, fitresult, Xnew) =
-	median.(predict(model, fitresult, Xnew))
+    median.(predict(model, fitresult, Xnew))
 ```
 
 Required, if the model is to be registered (findable by general users):

@@ -13,10 +13,18 @@ const DeterministicDetector = Union{
 
 const StatTraits = StatisticalTraits
 
+# note that if F is a constructor, like `TunedModel`, then `docstring(F)` already falls
+# back to the function's document string.
 function StatTraits.docstring(M::Type{<:Model})
-    docstring = Base.Docs.doc(M) |> string
+    constructor = StatTraits.constructor(M)
+    # At time of writing, `constructor` is a new trait only overloaded for model wrappers
+    # that have multiple types associated with the same constructor (e.g., `TunedModel` is
+    # a constructor that can return objects of either `ProbabilisticTunedModel` or
+    # `DeterministicTunedModel` type. However, we want these bound to the same docstring.
+    C = isnothing(constructor) ? M : constructor
+    docstring = Base.Docs.doc(C) |> string
     if occursin("No documentation found", docstring)
-        docstring = synthesize_docstring(M)
+        docstring = synthesize_docstring(C)
     end
     return docstring
 end

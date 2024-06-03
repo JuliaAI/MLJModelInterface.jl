@@ -33,6 +33,7 @@ const MODEL_TRAITS = [
     :reports_feature_importances,
     :deep_properties,
     :reporting_operations,
+    :constructor,
 ]
 
 const ABSTRACT_MODEL_SUBTYPES = [

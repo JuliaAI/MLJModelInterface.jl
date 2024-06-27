@@ -32,6 +32,9 @@ end
 StatTraits.is_supervised(::Type{<:Supervised}) = true
 StatTraits.is_supervised(::Type{<:SupervisedAnnotator}) = true
 
+StatTraits.target_in_fit(::Type{<:Supervised}) = true
+StatTraits.target_in_fit(::Type{<:Unsupervised}) = false
+
 StatTraits.prediction_type(::Type{<:Deterministic}) = :deterministic
 StatTraits.prediction_type(::Type{<:Probabilistic}) = :probabilistic
 StatTraits.prediction_type(::Type{<:Interval}) = :interval
@@ -73,7 +76,15 @@ function supervised_fit_data_scitype(M)
     return ret
 end
 
-StatTraits.fit_data_scitype(M::Type{<:Unsupervised}) = Tuple{input_scitype(M)}
+# helper to determine the scitype of unsupervised models
+function unsupervised_fit_data_scitype(M)
+    I = input_scitype(M)
+    T = target_scitype(M)
+    target_in_fit(M) && return Tuple{I, T}
+    return Tuple{I}
+end
+
+StatTraits.fit_data_scitype(M::Type{<:Unsupervised}) = unsupervised_fit_data_scitype(M)
 StatTraits.fit_data_scitype(::Type{<:Static}) = Tuple{}
 StatTraits.fit_data_scitype(M::Type{<:Supervised}) = supervised_fit_data_scitype(M)
 

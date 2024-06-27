@@ -8,6 +8,7 @@ const MODEL_TRAITS = [
     :predict_scitype,
     :transform_scitype,
     :inverse_transform_scitype,
+    :target_in_fit,
     :is_pure_julia,
     :package_name,
     :package_license,

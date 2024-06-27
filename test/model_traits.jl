@@ -23,6 +23,10 @@ end
 @mlj_model mutable struct UA <: UnsupervisedAnnotator
 end
 
+@mlj_model mutable struct SupervisedTransformer <: Unsupervised
+end
+
+
 foo(::P1) = 0
 bar(::P1) = nothing
 
@@ -34,6 +38,10 @@ M.package_name(::Type{<:U1}) = "Bach"
 M.package_url(::Type{<:U1}) = "www.did_he_write_565.com"
 M.human_name(::Type{<:U1}) = "funky model"
 
+M.target_in_fit(::Type{<:SupervisedTransformer}) = true
+M.target_scitype(::Type{<:SupervisedTransformer}) = Continuous
+M.input_scitype(::Type{<:SupervisedTransformer}) = Finite
+
 @testset "traits" begin
     ms = S1()
     mu = U1(a=42, b=sin)
@@ -42,6 +50,7 @@ M.human_name(::Type{<:U1}) = "funky model"
     mi = I1()
     sa = SA()
     ua = UA()
+    supervised_transformer = SupervisedTransformer()
 
     @test input_scitype(ms)  == Unknown
     @test output_scitype(ms) == Unknown
@@ -115,6 +124,11 @@ M.human_name(::Type{<:U1}) = "funky model"
     setfull()
 
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
+
+    @test fit_data_scitype(mu) == Tuple{Unknown};;;
+    @test fit_data_scitype(mu) == Tuple{Unknown}
+    @test fit_data_scitype(supervised_transformer) == Tuple{Finite,Continuous}
+ 
 end
 
 @testset "`_density` - helper for predict_scitype fallback" begin

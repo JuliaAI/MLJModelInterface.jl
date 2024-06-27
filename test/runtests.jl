@@ -43,6 +43,6 @@ end
     include("equality.jl")
 end
 
-# @testset "aqua.jl" begin
-#     include("aqua.jl")
-# end
+@testset "aqua.jl" begin
+    include("aqua.jl")
+end

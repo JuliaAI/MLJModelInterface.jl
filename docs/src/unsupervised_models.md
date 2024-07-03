@@ -5,11 +5,10 @@ similar fashion. The main differences are:
 
 - The `fit` method, which still returns `(fitresult, cache, report)` will typically have
   only one training argument `X`, as in `MLJModelInterface.fit(model, verbosity, X)`,
-  although this is not a hard requirement. For example, a feature selection tool (wrapping
-  some supervised model) might also include a target `y` as input. Furthermore, in the
-  case of models that subtype `Static <: Unsupervised` (see [Static
-  models](@ref)) `fit` has no training arguments at all, but does not need to be
-  implemented as a fallback returns `(nothing, nothing, nothing)`.
+  although this is not a hard requirement; see [Transformers requiring a target variable
+  in training](@ref) below.  Furthermore, in the case of models that subtype `Static <:
+  Unsupervised` (see [Static models](@ref)) `fit` has no training arguments at all, but
+  does not need to be implemented as a fallback returns `(nothing, nothing, nothing)`.
 
 - A `transform` and/or `predict` method is implemented, and has the same signature as
   `predict` does in the supervised case, as in `MLJModelInterface.transform(model,
@@ -27,15 +26,43 @@ similar fashion. The main differences are:
   argument, you must overload the trait `fit_data_scitype`, which bounds the allowed
   `data` passed to `fit(model, verbosity, data...)` and will always be a `Tuple` type.
 
-- An `inverse_transform` can be optionally implemented. The signature
-  is the same as `transform`, as in
-  `MLJModelInterface.inverse_transform(model, fitresult, Xout)`, which:
+- An `inverse_transform` can be optionally implemented. The signature is the same as
+  `transform`, as in `MLJModelInterface.inverse_transform(model::MyUnsupervisedModel,
+  fitresult, Xout)`, which:
    - must make sense for any `Xout` for which `scitype(Xout) <:
-     output_scitype(SomeSupervisedModel)` (see below); and
+     output_scitype(MyUnsupervisedModel)`; and
    - must return an object `Xin` satisfying `scitype(Xin) <:
-     input_scitype(SomeSupervisedModel)`.
+     input_scitype(MyUnsupervisedModel)`.
 
-For sample implementatations, see MLJ's [built-in
+For sample implementations, see MLJ's [built-in
 transformers](https://github.com/JuliaAI/MLJModels.jl/blob/dev/src/builtins/Transformers.jl)
 and the clustering models at
 [MLJClusteringInterface.jl](https://github.com/jbrea/MLJClusteringInterface.jl).
+
+## Transformers requiring a target variable in training
+
+An `Unsupervised` model that is not `Static` may include a second argument `y` in it's
+`fit` signature, as in `fit(::MyTransformer, verbosity, X, y)`. For example, some feature
+selection tools require a target variable `y` in training. (Unlike `Supervised` models, an
+`Unsupervised` model is not required to implement `predict`, and in pipelines it is the
+output of `transform`, and not `predict`, that is always propagated to the next model.) Such a
+model should overload the trait `target_in_fit`, as in this example:
+
+```julia
+MLJModelInterface.target_in_fit(::Type{<:MyTransformer}) = true
+```
+
+This ensures that such models can appear in pipelines, and that a target provided to the
+pipeline model is passed on to the model in training. 
+
+If the model implements more than one `fit` signature (e.g., one with a target `y` and one
+without) then `fit_data_scitype` must also be overloaded, as in this example:
+
+```julia
+MLJModelInterface.fit_data_scitype(::Type{<:MyTransformer}) = Union{
+    Tuple{Table(Continuous)},
+	Tuple{Table(Continous), AbstractVector{<:Finite}},
+}
+```
+
+

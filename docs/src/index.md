@@ -8,7 +8,7 @@ API defined there, as outlined in this document.
 
 !!! tip
 
-    This is a reference document, which has become rather sprawling over the evolution of the MLJ project. We recommend starting with [Quick start guide](@ref), which covers the main points relevant to most new model implementations.
+    This is a reference document, which has become rather sprawling over the evolution of the MLJ project. We recommend starting with [Quick start guide](@ref), which covers the main points relevant to most new model implementations. Most topics are only detailed for `Supervised` models, so if you are implementing another kind of model, you may still need to refer to the [Supervised models](@ref) section. 
 
 Interface code can be hosted by the package providing the core machine learning algorithm,
 or by a stand-alone "interface-only" package, using the template

@@ -7,7 +7,7 @@ machine learning models into
 
 | Linux | Coverage |
 | :-----------: | :------: |
-| [![Build Status](https://github.com/JuliaAI/MLJModelInterface.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJModelInterface.jl/actions) | [![codecov.io](http://codecov.io/github/JuliaAI/MLJModelInterface.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaAI/MLJModelInterface.jl?branch=master) |
+| [![Build Status](https://github.com/JuliaAI/MLJModelInterface.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJModelInterface.jl/actions) | [![codecov](https://codecov.io/github/JuliaAI/MLJModelInterface.jl/graph/badge.svg?token=rkvwHku1dW)](https://codecov.io/github/JuliaAI/MLJModelInterface.jl)
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaai.github.io/MLJModelInterface.jl/dev/)
 

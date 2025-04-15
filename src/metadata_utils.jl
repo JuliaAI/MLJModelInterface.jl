@@ -71,7 +71,7 @@ depwarn_docstring(T) =
     Regarding $T: `metadata_model` should not be called with the keyword argument `descr`
     or `docstring`. Implementers of the MLJ model interface should instead create an
     MLJ-compliant docstring in the usual way.  See
-    https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings
+    https://juliaai.github.io/MLJ.jl/dev/adding_models_for_general_use/#Document-strings
     for details.
 
     """

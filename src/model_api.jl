@@ -47,7 +47,7 @@ The following trait overload is also required:
 training_losses(model, report) = nothing
 
 # to support online learning in the future:
-# https://github.com/alan-turing-institute/MLJ.jl/issues/60 :
+# https://github.com/JuliaAI/MLJ.jl/issues/60 :
 function update_data end
 
 """
@@ -67,7 +67,7 @@ the model-specific representations of the data.
 
 To implement the `reformat` data front-end for a model, refer to
 "Implementing a data front-end" in the [MLJ
-manual](https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/).
+manual](https://juliaai.github.io/MLJ.jl/dev/adding_models_for_general_use/).
 
 
 """

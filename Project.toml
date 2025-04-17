@@ -4,6 +4,7 @@ authors = ["Thibaut Lienart and Anthony Blaom"]
 version = "1.11.0"
 
 [deps]
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ScientificTypesBase = "30f210dd-8aff-4c5f-94ba-8e64358c1161"
 StatisticalTraits = "64bff920-2084-43da-a3e6-9bb72801c0c9"
@@ -16,6 +17,7 @@ Distances = "0.10"
 InteractiveUtils = "<0.0.1, 1"
 Markdown = "<0.0.1, 1"
 OrderedCollections = "1"
+REPL = "<0.0.1, 1"
 Random = "<0.0.1, 1"
 ScientificTypes = "3"
 ScientificTypesBase = "3"

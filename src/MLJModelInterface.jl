@@ -63,6 +63,7 @@ const ABSTRACT_MODEL_SUBTYPES = [
 using ScientificTypesBase
 using StatisticalTraits
 using Random
+using InteractiveUtils
 using REPL # apparently needed to get Base.Docs.doc to work
 
 import StatisticalTraits: info

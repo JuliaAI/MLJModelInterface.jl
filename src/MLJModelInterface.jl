@@ -22,6 +22,7 @@ const MODEL_TRAITS = [
     :docstring,
     :name,
     :human_name,
+    :tags,
     :is_supervised,
     :prediction_type,
     :abstract_type,
@@ -63,7 +64,8 @@ const ABSTRACT_MODEL_SUBTYPES = [
 using ScientificTypesBase
 using StatisticalTraits
 using Random
-using REPL # apparently needed to get Base.Docs.doc to work
+using InteractiveUtils
+using REPL # needed to get Base.Docs.doc to work
 
 import StatisticalTraits: info
 

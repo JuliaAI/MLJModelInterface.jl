@@ -50,11 +50,10 @@ function StatTraits.target_scitype(::Type{<:DeterministicDetector})
     return AbstractVector{<:Union{Missing, OrderedFactor{2}}}
 end
 
-# implementation is deferred as it requires methodswith which depends upon
-# InteractiveUtils which we don't want to bring here as a dependency
-# (even if it's stdlib).
-implemented_methods(M::Type) = implemented_methods(get_interface_mode(), M)
+implemented_methods(M::Type) = getfield.(methodswith(M), :name) |> unique
 implemented_methods(model) = implemented_methods(typeof(model))
+
+# can be removed in MLJModelInterface 2.0:
 implemented_methods(::LightInterface, M) = errlight("implemented_methods")
 
 for M in ABSTRACT_MODEL_SUBTYPES

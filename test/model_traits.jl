@@ -33,6 +33,7 @@ bar(::P1) = nothing
 M.package_name(::Type{<:S1}) = "Sibelius"
 M.package_url(::Type{<:S1}) = "www.find_the_eighth.org"
 M.human_name(::Type{<:S1}) = "silly model"
+M.tags(::Type{<:S1}) = ["regression", "gradient descent"]
 
 M.package_name(::Type{<:U1}) = "Bach"
 M.package_url(::Type{<:U1}) = "www.did_he_write_565.com"
@@ -103,6 +104,7 @@ M.input_scitype(::Type{<:SupervisedTransformer}) = Finite
 
     @test name(ms) == "S1"
     @test human_name(ms) == "silly model"
+    @test tags(ms) == ["regression", "gradient descent"]
 
 
     @test is_supervised(ms)
@@ -117,18 +119,14 @@ M.input_scitype(::Type{<:SupervisedTransformer}) = Finite
     @test hyperparameters(md) == (:a,)
     @test hyperparameter_types(md) == ("Int64",)
 
-    # implemented methods is deferred
-    setlight()
-    @test_throws M.InterfaceError implemented_methods(mp)
-
-    setfull()
+    @test implemented_methods(ms) == [:clean!,]
 
     @test Set(implemented_methods(mp)) == Set([:clean!,:bar,:foo])
 
-    @test fit_data_scitype(mu) == Tuple{Unknown};;;
+    @test fit_data_scitype(mu) == Tuple{Unknown}
     @test fit_data_scitype(mu) == Tuple{Unknown}
     @test fit_data_scitype(supervised_transformer) == Tuple{Finite,Continuous}
- 
+
 end
 
 @testset "`_density` - helper for predict_scitype fallback" begin

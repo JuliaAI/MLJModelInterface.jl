@@ -11,10 +11,11 @@ and `X = nothing`.
 
 The `predict` method should return a single distribution.
 
-A working implementation of a model that fits a `UnivariateFinite`
-distribution to some categorical data using [Laplace
-smoothing](https://en.wikipedia.org/wiki/Additive_smoothing)
-controlled by a hyperparameter `alpha` is given
-[here](https://github.com/JuliaAI/MLJBase.jl/blob/d377bee1198ec179a4ade191c11fef583854af4a/test/interface/model_api.jl#L36).
+A working implementation of a model that fits a `UnivariateFinite` distribution to some
+categorical data using [Laplace
+smoothing](https://en.wikipedia.org/wiki/Additive_smoothing) controlled by a
+hyperparameter `alpha` is given in [MLJBase
+tests](https://github.com/JuliaAI/MLJBase.jl/blob/dev/test/resampling.jl); try
+[here](https://github.com/JuliaAI/MLJBase.jl/blob/203aae371f67ed639685aa4803e150ff69f0fa49/test/resampling.jl#L1050).
 
 

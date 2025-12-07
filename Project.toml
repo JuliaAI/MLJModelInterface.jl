@@ -12,7 +12,7 @@ StatisticalTraits = "64bff920-2084-43da-a3e6-9bb72801c0c9"
 
 [compat]
 Aqua = "0.8"
-CategoricalArrays = "0.10"
+CategoricalArrays = "0.10, 1"
 DataFrames = "1"
 Distances = "0.10"
 InteractiveUtils = "<0.0.1, 1"

@@ -63,7 +63,7 @@ The fallback is `reformat(model, args...) = args` (i.e., slurps provided data).
   arguments are `reformat`ed versions of user-supplied data. For
   example, in the supervised case, `data_new` in
   `predict(model::SomeModelType, fitresult, data_new)` is
-  `reformat(model, Xnew)`, where `Xnew` is the data provided by the MLJ
+  `reformat(model, Xnew)[1]`, where `Xnew` is the data provided by the MLJ
   user in a call `predict(mach, Xnew)` (`mach.model == model`).
 
 - To specify how the model-specific representation of data is to be

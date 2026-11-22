@@ -144,8 +144,6 @@ end
 # equality and a corresponding definition of `in`.
 Base.isequal(m1::MLJType, m2::MLJType) = (m1 === m2)
 
-# Note: To prevent julia crash, it seems we need to annotate the type
-# of itr:
 function special_in(x, itr)::Union{Bool,Missing}
     for y in itr
         ismissing(y) && return missing
@@ -154,9 +152,12 @@ function special_in(x, itr)::Union{Bool,Missing}
     return false
 end
 
+# Note: To address some method ambiguities, it seems we need to annotate
+# the type of itr:
 Base.in(x::MLJType, itr::Set) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractVector{<:MLJType}) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractRange{<:MLJType}) = special_in(x, itr)
+Base.in(x::MLJType, itr::Base.ReshapedVector{<:MLJType}) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple{(Any for _ in 1:32)..., Vararg{Any}}) = special_in(x, itr)
 

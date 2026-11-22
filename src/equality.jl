@@ -157,7 +157,7 @@ end
 Base.in(x::MLJType, itr::Set) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractVector{<:MLJType}) = special_in(x, itr)
 Base.in(x::MLJType, itr::AbstractRange{<:MLJType}) = special_in(x, itr)
-Base.in(x::MLJType, itr::Base.ReshapedVector{<:MLJType}) = special_in(x, itr)
+Base.in(x::MLJType, itr::Base.ReshapedArray{<:MLJType,1}) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple) = special_in(x, itr)
 Base.in(x::MLJType, itr::Tuple{(Any for _ in 1:32)..., Vararg{Any}}) = special_in(x, itr)
 
